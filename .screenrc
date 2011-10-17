@@ -1,0 +1,49 @@
+# vim:set ts=8 sts=2 sw=2 tw=0:
+# vim:set foldmethod=marker foldmarker={{{,}}} :
+#===========================================================================
+# File: .screenrc
+# Last Change: 18-Oct-2011.
+# Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
+#===========================================================================
+
+##############################
+# encoding setting
+##############################
+# {{{
+defutf8 on
+defencoding utf8
+encoding utf-8 utf-8
+# }}}
+
+##############################
+# switch on/off
+##############################
+# {{{
+startup_message off
+vbell off
+autodetach on
+hardstatus on
+# }}}
+
+##############################
+# scrollback
+##############################
+# {{{
+scrollback 5000
+defscrollback 5000 
+# }}}
+
+##############################
+# status line
+##############################
+# {{{
+shelltitle "$|zsh"
+hardstatus alwayslastline "%{= wk}[screen@$USER]%` %`%-w%{= ck}%n %t%{-}%+w %=[$LANG][%m/%d %02c:%s]"
+# }}}
+
+##############################
+# key mappings
+##############################
+# {{{
+escape 
+# }}}
