@@ -2,36 +2,38 @@
 " vim:set foldmethod=marker foldmarker={{{,}}} :
 "===========================================================================
 " File: .vimrc
-" Last Change: 18-Oct-2011.
+" Last Change: 19-Oct-2011.
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 "===========================================================================
 "
 " # basic setting
-" {{{
 scriptencoding utf-8
 syntax on
 filetype plugin indent on
-" }}}
 "
 " # utilities
 " {{{
 " ## variables
 " {{{
-" ### wondows machine
+" ### multi OS
+" windows machine
 let s:is_win = has( 'win16' ) || has( 'win32' ) || has( 'win64' )
+" cygwin
+let s:is_cyg = has( 'win32unix' )
+" unix(NOT Cygwin)
+let s:is_unix = has( 'unix' ) && s:is_cyg == 0
 "
 " ### my vim folder
 if s:is_win
   let $MYVIM = expand( '$HOME/vimfiles' )
-else
+elseif s:is_cyg || s:is_unix
   let $MYVIM = expand( '$HOME/.vim' )
 endif
-"
 " }}}
 "
 " ## commands
 " {{{
-" ### .vimrc(Master)
+" ### .vimrc
 command! EditVimrc :tabe $DROPBOX/dotfiles/.vimrc
 command! ReadVimrc :source $DROPBOX/dotfiles/.vimrc
 nnoremap ,ev :EditVimrc<CR>
@@ -42,18 +44,15 @@ command! EditVimrcHome :tabe $HOME/.vimrc
 command! ReadVimrcHome :source $HOME/.vimrc
 nnoremap <Leader>ev :EditVimrcHome<CR>
 nnoremap <Leader>rv :ReadVimrcHome<CR>
-"
 " }}}
 "
 " ## functions
 " {{{
-"
 " }}}
 " }}}
 "
 " # options
 " {{{
-"
 " ## backup, swap
 if finddir('backup', $MYVIM) != ''
   set backup
@@ -136,12 +135,11 @@ set shellslash
 set nrformats+=alpha
 set nrformats+=octal
 set nrformats+=hex
-"
+set history=50
 " }}}
 " 
 " # key map (:map <F1> <F2> #-> <F1> <- <F2>)
 " {{{
-"
 " ## move
 inoremap <C-a> <Home>
 inoremap <C-e> <End>
@@ -184,7 +182,6 @@ inoremap <> <><Left>
 cmap <C-x> <C-r>=expand('%:p:h')<CR>/
 " expand file
 cmap <C-z> <C-r>=expand('%:p:r')<CR>
-"
 " }}}
 
 " # macro
@@ -204,6 +201,17 @@ function! s:filetype_vim()
   set shiftwidth=2
 endfunction
 " }}}
+"
+" ## perl
+" {{{
+autocmd BufRead *.pl call s:filetype_pl()
+autocmd FileType perl call s:filetype_pl()
+function! s:filetype_pl()
+  set tabstop=4
+  set shiftwidth=4
+endfunction
+" }}}
+"
 " ## javascript
 " {{{
 autocmd BufRead *.js call s:filetype_js()
@@ -213,6 +221,7 @@ function! s:filetype_js()
   set shiftwidth=4
 endfunction
 " }}}
+"
 " ## vba
 " {{{
 autocmd BufRead *.bas call s:filetype_bas()
@@ -372,3 +381,4 @@ if exists( 'g:my_neocomplcache_flag' ) && g:my_neocomplcache_flag != 0
 endif
 " }}}
 " }}}
+"
