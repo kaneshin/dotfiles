@@ -254,7 +254,6 @@ Bundle 'tpope/vim-repeat'
 " www.vim.org
 Bundle 'TwitVim'
 Bundle 'surround.vim'
-Bundle 'shomarks.vim'
 " Bundle
 filetype plugin indent on
 " using BundleInstall for installing vim plugin 

@@ -2,7 +2,7 @@
 # vim:set foldmethod=marker foldmarker={{{,}}} :
 #===========================================================================
 # File: .zshrc
-# Last Change: 18-Oct-2011.
+# Last Change: 19-Oct-2011.
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 #===========================================================================
 
@@ -101,4 +101,6 @@ bindkey -v # vi key map
 alias ls='ls -F'
 alias la='ls -a'
 alias ll='ls -la'
+alias ce='cd ../'
+alias cy='cd /cygdrive/'
 # }}}
