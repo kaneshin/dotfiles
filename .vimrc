@@ -2,7 +2,7 @@
 " vim:set foldmethod=marker foldmarker={{{,}}} :
 "===========================================================================
 " File: .vimrc
-" Last Change: 19-Oct-2011.
+" Last Change: 04-Nov-2011.
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 "===========================================================================
 "
@@ -67,11 +67,11 @@ else
 endif
 "
 " ## fold
-"if finddir('view', $MYVIM) != ''
-"  set viewdir=$MYVIM/view
+if finddir('view', $MYVIM) != ''
+  set viewdir=$MYVIM/view
 "  autocmd BufWritePost * mkview
 "  autocmd BufReadPost * loadview
-"endif
+endif
 "
 " ## encoding
 set fileencodings=utf-8,euc-jp,cp932,shiftjis,iso-2022-jp,latin1
@@ -147,12 +147,12 @@ inoremap <C-h> <Left>
 inoremap <C-j> <Down>
 inoremap <C-k> <Up>
 inoremap <C-l> <Right>
-cnoremap <C-a> <Home>
-cnoremap <C-e> <End>
-cnoremap <C-b> <Left>
-cnoremap <C-f> <Right>
-cnoremap <C-n> <Down>
-cnoremap <C-p> <Up>
+" cnoremap <C-a> <Home>
+" cnoremap <C-e> <End>
+" cnoremap <C-b> <Left>
+" cnoremap <C-f> <Right>
+" cnoremap <C-n> <Down>
+" cnoremap <C-p> <Up>
 "
 " ## window
 nnoremap <silent> <C-x>0 <C-w>c
@@ -240,17 +240,20 @@ endfunction
 filetype off
 set rtp+=$MYVIM/bundle/vundle
 call vundle#rc( '$MYVIM/bundle' )
-" self-managing
-Bundle 'gmarik/vundle'
+"
 " github
-Bundle 'thinca/vim-quickrun'
+Bundle 'gmarik/vundle'
 Bundle 'mattn/zencoding-vim'
 Bundle 'mattn/gist-vim'
 Bundle 'mattn/calendar-vim'
-Bundle 'Shougo/neocomplcache'
+Bundle 'mattn/sonictemplate-vim'
+Bundle 'thinca/vim-quickrun'
+Bundle 'thinca/vim-ref'
 Bundle 'Shougo/unite.vim'
 Bundle 'kaneshin/vimever-vim'
 Bundle 'tpope/vim-repeat'
+" Bundle 'Shougo/neocomplcache'
+"
 " www.vim.org
 Bundle 'TwitVim'
 Bundle 'surround.vim'
@@ -301,27 +304,7 @@ nnoremap ,gd :<C-u>Gist -d<CR>
 " fork gist
 nnoremap ,gf :<C-u>Gist -f<CR>
 " }}}
-" ## surround.vim
-" {{{
-" }}}
-" ## tpope/vim-repeat
-" {{{
-" }}}
-" ## vimever.vim
-" {{{
-" }}}
-" ## thinca/vim-quickrun
-" {{{
-" }}}
-" ## mattn/zencoding-vim
-" {{{
-" }}}
-" ## Shougo/unite.vim
-" {{{
-if exists( 'g:my_unite_flag' ) && g:my_unite_flag != 0
-endif
-" }}}
-" ## Shougo/neocomplcache
+"" ## Shougo/neocomplcache
 " {{{
 if exists( 'g:my_neocomplcache_flag' ) && g:my_neocomplcache_flag != 0
   " Disable AutoComplPop.
