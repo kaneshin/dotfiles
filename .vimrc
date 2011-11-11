@@ -2,7 +2,7 @@
 " vim:set foldmethod=marker foldmarker={{{,}}} :
 "===========================================================================
 " File: .vimrc
-" Last Change: 04-Nov-2011.
+" Last Change: 11-Nov-2011.
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 "===========================================================================
 "
@@ -177,6 +177,7 @@ inoremap () ()<Left>
 inoremap "" ""<Left>
 inoremap '' ''<Left>
 inoremap <> <><Left>
+inoremap %% %%<Left>
 "
 " expand path
 cmap <C-x> <C-r>=expand('%:p:h')<CR>/

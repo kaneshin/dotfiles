@@ -2,7 +2,7 @@
 # vim:set foldmethod=marker foldmarker={{{,}}} :
 #===========================================================================
 # File: .zshrc
-# Last Change: 02-Nov-2011.
+# Last Change: 11-Nov-2011.
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 #===========================================================================
 
@@ -26,6 +26,15 @@ autoload -Uz compinit
 compinit
 autoload -Uz colors
 colors
+# }}}
+
+##############################
+# Display
+##############################
+# {{{
+PS1='%{]0;%/
+[32m%}(%n@%m)[%h] %{[33m%}%~%{[0m%}
+$ '
 # }}}
 
 ##############################
