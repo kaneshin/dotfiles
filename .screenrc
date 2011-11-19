@@ -1,7 +1,7 @@
 # vim:set ts=8 sts=2 sw=2 tw=0:
 #===========================================================================
 # File: .screenrc
-# Last Change: 19-Oct-2011.
+# Last Change: 20-Nov-2011.
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 #===========================================================================
 
@@ -24,7 +24,7 @@ hardstatus on
 # scrollback
 ##############################
 scrollback 5000
-defscrollback 5000 
+defscrollback 5000
 
 ##############################
 # status line

@@ -1,8 +1,8 @@
-la=ls -a 
+la=ls -a
 dosm=doskey /macros
 cdu=cd /d C:\Users\kaneshin $t cls
 cdc=cd /d C:\ $t cls
 cdh=cd /d D:\home\kaneshin $t cls
 cdd=cd /d D:\ $t cls
-ll=ls -la 
+ll=ls -la
 ce=cd ..\

@@ -1,8 +1,8 @@
 " vim:set ts=8 sts=2 sw=2 tw=0:
-" vim:set foldmethod=marker foldmarker={{{,}}} :
+" vim:set foldmethod=marker foldmarker={{{,}}}:
 "===========================================================================
 " File: .vimrc
-" Last Change: 11-Nov-2011.
+" Last Change: 20-Nov-2011.
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 "===========================================================================
 "
@@ -17,7 +17,7 @@ filetype plugin indent on
 " {{{
 " ### multi OS
 " windows machine
-let s:is_win = has( 'win16' ) || has( 'win32' ) || has( 'win64' )
+let s:is_win = has( 'win32' ) || has( 'win64' )
 " cygwin
 let s:is_cyg = has( 'win32unix' )
 " unix(NOT Cygwin)
@@ -86,23 +86,22 @@ set splitright
 set title
 set titlelen=80
 set number
-set scrolloff=5
+set scrolloff=3
 set linespace=1
 set wrap
-set nolist
-set listchars=eol:$,tab:>\ ,extends:<
+set list
+set listchars=eol:\ ,tab:>\ ,trail:ｽ,extends:<
 "
 " ## display#below
 set ruler
 set showcmd
 set laststatus=2
-set statusline=%<%t\ %m%r%h%w%y%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=[%l/%L,%c/%{col('$')-1}][0x\%02.2B][%{strftime('%b/%d\ %X')}] 
+set statusline=%<%t\ %m%r%h%w%y%{'['.(&fenc!=''?&fenc:&enc).':'.&ff.']'}%=[%l/%L,%c/%{col('$')-1}][0x\%02.2B]
 set cmdheight=2
 set wildmenu
 set wildmode=list:longest
 "
 " ## cursor
-set nocursorbind
 set cursorline
 set nocursorcolumn
 "
@@ -137,7 +136,7 @@ set nrformats+=octal
 set nrformats+=hex
 set history=50
 " }}}
-" 
+"
 " # key map (:map <F1> <F2> #-> <F1> <- <F2>)
 " {{{
 " ## move
@@ -169,7 +168,6 @@ nmap <C-p> :bprevious<CR>
 inoremap <C-b> <BS>
 inoremap <C-d> <Del>
 inoremap <C-f> <CR>
-inoremap <Leader>k <ESC>d$i
 inoremap <Leader>p <ESC>pi
 inoremap {} {}<Left>
 inoremap [] []<Left>
@@ -178,6 +176,12 @@ inoremap "" ""<Left>
 inoremap '' ''<Left>
 inoremap <> <><Left>
 inoremap %% %%<Left>
+cnoremap {} {}<Left>
+cnoremap [] []<Left>
+cnoremap () ()<Left>
+cnoremap "" ""<Left>
+cnoremap '' ''<Left>
+cnoremap <> <><Left>
 "
 " expand path
 cmap <C-x> <C-r>=expand('%:p:h')<CR>/
@@ -195,8 +199,8 @@ inoremap <Leader>dl <C-r>=repeat('-', 75)<CR>
 " {{{
 " ## vim
 " {{{
-autocmd BufRead *.vim call s:filetype_vim()
 autocmd FileType vim call s:filetype_vim()
+autocmd BufReadPost,BufNewFile *.vim call s:filetype_vim()
 function! s:filetype_vim()
   set tabstop=2
   set shiftwidth=2
@@ -205,8 +209,8 @@ endfunction
 "
 " ## perl
 " {{{
-autocmd BufRead *.pl call s:filetype_pl()
 autocmd FileType perl call s:filetype_pl()
+autocmd BufReadPost,BufNewFile *.pl,*.pm,*.t call s:filetype_pl()
 function! s:filetype_pl()
   set tabstop=4
   set shiftwidth=4
@@ -215,8 +219,8 @@ endfunction
 "
 " ## javascript
 " {{{
-autocmd BufRead *.js call s:filetype_js()
 autocmd FileType javascript call s:filetype_js()
+autocmd BufReadPost,BufNewFile *.js call s:filetype_js()
 function! s:filetype_js()
   set tabstop=4
   set shiftwidth=4
@@ -225,9 +229,9 @@ endfunction
 "
 " ## vba
 " {{{
-autocmd BufRead *.bas call s:filetype_bas()
-autocmd FileType vb call s:filetype_bas()
-function! s:filetype_bas()
+autocmd FileType vb call s:filetype_vb()
+autocmd BufReadPost,BufNewFile *.bas call s:filetype_vb()
+function! s:filetype_vb()
   set tabstop=4
   set shiftwidth=4
 endfunction
@@ -248,12 +252,12 @@ Bundle 'mattn/zencoding-vim'
 Bundle 'mattn/gist-vim'
 Bundle 'mattn/calendar-vim'
 Bundle 'mattn/sonictemplate-vim'
+Bundle 'mattn/webapi-vim'
+Bundle 'mattn/vimplenote-vim'
 Bundle 'thinca/vim-quickrun'
 Bundle 'thinca/vim-ref'
-Bundle 'Shougo/unite.vim'
-Bundle 'kaneshin/vimever-vim'
 Bundle 'tpope/vim-repeat'
-" Bundle 'Shougo/neocomplcache'
+Bundle 'markabe/bufexplorer'
 "
 " www.vim.org
 Bundle 'TwitVim'
@@ -268,6 +272,10 @@ function! s:my_bundle()
   set shellslash
 endfunction
 nnoremap ,bi :<C-u>BundleMyInstall<CR>
+" }}}
+" ## mattn/vimplenote-vim
+" {{{
+"
 " }}}
 " ## TwitVim
 " {{{
@@ -305,63 +313,6 @@ nnoremap ,gd :<C-u>Gist -d<CR>
 " fork gist
 nnoremap ,gf :<C-u>Gist -f<CR>
 " }}}
-"" ## Shougo/neocomplcache
-" {{{
-if exists( 'g:my_neocomplcache_flag' ) && g:my_neocomplcache_flag != 0
-  " Disable AutoComplPop.
-  let g:acp_enableAtStartup = 0
-  " Use neocomplcache.
-  let g:neocomplcache_enable_at_startup = 1
-  " Use smartcase.
-  let g:neocomplcache_enable_smart_case = 1
-  " Use camel case completion.
-  let g:neocomplcache_enable_camel_case_completion = 1
-  " Use underbar completion.
-  let g:neocomplcache_enable_underbar_completion = 1
-  " Set minimum syntax keyword length.
-  let g:neocomplcache_min_syntax_length = 3
-  let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
-  
-  " Define keyword.
-  if !exists('g:neocomplcache_keyword_patterns')
-    let g:neocomplcache_keyword_patterns = {}
-  endif
-  let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
-  
-  " Plugin key-mappings.
-  imap <C-f>     <Plug>(neocomplcache_snippets_expand)
-  smap <C-f>     <Plug>(neocomplcache_snippets_expand)
-  " inoremap <expr><C-g>     neocomplcache#undo_completion()
-  " inoremap <expr><C-l>     neocomplcache#complete_common_string()
-  
-  " Recommended key-mappings.
-  " <CR>: close popup and save indent.
-  inoremap <expr><CR>  neocomplcache#smart_close_popup() . "\<CR>"
-  " <TAB>: completion.
-  inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-  " <C-h>, <BS>: close popup and delete backword char.
-  " inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
-  " inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
-  " inoremap <expr><C-y>  neocomplcache#close_popup()
-  " inoremap <expr><C-e>  neocomplcache#cancel_popup()
-  
-  " Enable omni completion.
-  autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-  autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-  autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-  autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-  autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-  
-  " Enable heavy omni completion.
-  if !exists('g:neocomplcache_omni_patterns')
-    let g:neocomplcache_omni_patterns = {}
-  endif
-  let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
-  "autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
-  let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-  let g:neocomplcache_omni_patterns.c = '\%(\.\|->\)\h\w*'
-  let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
-endif
-" }}}
 " }}}
 "
+" EOF

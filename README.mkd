@@ -1,0 +1,19 @@
+my dotfiles
+===========
+
+FILES
+-----
+
+- .vimrc
+
+- .gvimrc
+
+- .zshrc
+
+- .bashrc
+
+- .screenrc
+
+- .doskey
+
+Please teach a best setting ;)
