@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOTDIR=~/dotfiles
+DOTDIR=~/Dropbox/dotfiles
 cd $DOTDIR
 for dotfile in .?*
 do
