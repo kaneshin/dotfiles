@@ -1,12 +1,11 @@
 #!/bin/bash
 
-DOTDIR=~/Dropbox/dotfiles
-cd $DOTDIR
+cd $(dirname ${0})
 for dotfile in .?*
 do
     if [[ $dotfile != '..' ]] && [[ $dotfile != '.git' ]] && [[ $dotfile != '.gitignore' ]] && [[ $dotfile != '.doskey' ]]
     then
-        ln -Fis "$DOTDIR/$dotfile" ~/
+        ln -Fis "$PWD/$dotfile" ~/
     fi
 done
 

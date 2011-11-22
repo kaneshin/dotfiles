@@ -1,13 +1,14 @@
 # vim:set ts=8 sts=2 sw=2 tw=0:
 #===========================================================================
 # File: .zshrc
-# Last Change: 20-Nov-2011.
+# Last Change: 22-Nov-2011.
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 #===========================================================================
 
 #====================
 # basic setting
-export LANG=ja_JP.UTF-8
+# export LANG=ja_JP.UTF-8
+export LANG="en_US.UTF-8"
 bindkey -v # vi key map
 # bindkey -e # emacs key map
 
@@ -23,6 +24,12 @@ setopt hist_ignore_space
 setopt hist_reduce_blanks
 setopt hist_verify
 setopt share_history
+
+autoload history-search-end
+zle -N history-beginning-search-backward-end history-search-end
+zle -N history-beginning-search-forward-end history-search-end
+bindkey "^P" history-beginning-search-backward-end
+bindkey "^N" history-beginning-search-forward-end
 
 #====================
 # Display
@@ -76,5 +83,9 @@ alias cy='cd /cygdrive/'
 # Node.js
 PATH=$PATH:~/.nave
 alias nave='nave.sh'
+
+#====================
+# CUTEr
+source ~/optim/.cuterrc
 
 # EOF
