@@ -2,7 +2,7 @@
 " vim:set foldmethod=marker foldmarker={{{,}}}:
 "===========================================================================
 " File: .vimrc
-" Last Change: 20-Nov-2011.
+" Last Change: 24-Nov-2011.
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 "===========================================================================
 "
@@ -93,10 +93,21 @@ set list
 set listchars=eol:\ ,tab:>\ ,trail:ｽ,extends:<
 "
 " ## display#below
+let s:hahhahpos = 0
+if !has('unix') || $VTE_CJK_WIDTH != ''
+  let s:hahhahstr = ["(  ´д`)", "(  ´д)", "(   ´)", "(     )", "(    )", "( ;   )", "(` ;  )", "(д` ; )", "(´д`; )", "( ´д`;)",]
+else
+  let s:hahhahstr = ["(  ´ д `)", "(   ´ д )", "(   ´ )", "(     )", "(    )", "( ;   )", "(` ;  )", "(д `;  )", "(´ д `; )", "( ´ д `;)" ]
+endif
+function! g:HahHah()
+  let s:hahhahpos = (s:hahhahpos + 1) % len(s:hahhahstr)
+  return s:hahhahstr[s:hahhahpos] . ' ﾊｧﾊｧ'
+endfunction
+" let &statusline = '%t %m%h%r%q%=%l-%c%V %p %=%{g:HahHah()}'
+set statusline=%<%t\ %m%r%h%w%y%{'['.(&fenc!=''?&fenc:&enc).':'.&ff.']'}%=[%l/%L,%c/%{col('$')-1}][0x\%02.2B]%{g:HahHah()}
 set ruler
 set showcmd
 set laststatus=2
-set statusline=%<%t\ %m%r%h%w%y%{'['.(&fenc!=''?&fenc:&enc).':'.&ff.']'}%=[%l/%L,%c/%{col('$')-1}][0x\%02.2B]
 set cmdheight=2
 set wildmenu
 set wildmode=list:longest
