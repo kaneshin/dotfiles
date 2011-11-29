@@ -2,7 +2,7 @@
 " vim:set foldmethod=marker foldmarker={{{,}}}:
 "===========================================================================
 " File: .vimrc
-" Last Change: 24-Nov-2011.
+" Last Change: 30-Nov-2011.
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 "===========================================================================
 "
@@ -95,9 +95,30 @@ set listchars=eol:\ ,tab:>\ ,trail:ｽ,extends:<
 " ## display#below
 let s:hahhahpos = 0
 if !has('unix') || $VTE_CJK_WIDTH != ''
-  let s:hahhahstr = ["(  ´д`)", "(  ´д)", "(   ´)", "(     )", "(    )", "( ;   )", "(` ;  )", "(д` ; )", "(´д`; )", "( ´д`;)",]
+  let s:hahhahstr = [
+        \"( ´д`)",
+        \"(  ´д)",
+        \"(    ´)",
+        \"(      )",
+        \"(      )",
+        \"( ;    )",
+        \"(` ;   )",
+        \"(д` ; )",
+        \"(´д`;)",
+        \]
 else
-  let s:hahhahstr = ["(  ´ д `)", "(   ´ д )", "(   ´ )", "(     )", "(    )", "( ;   )", "(` ;  )", "(д `;  )", "(´ д `; )", "( ´ д `;)" ]
+  let s:hahhahstr = [
+        \"(  ´ д `)",
+        \"(   ´ д )",
+        \"(   ´ )",
+        \"(     )",
+        \"(    )",
+        \"( ;   )",
+        \"(` ;  )",
+        \"(д `;  )",
+        \"(´ д `; )",
+        \"( ´ д `;)",
+        \]
 endif
 function! g:HahHah()
   let s:hahhahpos = (s:hahhahpos + 1) % len(s:hahhahstr)
@@ -141,7 +162,7 @@ set smarttab
 "
 " ## etc
 set nocompatible
-set shellslash
+set noshellslash
 set nrformats+=alpha
 set nrformats+=octal
 set nrformats+=hex
@@ -198,6 +219,10 @@ cnoremap <> <><Left>
 cmap <C-x> <C-r>=expand('%:p:h')<CR>/
 " expand file
 cmap <C-z> <C-r>=expand('%:p:r')<CR>
+
+" my email address
+cmap <C-e> kaneshin0120@gmail.com
+
 " }}}
 
 " # macro
@@ -251,39 +276,31 @@ endfunction
 "
 " # plugin
 " {{{
+"
 " ## gmarik/vundle
 " {{{
 filetype off
 set rtp+=$MYVIM/bundle/vundle
 call vundle#rc( '$MYVIM/bundle' )
-"
 " github
 Bundle 'gmarik/vundle'
-Bundle 'mattn/zencoding-vim'
-Bundle 'mattn/gist-vim'
-Bundle 'mattn/calendar-vim'
-Bundle 'mattn/sonictemplate-vim'
 Bundle 'mattn/webapi-vim'
+Bundle 'mattn/zencoding-vim'
 Bundle 'mattn/vimplenote-vim'
+Bundle 'mattn/sonictemplate-vim'
+" Bundle 'mattn/gist-vim'
+Bundle 'mattn/calendar-vim'
 Bundle 'thinca/vim-quickrun'
 Bundle 'thinca/vim-ref'
 Bundle 'tpope/vim-repeat'
 Bundle 'markabe/bufexplorer'
-"
 " www.vim.org
 Bundle 'TwitVim'
 Bundle 'surround.vim'
 " Bundle
 filetype plugin indent on
-" using BundleInstall for installing vim plugin 
-command! MyBundleInstall :call s:my_bundle()
-function! s:my_bundle()
-  set noshellslash
-  :BundleInstall!
-  set shellslash
-endfunction
-nnoremap ,bi :<C-u>BundleMyInstall<CR>
 " }}}
+"
 " ## mattn/vimplenote-vim
 " {{{
 "
@@ -306,7 +323,7 @@ endfunction
 " {{{
 " --- gist setting ---
 " let g:github_user = 'kaneshin'
-" let g:github_token = '<api token>'
+" let g:github_token = ''
 " let g:gist_privates = 1
 " --- key map ---
 " post to gist
@@ -323,6 +340,23 @@ nnoremap ,gla :<C-u>Gist -la<CR>
 nnoremap ,gd :<C-u>Gist -d<CR>
 " fork gist
 nnoremap ,gf :<C-u>Gist -f<CR>
+" }}}
+" ## mattn/vimplenote-vim
+" {{{
+" list all notes
+nnoremap ,vl :<C-u>VimpleNote -l<CR>
+" move note to trash
+nnoremap ,vd :<C-u>VimpleNote -d<CR>
+" delete note in current buffer
+nnoremap ,vD :<C-u>VimpleNote -D<CR>
+" tag note in current buffer
+nnoremap ,vt :<C-u>VimpleNote -t<CR>
+" create new note from buffer
+nnoremap ,vn :<C-u>VimpleNote -n<CR>
+" update a note from buffer
+nnoremap ,vu :<C-u>VimpleNote -u<CR>
+" search notes with tags
+nnoremap ,vs :<C-u>VimpleNote -s<CR>
 " }}}
 " }}}
 "
