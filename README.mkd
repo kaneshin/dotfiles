@@ -1,19 +1,16 @@
-my dotfiles
-===========
-
-FILES
------
+DOTFILES
+========
 
 - .vimrc
-
 - .gvimrc
-
 - .zshrc
-
 - .bashrc
-
 - .screenrc
 
-- .doskey
+ETC.
+----
+
+- ln.sh
+- mklink.bat
 
 Please teach a best setting ;)
