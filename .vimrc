@@ -348,21 +348,21 @@ call vundle#rc( '$MYVIM/bundle' )
 " github
 Bundle 'gmarik/vundle'
 Bundle 'mattn/webapi-vim'
-Bundle 'mattn/zencoding-vim'
+Bundle 'mattn/gist-vim'
 Bundle 'mattn/vimplenote-vim'
 Bundle 'mattn/sonictemplate-vim'
-Bundle 'mattn/gist-vim'
+Bundle 'mattn/zencoding-vim'
 Bundle 'mattn/calendar-vim'
 Bundle 'thinca/vim-quickrun'
 Bundle 'thinca/vim-ref'
+Bundle 'thinca/vim-prettyprint'
+Bundle 'Lokaltog/vim-easymotion'
 Bundle 'tpope/vim-repeat'
 Bundle 'markabe/bufexplorer'
-Bundle 'Lokaltog/vim-easymotion'
-Bundle 'thinca/vim-prettyprint'
 Bundle 'tyru/restart.vim'
+Bundle 'tyru/caw.vim'
 Bundle 't9md/vim-quickhl'
 Bundle 'dannyob/quickfixstatus'
-Bundle 'tyru/caw.vim'
 Bundle 'vim-scripts/Highlight-UnMatched-Brackets'
 Bundle 'hotchpotch/perldoc-vim'
 Bundle 'c9s/perlomni.vim'
@@ -371,7 +371,7 @@ Bundle 'TwitVim'
 Bundle 'surround.vim'
 filetype plugin indent on
 " /=gmarik/vundle }}}
-"
+
 " ########## TwitVim {{{
 let g:twitvim_count = 50
 if s:is_win
@@ -408,7 +408,7 @@ function! s:twitvim_my_help()
 endfunction
 " /=TwitVim }}}
 "
-" ## mattn/gist-vim {{{
+" ########## mattn/gist-vim {{{
 " --- gist setting ---
 " let g:github_user = 'kaneshin'
 " let g:github_token = ''
@@ -447,10 +447,17 @@ nnoremap ,vu :<C-u>VimpleNote -u<CR>
 nnoremap ,vs :<C-u>VimpleNote -s<CR>
 " /=mattn/vimplenote-vim }}}
 "
-" tyru/restart.vim {{{
+" ########## tyru/restart.vim {{{
 let g:restart_sessionoptions
     \ = 'blank,buffers,curdir,folds,help,localoptions,tabpages'
 " /=tyru/restart.vim }}}
+"
+" ########## Lokaltog/vim-easymotion {{{
+let g:EasyMotion_leader_key = '<Leader>'
+" }}}
+"
+" ########## tyru/caw.vim {{{
+" }}}
 " /=plugin }}}
 "
 " EOF
