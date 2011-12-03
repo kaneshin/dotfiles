@@ -53,55 +53,55 @@ endif
 " /=commands }}}
 "
 " ########## functions {{{
-if !has('unix') || ($VTE_CJK_WIDTH != '' && &ambiwidth == 'double')
-  let s:hahhahstd = [
-  \ '(´д｀;)',
-  \ '( ´д`;)',
-  \ '(  ´д`)',
-  \ '(   ´д)',
-  \ '(     ´)',
-  \ '(       )',
-  \ '(       )',
-  \ '(;      )',
-  \ '( ;     )',
-  \ '(` ;    )',
-  \ '(д` ;  )']
-else
-  let s:hahhahstd = [
-  \ '(´ д｀; )',
-  \ '( ´ д `;)',
-  \ '(  ´ д `)',
-  \ '(   ´ д )',
-  \ '(     ´ )',
-  \ '(       )',
-  \ '(       )',
-  \ '(;      )',
-  \ '( ;     )',
-  \ '(` ;    )',
-  \ '(д `;   )']
-endif
-let s:hahstr = [
-  \ '  ﾊｧ  ',
-  \ ' ﾊｧﾊｧ ',
-  \ 'ﾊｧﾊｧﾊｧ',
-  \ ' ﾊｧﾊｧ ',
-\ ]
-let s:hahstdpos = 0
-let s:leftnum = 0
-let s:rightnum = 0
-let s:hahflg = 0
-function! g:HahHah()
-  let s:hahstdpos = (s:hahstdpos + 1) % len(s:hahhahstd)
-  if localtime() % 2
-    let s:hahflg = 1
-  endif
-  if !(localtime() % 2) && s:hahflg
-    let s:hahflg = 0
-    let s:leftnum = (s:leftnum + 1) % len(s:hahstr)
-    let s:rightnum = (s:rightnum + 1)  % len(s:hahstr)
-  endif
-  return s:hahstr[s:leftnum].s:hahhahstd[s:hahstdpos].s:hahstr[s:rightnum]
-endfunction
+" if !has('unix') || ($VTE_CJK_WIDTH != '' && &ambiwidth == 'double')
+"   let s:hahhahstd = [
+"   \ '(´д｀;)',
+"   \ '( ´д`;)',
+"   \ '(  ´д`)',
+"   \ '(   ´д)',
+"   \ '(     ´)',
+"   \ '(       )',
+"   \ '(       )',
+"   \ '(;      )',
+"   \ '( ;     )',
+"   \ '(` ;    )',
+"   \ '(д` ;  )']
+" else
+"   let s:hahhahstd = [
+"   \ '(´ д｀; )',
+"   \ '( ´ д `;)',
+"   \ '(  ´ д `)',
+"   \ '(   ´ д )',
+"   \ '(     ´ )',
+"   \ '(       )',
+"   \ '(       )',
+"   \ '(;      )',
+"   \ '( ;     )',
+"   \ '(` ;    )',
+"   \ '(д `;   )']
+" endif
+" let s:hahstr = [
+"   \ '  ﾊｧ  ',
+"   \ ' ﾊｧﾊｧ ',
+"   \ 'ﾊｧﾊｧﾊｧ',
+"   \ ' ﾊｧﾊｧ ',
+" \ ]
+" let s:hahstdpos = 0
+" let s:leftnum = 0
+" let s:rightnum = 0
+" let s:hahflg = 0
+" function! g:HahHah()
+"   let s:hahstdpos = (s:hahstdpos + 1) % len(s:hahhahstd)
+"   if localtime() % 2
+"     let s:hahflg = 1
+"   endif
+"   if !(localtime() % 2) && s:hahflg
+"     let s:hahflg = 0
+"     let s:leftnum = (s:leftnum + 1) % len(s:hahstr)
+"     let s:rightnum = (s:rightnum + 1)  % len(s:hahstr)
+"   endif
+"   return s:hahstr[s:leftnum].s:hahhahstd[s:hahstdpos].s:hahstr[s:rightnum]
+" endfunction
 function! s:guiopt()
   if &guioptions =~ 'm'
     exec 'set guioptions-=m'
@@ -229,7 +229,7 @@ set listchars=eol:\ ,tab:>ﾀ,trail:ｽ,extends:<
 " ########## display#below
 set statusline=
       \%<%t\ %m%r%h%w%y%{'['.(&fenc!=''?&fenc:&enc).':'.&ff.']'}
-      \%=[%l/%L,%c/%{col('$')-1}][0x\%02.2B]%{g:HahHah()}
+      \%=[%l/%L,%c/%{col('$')-1}][0x\%02.2B]
 set ruler
 set showcmd
 set laststatus=2
@@ -356,11 +356,12 @@ Bundle 'mattn/calendar-vim'
 Bundle 'thinca/vim-quickrun'
 Bundle 'thinca/vim-ref'
 Bundle 'thinca/vim-prettyprint'
+Bundle 'tyru/restart.vim'
+Bundle 'tyru/caw.vim'
+Bundle 'kaneshin/hahhah-vim'
 Bundle 'Lokaltog/vim-easymotion'
 Bundle 'tpope/vim-repeat'
 Bundle 'markabe/bufexplorer'
-Bundle 'tyru/restart.vim'
-Bundle 'tyru/caw.vim'
 Bundle 't9md/vim-quickhl'
 Bundle 'dannyob/quickfixstatus'
 Bundle 'vim-scripts/Highlight-UnMatched-Brackets'
@@ -457,6 +458,9 @@ let g:EasyMotion_leader_key = '<Leader>'
 " }}}
 "
 " ########## tyru/caw.vim {{{
+" }}}
+" ########## kaneshin/hahhah-vim {{{
+let &statusline .= '%{g:HahHah()}'
 " }}}
 " /=plugin }}}
 "
