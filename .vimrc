@@ -2,7 +2,7 @@
 " vim:set foldmethod=marker foldmarker={{{,}}}:
 "===========================================================================
 " File: .vimrc
-" Last Change: 03-Dec-2011.
+" Last Change: 06-Dec-2011.
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 "===========================================================================
 "
@@ -308,7 +308,6 @@ autocmd BufReadPost,BufNewFile *.c call s:filetype_c()
 function! s:filetype_c()
   set tabstop=4
   set shiftwidth=4
-  set noexpandtab
 endfunction
 " /=c }}}
 "
@@ -338,6 +337,15 @@ function! s:filetype_vb()
   set shiftwidth=4
 endfunction
 " /=vbs }}}
+"
+" ########## markdown {{{
+autocmd FileType markdown call s:filetype_mkd()
+autocmd BufReadPost,BufNewFile *.mkd,*.md call s:filetype_mkd()
+function! s:filetype_mkd()
+  set tabstop=4
+  set shiftwidth=4
+endfunction
+" /=vbs }}}
 " /=file type }}}
 "
 " ##### plugin {{{
@@ -358,6 +366,7 @@ Bundle 'thinca/vim-ref'
 Bundle 'thinca/vim-prettyprint'
 Bundle 'tyru/restart.vim'
 Bundle 'tyru/caw.vim'
+Bundle 'mrtazz/molokai.vim'
 Bundle 'kaneshin/hahhah-vim'
 Bundle 'Lokaltog/vim-easymotion'
 Bundle 'tpope/vim-repeat'
@@ -460,7 +469,10 @@ let g:EasyMotion_leader_key = '<Leader>'
 " ########## tyru/caw.vim {{{
 " }}}
 " ########## kaneshin/hahhah-vim {{{
-let &statusline .= '%{g:HahHah()}'
+let &statusline =
+      \ strpart(&statusline, 0, stridx(&statusline, '%=')).
+      \ '%{g:HahHah()}'.
+      \ strpart(&statusline, stridx(&statusline, '%='), len(&statusline))
 " }}}
 " /=plugin }}}
 "
