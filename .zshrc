@@ -72,6 +72,7 @@ zstyle ':completion:*:default' menu select=3
 
 #====================
 # alias
+alias sl="ls"
 alias ls="ls -G"
 alias ls='ls -F'
 alias la='ls -a'
@@ -86,6 +87,6 @@ alias nave='nave.sh'
 
 #====================
 # CUTEr
-source ~/optim/.cuterrc
+# source ~/optim/.cuterrc
 
 # EOF
