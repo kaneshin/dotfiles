@@ -2,7 +2,7 @@
 " vim:set foldmethod=marker foldmarker={{{,}}}:
 "===========================================================================
 " File: .vimrc
-" Last Change: 06-Dec-2011.
+" Last Change: 08-Dec-2011.
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 "===========================================================================
 "
@@ -39,92 +39,41 @@ if !exists( '$DROPBOX' ) && filewritable( expand( '$MYHOME/Dropbox' ) )
 endif
 " /=variables }}}
 "
-" ########## commands {{{
-" .vimrc
-if filereadable( expand( '$DROPBOX/dotfiles/.vimrc' ) )
-  command! EditVimrc :tabe $DROPBOX/dotfiles/.vimrc
-  command! ReadVimrc :source $DROPBOX/dotfiles/.vimrc
-endif
-" .gvimrc
-if filereadable( expand( '$DROPBOX/dotfiles/.gvimrc' ) )
-  command! EditGVimrc :tabe $DROPBOX/dotfiles/.gvimrc
-  command! ReadGVimrc :source $DROPBOX/dotfiles/.gvimrc
-endif
+" ########## autocmds {{{
+" change directory when you open that file.
+autocmd BufEnter * execute ':lcd ' . expand('%:p:h')
 " /=commands }}}
-"
-" ########## functions {{{
-" if !has('unix') || ($VTE_CJK_WIDTH != '' && &ambiwidth == 'double')
-"   let s:hahhahstd = [
-"   \ '(´д｀;)',
-"   \ '( ´д`;)',
-"   \ '(  ´д`)',
-"   \ '(   ´д)',
-"   \ '(     ´)',
-"   \ '(       )',
-"   \ '(       )',
-"   \ '(;      )',
-"   \ '( ;     )',
-"   \ '(` ;    )',
-"   \ '(д` ;  )']
-" else
-"   let s:hahhahstd = [
-"   \ '(´ д｀; )',
-"   \ '( ´ д `;)',
-"   \ '(  ´ д `)',
-"   \ '(   ´ д )',
-"   \ '(     ´ )',
-"   \ '(       )',
-"   \ '(       )',
-"   \ '(;      )',
-"   \ '( ;     )',
-"   \ '(` ;    )',
-"   \ '(д `;   )']
-" endif
-" let s:hahstr = [
-"   \ '  ﾊｧ  ',
-"   \ ' ﾊｧﾊｧ ',
-"   \ 'ﾊｧﾊｧﾊｧ',
-"   \ ' ﾊｧﾊｧ ',
-" \ ]
-" let s:hahstdpos = 0
-" let s:leftnum = 0
-" let s:rightnum = 0
-" let s:hahflg = 0
-" function! g:HahHah()
-"   let s:hahstdpos = (s:hahstdpos + 1) % len(s:hahhahstd)
-"   if localtime() % 2
-"     let s:hahflg = 1
-"   endif
-"   if !(localtime() % 2) && s:hahflg
-"     let s:hahflg = 0
-"     let s:leftnum = (s:leftnum + 1) % len(s:hahstr)
-"     let s:rightnum = (s:rightnum + 1)  % len(s:hahstr)
-"   endif
-"   return s:hahstr[s:leftnum].s:hahhahstd[s:hahstdpos].s:hahstr[s:rightnum]
-" endfunction
-function! s:guiopt()
-  if &guioptions =~ 'm'
-    exec 'set guioptions-=m'
-  else
-    exec 'set guioptions+=m'
-  endif
-endfunction
-" /=functions }}}
 "
 " ########## macros {{{
 " normal mode
+if filereadable( expand( '$DROPBOX/dotfiles/.vimrc' ) )
+  command! EditVimrc :tabe $DROPBOX/dotfiles/.vimrc
+  command! ReadVimrc :source $DROPBOX/dotfiles/.vimrc
+  nnoremap <silent> ,ev :EditVimrc<CR>
+  nnoremap <silent> ,rv :ReadVimrc<CR>
+endif
+if filereadable( expand( '$DROPBOX/dotfiles/.gvimrc' ) )
+  command! EditGVimrc :tabe $DROPBOX/dotfiles/.gvimrc
+  command! ReadGVimrc :source $DROPBOX/dotfiles/.gvimrc
+  nnoremap <silent> ,eg :EditGVimrc<CR>
+  nnoremap <silent> ,rg :ReadGVimrc<CR>
+endif
+if has( 'gui_runnig' )
+  nnoremap <silent> <C-F11> :call <SID>my_guioptions()<CR>
+  function! s:my_guioptions()
+    if &guioptions =~ 'm'
+      exec 'set guioptions-=m'
+    else
+      exec 'set guioptions+=m'
+    endif
+  endfunction
+endif
 nnoremap <C-F1> :help<Space>
 nnoremap <silent> <C-F4> :tabclose<CR>
-" nnoremap <silent> <C-F5> :source %<CR>
-nnoremap <silent> <C-F11> :call <SID>guiopt()<CR>
 nnoremap <silent> <C-F12> :confirm browse saveas<CR>
 nnoremap <silent> <C-s> :confirm browse saveas<CR>
 nnoremap <silent> <C-Tab> :tabnext<CR>
 nnoremap <silent> <C-S-Tab> :tabprevious<CR>
-nnoremap <silent> ,ev :EditVimrc<CR>
-nnoremap <silent> ,rv :ReadVimrc<CR>
-nnoremap <silent> ,eg :EditGVimrc<CR>
-nnoremap <silent> ,rg :ReadGVimrc<CR>
 " insert mode
 imap <silent> <Leader>date <C-r>=strftime('%Y/%m/%d(%a)')<CR>
 imap <silent> <Leader>time <C-r>=strftime('%H:%M')<CR>
@@ -139,33 +88,37 @@ cmap <C-z> <C-r>=expand('%:p:r')<CR>
 " /=macros }}}
 "
 " ########## key mapping {{{
-" move
 inoremap <C-a> <Home>
 inoremap <C-e> <End>
+inoremap <C-s> <BS>
+inoremap <C-d> <ESC><S-d><S-a>
+inoremap <C-f> <ESC>
+inoremap <C-g> <CR>
 inoremap <C-h> <Left>
 inoremap <C-j> <Down>
 inoremap <C-k> <Up>
 inoremap <C-l> <Right>
+inoremap <C-r><C-r> <C-r>"
+inoremap <Leader>reg <ESC>:registers<CR>
+inoremap // //<Space>
+
+nnoremap <silent> <C-x>0 :close<CR>
+nnoremap <silent> <C-x>1 :only<CR>
+nnoremap <silent> <C-x>2 :new<CR>
+nnoremap <silent> <C-x>3 :vnew<CR>
+nnoremap <silent> <C-x>4 :BufExplorer<CR>
+nnoremap <silent> <C-n> :bnext<CR>
+nnoremap <silent> <C-p> :bprevious<CR>
+nnoremap <silent> d<C-r> :let @"=""<CR>
+
+" emacs key bind in command mode
 cnoremap <C-a> <Home>
 cnoremap <C-e> <End>
 cnoremap <C-b> <Left>
 cnoremap <C-f> <Right>
 cnoremap <C-n> <Down>
 cnoremap <C-p> <Up>
-" window
-nnoremap <silent> <C-x>0 <C-w>c
-nnoremap <silent> <C-x>1 <C-w>o
-nnoremap <silent> <C-x>2 <C-w>s
-nnoremap <silent> <C-x>3 <C-w>v
-nnoremap <C-S-j> <C-w>k<C-e><C-w><C-w>
-" buffer
-nnoremap <C-n> :bnext<CR>
-nnoremap <C-p> :bprevious<CR>
-" edit
-inoremap <C-b> <BS>
-inoremap <C-d> <Del>
-inoremap <C-f> <CR>
-inoremap <Leader>p <ESC>pi
+
 inoremap {} {}<Left>
 inoremap [] []<Left>
 inoremap () ()<Left>
@@ -173,8 +126,6 @@ inoremap "" ""<Left>
 inoremap '' ''<Left>
 inoremap <> <><Left>
 inoremap %% %%<Left>
-" inoremap <Space><Space> <Space><Space><Left>
-inoremap // //<Space>
 cnoremap {} {}<Left>
 cnoremap [] []<Left>
 cnoremap () ()<Left>
@@ -214,26 +165,56 @@ set fileformats=unix,dos,mac
 " set fileencoding=utf-8
 " set fileformat=unix
 "
+" ########## display#title
+set title
+set titlelen=90
+set titlestring=%t%(\ %M%)\ (%F)\ L=%l/%L\ :\ C=%c/%{col('$')-1}%=%<%{g:HahHah()}
+"
+" ########## display#tabline
+set showtabline=2
+set tabline=%!MyTabLine()
+function! MyTabLabel(n)
+  let buflist = tabpagebuflist(a:n)
+  let winnr = tabpagewinnr(a:n)
+  let mod = len(filter(copy(buflist), 'getbufvar(v:val, "&modified")')) ? '+ ' : ''
+  let fname = bufname(buflist[winnr - 1])
+  let tablb = mod . pathshorten(fname != '' ? fname : '名前が無いよ')
+  let hi = (a:n == tabpagenr() ? '%#TabLineSel#' : '%#TabLine#' )
+  return '%'.a:n.'T' . hi . ' ' . tablb . ' ' . '%T%#TabLineFill#'
+endfunction
+function! MyTabLine()
+  let tabrange = range(1, tabpagenr('$'))
+  let sep = ' '
+  let tabln = ' '
+  for i in tabrange
+    let tabln .= MyTabLabel(i)
+    let tabln .= sep
+  endfor
+  let tabln .= '%=%<@*['.@*.'] '
+  return tabln
+endfunction
+"
 " ########## display#main
 set splitbelow
 set splitright
-set title
-set titlelen=80
 set number
 set scrolloff=3
 set linespace=1
 set wrap
 set list
-set listchars=eol:\ ,tab:>ﾀ,trail:ｽ,extends:<
+set listchars=eol:\ ,tab:>\ ,trail:ｽ,extends:<
 "
 " ########## display#below
-set statusline=
-      \%<%t\ %m%r%h%w%y%{'['.(&fenc!=''?&fenc:&enc).':'.&ff.']'}
-      \%=[%l/%L,%c/%{col('$')-1}][0x\%02.2B]
-set ruler
-set showcmd
 set laststatus=2
 set cmdheight=2
+set statusline=%!MyStatusLine()
+function! MyStatusLine()
+  let stsln = "%t\ %m%r%h%w%y%{'['.(&fenc!=''?&fenc:&enc).':'.&ff.']'}[0x\%02.2B]"
+      \ ."%=%<%{'@\"['.@\".']\ @/[/'.@/.']'}"
+  return stsln
+endfunction
+set ruler
+set showcmd
 set wildmenu
 set wildmode=list:longest
 "
@@ -265,85 +246,81 @@ set expandtab
 set smarttab
 "
 " ########## etc
-set nocompatible
+" NOTE: compatible is switched off if Vim figure out vimrc or gvimrc when Vim run.
+" set nocompatible
 set noshellslash
 set nrformats+=alpha
 set nrformats+=octal
 set nrformats+=hex
-set history=50
+set history=100
 " /=options }}}
 "
-
 " ##### file type {{{
+" ########## common setting {{{
+function! s:my_common()
+endfunction
+" }}}
 " ########## vim {{{
 autocmd FileType vim call s:filetype_vim()
-autocmd BufReadPost,BufNewFile *.vim call s:filetype_vim()
 function! s:filetype_vim()
-  set tabstop=2
-  set shiftwidth=2
+  setlocal tabstop=2
+  setlocal shiftwidth=2
 endfunction
 " /=vim }}}
 "
 " ########## perl {{{
 autocmd FileType perl call s:filetype_pl()
-autocmd BufReadPost,BufNewFile *.pl,*.pm,*.t call s:filetype_pl()
 function! s:filetype_pl()
-  set tabstop=4
-  set shiftwidth=4
+  setlocal tabstop=4
+  setlocal shiftwidth=4
 endfunction
 " /=perl }}}
 "
 " ########## javascript {{{
 autocmd FileType javascript call s:filetype_js()
-autocmd BufReadPost,BufNewFile *.js call s:filetype_js()
 function! s:filetype_js()
-  set tabstop=4
-  set shiftwidth=4
+  setlocal tabstop=4
+  setlocal shiftwidth=4
 endfunction
 " /=javascript }}}
 "
 " ########## c {{{
 autocmd FileType c call s:filetype_c()
-autocmd BufReadPost,BufNewFile *.c call s:filetype_c()
 function! s:filetype_c()
-  set tabstop=4
-  set shiftwidth=4
+  setlocal tabstop=4
+  setlocal shiftwidth=4
 endfunction
 " /=c }}}
 "
 " ########## html {{{
 autocmd FileType html call s:filetype_html()
-autocmd BufReadPost,BufNewFile *.html,*.htm call s:filetype_html()
 function! s:filetype_html()
-  set tabstop=4
-  set shiftwidth=4
+  setlocal tabstop=4
+  setlocal shiftwidth=4
 endfunction
 " /=html }}}
 "
 " ########## css {{{
 autocmd FileType css call s:filetype_css()
-autocmd BufReadPost,BufNewFile *.css call s:filetype_css()
 function! s:filetype_css()
-  set tabstop=4
-  set shiftwidth=4
+  setlocal tabstop=4
+  setlocal shiftwidth=4
 endfunction
 " /=css }}}
 "
 " ########## vbs {{{
 autocmd FileType vb call s:filetype_vb()
-autocmd BufReadPost,BufNewFile *.bas call s:filetype_vb()
 function! s:filetype_vb()
-  set tabstop=4
-  set shiftwidth=4
+  setlocal tabstop=4
+  setlocal shiftwidth=4
 endfunction
 " /=vbs }}}
 "
 " ########## markdown {{{
 autocmd FileType markdown call s:filetype_mkd()
-autocmd BufReadPost,BufNewFile *.mkd,*.md call s:filetype_mkd()
 function! s:filetype_mkd()
-  set tabstop=4
-  set shiftwidth=4
+  setlocal tabstop=4
+  setlocal shiftwidth=4
 endfunction
 " /=vbs }}}
 " /=file type }}}
@@ -366,7 +343,6 @@ Bundle 'thinca/vim-ref'
 Bundle 'thinca/vim-prettyprint'
 Bundle 'tyru/restart.vim'
 Bundle 'tyru/caw.vim'
-Bundle 'mrtazz/molokai.vim'
 Bundle 'kaneshin/hahhah-vim'
 Bundle 'Lokaltog/vim-easymotion'
 Bundle 'tpope/vim-repeat'
@@ -376,9 +352,13 @@ Bundle 'dannyob/quickfixstatus'
 Bundle 'vim-scripts/Highlight-UnMatched-Brackets'
 Bundle 'hotchpotch/perldoc-vim'
 Bundle 'c9s/perlomni.vim'
+Bundle 'kana/vim-smartchr'
 " www.vim.org
 Bundle 'TwitVim'
 Bundle 'surround.vim'
+Bundle 'Align'
+" colorscheme
+Bundle 'mrtazz/molokai.vim'
 filetype plugin indent on
 " /=gmarik/vundle }}}
 
@@ -391,32 +371,34 @@ elseif s:is_unix
   let g:twitvim_browser_cmd
       \ = ''
 endif
-nnoremap ,twp :<C-u>PosttoTwitter<CR>
-nnoremap ,twl :tabe<CR>:<C-u>ListTwitter refav<CR><C-w>c
-nnoremap ,twf :tabe<CR>:<C-u>FriendsTwitter<CR><C-w>c
-nnoremap ,twu :<C-u>UserTwitter<CR><C-w>j
-nnoremap ,twr :<C-u>RepliesTwitter<CR><C-w>j
-nnoremap ,twn :<C-u>NextTwitter<CR>
-nnoremap ,twb :<C-u>BackTwitter<CR>
-autocmd FileType twitvim call s:twitvim_my_settings()
-function! s:twitvim_my_settings()
-  set nowrap
-endfunction
-nnoremap ,twh :call <SID>twitvim_my_help()<CR>
-function! s:twitvim_my_help()
-  echo ',twp :<C-u>PosttoTwitter<CR>'
-  echo ',twl :tabe<CR>:<C-u>ListTwitter refav<CR><C-w>c'
-  echo ',twf :tabe<CR>:<C-u>FriendsTwitter<CR><C-w>c'
-  echo ',twu :<C-u>UserTwitter<CR><C-w>j'
-  echo ',twr :<C-u>RepliesTwitter<CR><C-w>j'
-  echo ',twn :<C-u>NextTwitter<CR>'
-  echo ',twb :<C-u>BackTwitter<CR>'
-  echo '<Leader><Leader> :RefreshTwitter'
-  echo '<Leader>r Not official retweet'
-  echo '<Leader>R Official retweet'
-  echo '<Leader>g Open URL on your browser('.g:twitvim_browser_cmd.')'
+nnoremap <silent> ,tp :<C-u>PosttoTwitter<CR>
+nnoremap <silent> ,tl :tabnew<CR>:<C-u>ListTwitter refav<CR>:close<CR>
+nnoremap <silent> ,tf :tabnew<CR>:<C-u>FriendsTwitter<CR>:close<CR>
+nnoremap <silent> ,tu :tabnew<CR>:<C-u>UserTwitter<CR>:close<CR>
+nnoremap <silent> ,tr :tabnew<CR>:<C-u>RepliesTwitter<CR>:close<CR>
+autocmd FileType twitvim :call s:my_twitvim()
+function! s:my_twitvim()
+  setlocal nowrap
+  nnoremap <buffer> <silent> ,tl :<C-u>ListTwitter refav<CR>
+  nnoremap <buffer> <silent> ,tf :<C-u>FriendsTwitter<CR>
+  nnoremap <buffer> <silent> ,tu :<C-u>UserTwitter<CR>
+  nnoremap <buffer> <silent> ,tr :<C-u>RepliesTwitter<CR>
+  nnoremap <buffer> <silent> ,tn :<C-u>NextTwitter<CR>
+  nnoremap <buffer> <silent> ,tb :<C-u>BackTwitter<CR>
+  nnoremap <buffer> <C-n> :<C-u>NextTwitter<CR>
+  nnoremap <buffer> <C-p> :<C-u>BackTwitter<CR>
 endfunction
 " /=TwitVim }}}
+"
+" ########## mattn/vimplenote-vim {{{
+nmap ,vl :<C-u>VimpleNote -l<CR>\ado
+nnoremap ,vd :<C-u>VimpleNote -d<CR>
+nnoremap ,vD :<C-u>VimpleNote -D<CR>
+nnoremap ,vt :<C-u>VimpleNote -t<CR>
+nnoremap ,vn :<C-u>VimpleNote -n<CR>
+nnoremap ,vu :<C-u>VimpleNote -u<CR>
+nnoremap ,vs :<C-u>VimpleNote -s<CR>
+" /=mattn/vimplenote-vim }}}
 "
 " ########## mattn/gist-vim {{{
 " --- gist setting ---
@@ -424,38 +406,14 @@ endfunction
 " let g:github_token = ''
 " let g:gist_privates = 1
 " --- key map ---
-" post to gist
 nnoremap ,gs :<C-u>Gist<CR>
-" update gist
 nnoremap ,ge :<C-u>Gist -e<CR>
-" private post
 nnoremap ,gp :<C-u>Gist -p<CR>
-" my list
 nnoremap ,gl :<C-u>Gist -l<CR>
-" all list
 nnoremap ,gla :<C-u>Gist -la<CR>
-" delete gist
 nnoremap ,gd :<C-u>Gist -d<CR>
-" fork gist
 nnoremap ,gf :<C-u>Gist -f<CR>
 " /=mattn/gist-vim }}}
-"
-" ########## mattn/vimplenote-vim {{{
-" list all notes
-nnoremap ,vl :<C-u>VimpleNote -l<CR>
-" move note to trash
-nnoremap ,vd :<C-u>VimpleNote -d<CR>
-" delete note in current buffer
-nnoremap ,vD :<C-u>VimpleNote -D<CR>
-" tag note in current buffer
-nnoremap ,vt :<C-u>VimpleNote -t<CR>
-" create new note from buffer
-nnoremap ,vn :<C-u>VimpleNote -n<CR>
-" update a note from buffer
-nnoremap ,vu :<C-u>VimpleNote -u<CR>
-" search notes with tags
-nnoremap ,vs :<C-u>VimpleNote -s<CR>
-" /=mattn/vimplenote-vim }}}
 "
 " ########## tyru/restart.vim {{{
 let g:restart_sessionoptions
@@ -466,14 +424,12 @@ let g:restart_sessionoptions
 let g:EasyMotion_leader_key = '<Leader>'
 " }}}
 "
+" ########## thinca/vim-quickrun {{{
+" }}}
+"
 " ########## tyru/caw.vim {{{
 " }}}
-" ########## kaneshin/hahhah-vim {{{
-let &statusline =
-      \ strpart(&statusline, 0, stridx(&statusline, '%=')).
-      \ '%{g:HahHah()}'.
-      \ strpart(&statusline, stridx(&statusline, '%='), len(&statusline))
-" }}}
+"
 " /=plugin }}}
 "
 " EOF

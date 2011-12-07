@@ -2,7 +2,7 @@
 " vim:set foldmethod=marker foldmarker={{{,}}}:
 "===========================================================================
 " File: .gvimrc
-" Last Change: 02-Dec-2011.
+" Last Change: 08-Dec-2011.
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 "===========================================================================
 
@@ -10,14 +10,14 @@
 scriptencoding utf-8
 
 " ##### options
-set guioptions=aegirLt
+set guioptions=agirLt
 
 " ########## display {{{
 set linespace=1
 set columns=90
 set lines=40
 set cmdheight=2
-colorscheme torte
+colorscheme desert
 colorscheme molokai
 " /=display }}}
 
