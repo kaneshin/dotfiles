@@ -2,7 +2,7 @@
 " vim:set foldmethod=marker foldmarker={{{,}}}:
 "===========================================================================
 " File: .vimrc
-" Last Change: 08-Dec-2011.
+" Last Change: 10-Dec-2011.
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 "===========================================================================
 "
@@ -59,8 +59,8 @@ if filereadable( expand( '$DROPBOX/dotfiles/.gvimrc' ) )
   nnoremap <silent> ,rg :ReadGVimrc<CR>
 endif
 if has( 'gui_runnig' )
-  nnoremap <silent> <C-F11> :call <SID>my_guioptions()<CR>
-  function! s:my_guioptions()
+  nnoremap <silent> <C-F11> :call MyGuioptions()<CR>
+  function! MyGuioptions()
     if &guioptions =~ 'm'
       exec 'set guioptions-=m'
     else
@@ -90,7 +90,7 @@ cmap <C-z> <C-r>=expand('%:p:r')<CR>
 " ########## key mapping {{{
 inoremap <C-a> <Home>
 inoremap <C-e> <End>
-inoremap <C-s> <BS>
+" inoremap <C-s> <BS>
 inoremap <C-d> <ESC><S-d><S-a>
 inoremap <C-f> <ESC>
 inoremap <C-g> <CR>
@@ -104,9 +104,12 @@ inoremap // //<Space>
 
 nnoremap <silent> <C-x>0 :close<CR>
 nnoremap <silent> <C-x>1 :only<CR>
-nnoremap <silent> <C-x>2 :new<CR>
-nnoremap <silent> <C-x>3 :vnew<CR>
+nnoremap <silent> <C-x>2 :split<CR>
+nnoremap <silent> <C-x>3 :vsplit<CR>
 nnoremap <silent> <C-x>4 :BufExplorer<CR>
+nnoremap <silent> <C-x>n :new<CR>
+nnoremap <silent> <C-x>v :vnew<CR>
+nnoremap <silent> <C-x>c :close<CR>
 nnoremap <silent> <C-n> :bnext<CR>
 nnoremap <silent> <C-p> :bprevious<CR>
 nnoremap <silent> d<C-r> :let @"=""<CR>
@@ -118,6 +121,7 @@ cnoremap <C-b> <Left>
 cnoremap <C-f> <Right>
 cnoremap <C-n> <Down>
 cnoremap <C-p> <Up>
+cnoremap <C-F1> :<C-u>help<Space>
 
 inoremap {} {}<Left>
 inoremap [] []<Left>
@@ -252,7 +256,7 @@ set noshellslash
 set nrformats+=alpha
 set nrformats+=octal
 set nrformats+=hex
-set history=100
+set history=300
 " /=options }}}
 "
 " ##### file type {{{
@@ -333,32 +337,35 @@ call vundle#rc( '$MYVIM/bundle' )
 " github
 Bundle 'gmarik/vundle'
 Bundle 'mattn/webapi-vim'
-Bundle 'mattn/gist-vim'
 Bundle 'mattn/vimplenote-vim'
-Bundle 'mattn/sonictemplate-vim'
+Bundle 'mattn/gist-vim'
 Bundle 'mattn/zencoding-vim'
+Bundle 'mattn/sonictemplate-vim'
 Bundle 'mattn/calendar-vim'
 Bundle 'thinca/vim-quickrun'
 Bundle 'thinca/vim-ref'
 Bundle 'thinca/vim-prettyprint'
 Bundle 'tyru/restart.vim'
 Bundle 'tyru/caw.vim'
-Bundle 'kaneshin/hahhah-vim'
-Bundle 'Lokaltog/vim-easymotion'
-Bundle 'tpope/vim-repeat'
 Bundle 'markabe/bufexplorer'
+Bundle 'Lokaltog/vim-easymotion'
+Bundle 'Shougo/neocomplcache'
+Bundle 'kaneshin/hahhah-vim'
+" testing
+Bundle 'tpope/vim-repeat'
 Bundle 't9md/vim-quickhl'
 Bundle 'dannyob/quickfixstatus'
 Bundle 'vim-scripts/Highlight-UnMatched-Brackets'
-Bundle 'hotchpotch/perldoc-vim'
 Bundle 'c9s/perlomni.vim'
 Bundle 'kana/vim-smartchr'
+Bundle 'motemen/git-vim'
 " www.vim.org
 Bundle 'TwitVim'
 Bundle 'surround.vim'
-Bundle 'Align'
 " colorscheme
 Bundle 'mrtazz/molokai.vim'
+" playspace
+" Bundle 'koron/nyancat-vim'
 filetype plugin indent on
 " /=gmarik/vundle }}}
 
@@ -424,10 +431,73 @@ let g:restart_sessionoptions
 let g:EasyMotion_leader_key = '<Leader>'
 " }}}
 "
+" ########## kana/vim-smartchr {{{
+" inoremap <buffer> <expr> = smartchr#one_of('=', ' = ', ' == ')
+" }}}
+"
 " ########## thinca/vim-quickrun {{{
 " }}}
 "
-" ########## tyru/caw.vim {{{
+" ########## Shougo/neocomplcache {{{
+function! MyNeoComplMap()
+  imap <C-s> <Plug>(neocomplcache_snippets_expand)
+  smap <C-s> <Plug>(neocomplcache_snippets_expand)
+  inoremap <expr><CR>  neocomplcache#smart_close_popup() . "\<CR>"
+  inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+  " inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
+  " inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
+  " inoremap <expr><C-y>  neocomplcache#close_popup()
+  " inoremap <expr><C-e>  neocomplcache#cancel_popup()
+endfunction
+function! NeoComplCacheToggle()
+  if s:neocom_is_enable
+    let s:neocom_is_enable = 0
+    call neocomplcache#disable()
+    echo 'NeoComplCache is disabled'
+    inoremap <C-s> <BS>
+    inoremap <CR>  <CR>
+    inoremap <TAB> <TAB>
+  else
+    let s:neocom_is_enable = 1
+    call neocomplcache#enable()
+    call MyNeoComplMap()
+    echo 'NeoComplCache is enabled'
+  endif
+endfunction
+let g:neocomplcache_enable_at_startup = 1
+let s:neocom_is_enable = g:neocomplcache_enable_at_startup
+if s:neocom_is_enable
+  call MyNeoComplMap()
+endif
+nnoremap <expr> <C-Space> NeoComplCacheToggle()
+let g:neocomplcache_enable_smart_case = 1
+let g:neocomplcache_enable_camel_case_completion = 1
+let g:neocomplcache_enable_underbar_completion = 1
+let g:neocomplcache_min_syntax_length = 3
+let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
+let g:neocomplcache_dictionary_filetype_lists = {
+    \ 'default' : ''
+    \ }
+" Define keyword.
+if !exists('g:neocomplcache_keyword_patterns')
+  let g:neocomplcache_keyword_patterns = {}
+endif
+let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
+" Enable omni completion.
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+" Enable heavy omni completion.
+if !exists('g:neocomplcache_omni_patterns')
+  let g:neocomplcache_omni_patterns = {}
+endif
+let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
+"autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
+let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+let g:neocomplcache_omni_patterns.c = '\%(\.\|->\)\h\w*'
+let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
 " }}}
 "
 " /=plugin }}}
