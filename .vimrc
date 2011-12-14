@@ -2,7 +2,7 @@
 " vim:set foldmethod=marker foldmarker={{{,}}}:
 "===========================================================================
 " File: .vimrc
-" Last Change: 10-Dec-2011.
+" Last Change: 14-Dec-2011.
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 "===========================================================================
 "
@@ -172,7 +172,7 @@ set fileformats=unix,dos,mac
 " ########## display#title
 set title
 set titlelen=90
-set titlestring=%t%(\ %M%)\ (%F)\ L=%l/%L\ :\ C=%c/%{col('$')-1}%=%<%{g:HahHah()}
+set titlestring=[%l/%L:%c/%{col('$')-1}]\ %t%(\ %M%)\ (%F)%=%<%{g:HahHah()}
 "
 " ########## display#tabline
 set showtabline=2
@@ -349,7 +349,6 @@ Bundle 'tyru/restart.vim'
 Bundle 'tyru/caw.vim'
 Bundle 'markabe/bufexplorer'
 Bundle 'Lokaltog/vim-easymotion'
-Bundle 'Shougo/neocomplcache'
 Bundle 'kaneshin/hahhah-vim'
 " testing
 Bundle 'tpope/vim-repeat'
@@ -398,7 +397,7 @@ endfunction
 " /=TwitVim }}}
 "
 " ########## mattn/vimplenote-vim {{{
-nmap ,vl :<C-u>VimpleNote -l<CR>\ado
+nmap ,vl :<C-u>VimpleNote -l<CR>\ado<CR>
 nnoremap ,vd :<C-u>VimpleNote -d<CR>
 nnoremap ,vD :<C-u>VimpleNote -D<CR>
 nnoremap ,vt :<C-u>VimpleNote -t<CR>
@@ -464,40 +463,40 @@ function! NeoComplCacheToggle()
     echo 'NeoComplCache is enabled'
   endif
 endfunction
-let g:neocomplcache_enable_at_startup = 1
+let g:neocomplcache_enable_at_startup = 0
 let s:neocom_is_enable = g:neocomplcache_enable_at_startup
 if s:neocom_is_enable
   call MyNeoComplMap()
 endif
-nnoremap <expr> <C-Space> NeoComplCacheToggle()
-let g:neocomplcache_enable_smart_case = 1
-let g:neocomplcache_enable_camel_case_completion = 1
-let g:neocomplcache_enable_underbar_completion = 1
-let g:neocomplcache_min_syntax_length = 3
-let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
-let g:neocomplcache_dictionary_filetype_lists = {
-    \ 'default' : ''
-    \ }
-" Define keyword.
-if !exists('g:neocomplcache_keyword_patterns')
-  let g:neocomplcache_keyword_patterns = {}
-endif
-let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
-" Enable omni completion.
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-" Enable heavy omni completion.
-if !exists('g:neocomplcache_omni_patterns')
-  let g:neocomplcache_omni_patterns = {}
-endif
-let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
-"autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
-let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-let g:neocomplcache_omni_patterns.c = '\%(\.\|->\)\h\w*'
-let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
+" nnoremap <expr> <C-Space> NeoComplCacheToggle()
+" let g:neocomplcache_enable_smart_case = 1
+" let g:neocomplcache_enable_camel_case_completion = 1
+" let g:neocomplcache_enable_underbar_completion = 1
+" let g:neocomplcache_min_syntax_length = 3
+" let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
+" let g:neocomplcache_dictionary_filetype_lists = {
+"     \ 'default' : ''
+"     \ }
+" " Define keyword.
+" if !exists('g:neocomplcache_keyword_patterns')
+"   let g:neocomplcache_keyword_patterns = {}
+" endif
+" let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
+" " Enable omni completion.
+" autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+" autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+" autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+" autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+" autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+" " Enable heavy omni completion.
+" if !exists('g:neocomplcache_omni_patterns')
+"   let g:neocomplcache_omni_patterns = {}
+" endif
+" let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
+" "autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
+" let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+" let g:neocomplcache_omni_patterns.c = '\%(\.\|->\)\h\w*'
+" let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
 " }}}
 "
 " /=plugin }}}
