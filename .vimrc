@@ -2,8 +2,8 @@
 " vim:set foldmethod=marker foldmarker={{{,}}}:
 "===========================================================================
 " File: .vimrc
-" Last Change: 14-Dec-2011.
-" Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
+" Last Change: 30-Dec-2011.
+" Maintainer: Shintaro Kaneko <kaneshin0120@gmail.com>
 "===========================================================================
 "
 " ##### for development {{{
@@ -271,62 +271,6 @@ function! s:filetype_vim()
   setlocal shiftwidth=2
 endfunction
 " /=vim }}}
-"
-" ########## perl {{{
-autocmd FileType perl call s:filetype_pl()
-function! s:filetype_pl()
-  setlocal tabstop=4
-  setlocal shiftwidth=4
-endfunction
-" /=perl }}}
-"
-" ########## javascript {{{
-autocmd FileType javascript call s:filetype_js()
-function! s:filetype_js()
-  setlocal tabstop=4
-  setlocal shiftwidth=4
-endfunction
-" /=javascript }}}
-"
-" ########## c {{{
-autocmd FileType c call s:filetype_c()
-function! s:filetype_c()
-  setlocal tabstop=4
-  setlocal shiftwidth=4
-endfunction
-" /=c }}}
-"
-" ########## html {{{
-autocmd FileType html call s:filetype_html()
-function! s:filetype_html()
-  setlocal tabstop=4
-  setlocal shiftwidth=4
-endfunction
-" /=html }}}
-"
-" ########## css {{{
-autocmd FileType css call s:filetype_css()
-function! s:filetype_css()
-  setlocal tabstop=4
-  setlocal shiftwidth=4
-endfunction
-" /=css }}}
-"
-" ########## vbs {{{
-autocmd FileType vb call s:filetype_vb()
-function! s:filetype_vb()
-  setlocal tabstop=4
-  setlocal shiftwidth=4
-endfunction
-" /=vbs }}}
-"
-" ########## markdown {{{
-autocmd FileType markdown call s:filetype_mkd()
-function! s:filetype_mkd()
-  setlocal tabstop=4
-  setlocal shiftwidth=4
-endfunction
-" /=vbs }}}
 " /=file type }}}
 "
 " ##### plugin {{{
@@ -363,6 +307,7 @@ Bundle 'TwitVim'
 Bundle 'surround.vim'
 " colorscheme
 Bundle 'mrtazz/molokai.vim'
+Bundle 'Wombat'
 " playspace
 " Bundle 'koron/nyancat-vim'
 filetype plugin indent on
