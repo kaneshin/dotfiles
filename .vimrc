@@ -2,14 +2,15 @@
 " vim:set foldmethod=marker foldmarker={{{,}}}:
 "===========================================================================
 " File: .vimrc
-" Last Change: 30-Dec-2011.
+" Last Change: 24-Feb-2012.
 " Maintainer: Shintaro Kaneko <kaneshin0120@gmail.com>
+" Description:
+" ToDo:
+" Note:
+"   1.  I'd like to make a plugin(At first, making here) that collect ToDo
+"       from current buffer.
 "===========================================================================
 "
-" ##### for development {{{
-set rtp+=D:/home/kaneshin/Dropbox/workspace/project/alerm-vim
-" /=for development }}}
-
 " ##### basic setting
 scriptencoding utf-8
 syntax on
@@ -17,6 +18,8 @@ filetype plugin indent on
 "
 " ##### utilities {{{
 " ########## variables {{{
+" email address
+let s:address = 'kaneshin0120@gmail.com'
 " Windows
 let s:is_win = has( 'win32' ) || has( 'win64' )
 " UNIX
@@ -58,7 +61,7 @@ if filereadable( expand( '$DROPBOX/dotfiles/.gvimrc' ) )
   nnoremap <silent> ,eg :EditGVimrc<CR>
   nnoremap <silent> ,rg :ReadGVimrc<CR>
 endif
-if has( 'gui_runnig' )
+if has( 'gui_running' )
   nnoremap <silent> <C-F11> :call MyGuioptions()<CR>
   function! MyGuioptions()
     if &guioptions =~ 'm'
@@ -77,9 +80,11 @@ nnoremap <silent> <C-S-Tab> :tabprevious<CR>
 " insert mode
 imap <silent> <Leader>date <C-r>=strftime('%Y/%m/%d(%a)')<CR>
 imap <silent> <Leader>time <C-r>=strftime('%H:%M')<CR>
-imap <silent> <Leader>dl <C-r>=repeat('-', 75)<CR>
-inoremap <Leader>email kaneshin0120@gmail.com
-inoremap <Leader>ado kaneshin0120@gmail.com
+imap <silent> <Leader>line- <C-r>=repeat('-', 75)<CR>
+imap <silent> <Leader>line= <C-r>=repeat('=', 75)<CR>
+inoremap <expr><Leader>email s:address
+inoremap <expr><Leader>ado s:address
+" tenkai
 " command mode
 cnoremap <Leader>email kaneshin0120@gmail.com
 cnoremap <Leader>ado kaneshin0120@gmail.com
@@ -150,7 +155,7 @@ if finddir('backup', $MYVIM) != ''
   set swapfile
   set directory=$MYVIM/backup
 else
-  echo "can't save a backup file."
+  echo "can't save as a backup file."
   set nobackup
   set noswapfile
 endif
@@ -182,7 +187,7 @@ function! MyTabLabel(n)
   let winnr = tabpagewinnr(a:n)
   let mod = len(filter(copy(buflist), 'getbufvar(v:val, "&modified")')) ? '+ ' : ''
   let fname = bufname(buflist[winnr - 1])
-  let tablb = mod . pathshorten(fname != '' ? fname : '名前が無いよ')
+  let tablb = mod . pathshorten(fname != '' ? fname : 'New File')
   let hi = (a:n == tabpagenr() ? '%#TabLineSel#' : '%#TabLine#' )
   return '%'.a:n.'T' . hi . ' ' . tablb . ' ' . '%T%#TabLineFill#'
 endfunction
@@ -250,7 +255,7 @@ set expandtab
 set smarttab
 "
 " ########## etc
-" NOTE: compatible is switched off if Vim figure out vimrc or gvimrc when Vim run.
+" NOTE: Vim turn off the compatible mode, if Vim find vimrc or gvimrc.
 " set nocompatible
 set noshellslash
 set nrformats+=alpha
