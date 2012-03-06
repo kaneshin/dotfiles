@@ -2,7 +2,7 @@
 " vim:set foldmethod=marker foldmarker={{{,}}}:
 "===========================================================================
 " File: .vimrc
-" Last Change: 24-Feb-2012.
+" Last Change: 06-Mar-2012.
 " Maintainer: Shintaro Kaneko <kaneshin0120@gmail.com>
 " Description:
 " ToDo:
@@ -29,7 +29,7 @@ let $MYVIM = s:is_win ? expand( '$HOME/vimfiles' ) : expand( '$HOME/.vim' )
 " $MYHOME
 if !exists( '$MYHOME' ) && s:is_win
   if ( $USERDOMAIN == 'KANESHIN-ASUS' )
-    let $MYHOME = 'D:\home\kaneshin'
+    let $MYHOME = 'C:\Users\kaneshin'
   elseif ( $USERDOMAIN == 'KANESHIN-HP')
     let $MYHOME = 'C:\home\kaneshin'
   endif
@@ -49,15 +49,15 @@ autocmd BufEnter * execute ':lcd ' . expand('%:p:h')
 "
 " ########## macros {{{
 " normal mode
-if filereadable( expand( '$DROPBOX/dotfiles/.vimrc' ) )
-  command! EditVimrc :tabe $DROPBOX/dotfiles/.vimrc
-  command! ReadVimrc :source $DROPBOX/dotfiles/.vimrc
+if filereadable( expand( '$DROPBOX/dev/dotfiles/.vimrc' ) )
+  command! EditVimrc :tabe $DROPBOX/dev/dotfiles/.vimrc
+  command! ReadVimrc :source $DROPBOX/dev/dotfiles/.vimrc
   nnoremap <silent> ,ev :EditVimrc<CR>
   nnoremap <silent> ,rv :ReadVimrc<CR>
 endif
-if filereadable( expand( '$DROPBOX/dotfiles/.gvimrc' ) )
-  command! EditGVimrc :tabe $DROPBOX/dotfiles/.gvimrc
-  command! ReadGVimrc :source $DROPBOX/dotfiles/.gvimrc
+if filereadable( expand( '$DROPBOX/dev/dotfiles/.gvimrc' ) )
+  command! EditGVimrc :tabe $DROPBOX/dev/dotfiles/.gvimrc
+  command! ReadGVimrc :source $DROPBOX/dev/dotfiles/.gvimrc
   nnoremap <silent> ,eg :EditGVimrc<CR>
   nnoremap <silent> ,rg :ReadGVimrc<CR>
 endif

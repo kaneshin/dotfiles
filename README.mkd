@@ -10,7 +10,7 @@ DOTFILES
 ETC.
 ----
 
-- ln.sh
-- mklink.bat
+- syln.sh
+- symklink.bat
 
 Please teach a best setting ;)
