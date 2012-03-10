@@ -2,10 +2,11 @@
 " vim:set foldmethod=marker foldmarker={{{,}}}:
 "===========================================================================
 " File: .vimrc
-" Last Change: 06-Mar-2012.
+" Last Change: 08-Mar-2012.
 " Maintainer: Shintaro Kaneko <kaneshin0120@gmail.com>
 " Description:
 " ToDo:
+"   選択した行を実行
 " Note:
 "   1.  I'd like to make a plugin(At first, making here) that collect ToDo
 "       from current buffer.
@@ -18,23 +19,29 @@ filetype plugin indent on
 "
 " ##### utilities {{{
 " ########## variables {{{
-" email address
-let s:address = 'kaneshin0120@gmail.com'
-" Windows
-let s:is_win = has( 'win32' ) || has( 'win64' )
+" Mac (not on terminal)
+let s:is_mac = has( 'mac' )
+" Windows (not on terminal)
+let s:is_win = ( has( 'win32' ) || has( 'win64' ) )
 " UNIX
-let s:is_unix = has( 'unix' )
-" $MYVIM(my vim dir)
+let s:is_unix = has( 'unix' ) && !s:is_mac && !s:is_win
+" $MYVIM
 let $MYVIM = s:is_win ? expand( '$HOME/vimfiles' ) : expand( '$HOME/.vim' )
 " $MYHOME
-if !exists( '$MYHOME' ) && s:is_win
-  if ( $USERDOMAIN == 'KANESHIN-ASUS' )
-    let $MYHOME = 'C:\Users\kaneshin'
-  elseif ( $USERDOMAIN == 'KANESHIN-HP')
-    let $MYHOME = 'C:\home\kaneshin'
+if !exists( '$MYHOME' )
+  if s:is_win
+    if ( $USERDOMAIN == 'KANESHIN-ASUS' )
+      let $MYHOME = 'C:\Users\kaneshin'
+    elseif ( $USERDOMAIN == 'KANESHIN-HP')
+      let $MYHOME = 'C:\home\kaneshin'
+    endif
+  elseif s:is_mac
+    let $MYHOME = '/Users/kaneshin0120'
+  elseif s:is_unix
+    let $MYHOME = '/home/kaneshin'
+  else
+    echoe "Can't find $MYHOME in .vimrc."
   endif
-else
-  let $MYHOME = '/home/kaneshin'
 endif
 " $DROPBOX
 if !exists( '$DROPBOX' ) && filewritable( expand( '$MYHOME/Dropbox' ) )
@@ -61,19 +68,6 @@ if filereadable( expand( '$DROPBOX/dev/dotfiles/.gvimrc' ) )
   nnoremap <silent> ,eg :EditGVimrc<CR>
   nnoremap <silent> ,rg :ReadGVimrc<CR>
 endif
-if has( 'gui_running' )
-  nnoremap <silent> <C-F11> :call MyGuioptions()<CR>
-  function! MyGuioptions()
-    if &guioptions =~ 'm'
-      exec 'set guioptions-=m'
-    else
-      exec 'set guioptions+=m'
-    endif
-  endfunction
-endif
-nnoremap <C-F1> :help<Space>
-nnoremap <silent> <C-F4> :tabclose<CR>
-nnoremap <silent> <C-F12> :confirm browse saveas<CR>
 nnoremap <silent> <C-s> :confirm browse saveas<CR>
 nnoremap <silent> <C-Tab> :tabnext<CR>
 nnoremap <silent> <C-S-Tab> :tabprevious<CR>
@@ -82,9 +76,6 @@ imap <silent> <Leader>date <C-r>=strftime('%Y/%m/%d(%a)')<CR>
 imap <silent> <Leader>time <C-r>=strftime('%H:%M')<CR>
 imap <silent> <Leader>line- <C-r>=repeat('-', 75)<CR>
 imap <silent> <Leader>line= <C-r>=repeat('=', 75)<CR>
-inoremap <expr><Leader>email s:address
-inoremap <expr><Leader>ado s:address
-" tenkai
 " command mode
 cnoremap <Leader>email kaneshin0120@gmail.com
 cnoremap <Leader>ado kaneshin0120@gmail.com
@@ -126,7 +117,6 @@ cnoremap <C-b> <Left>
 cnoremap <C-f> <Right>
 cnoremap <C-n> <Down>
 cnoremap <C-p> <Up>
-cnoremap <C-F1> :<C-u>help<Space>
 
 inoremap {} {}<Left>
 inoremap [] []<Left>
@@ -155,7 +145,7 @@ if finddir('backup', $MYVIM) != ''
   set swapfile
   set directory=$MYVIM/backup
 else
-  echo "can't save as a backup file."
+  echoe "Can't save as a backup file."
   set nobackup
   set noswapfile
 endif
@@ -177,7 +167,9 @@ set fileformats=unix,dos,mac
 " ########## display#title
 set title
 set titlelen=90
-set titlestring=[%l/%L:%c/%{col('$')-1}]\ %t%(\ %M%)\ (%F)%=%<%{g:HahHah()}
+if s:is_win
+  set titlestring=[%l/%L:%c/%{col('$')-1}]\ %t%(\ %M%)\ (%F)%=%<%{g:HahHah()}
+endif
 "
 " ########## display#tabline
 set showtabline=2
@@ -211,8 +203,7 @@ set scrolloff=3
 set linespace=1
 set wrap
 set list
-set listchars=eol:\ ,tab:>\ ,trail:ｽ,extends:<
-"
+set listchars=eol:\ ,tab:>\ ,trail:S,extends:<
 " ########## display#below
 set laststatus=2
 set cmdheight=2
