@@ -2,14 +2,18 @@
 " vim:set foldmethod=marker foldmarker={{{,}}}:
 "===========================================================================
 " File: .vimrc
-" Last Change: 08-Mar-2012.
+" Last Change: 10-Mar-2012.
 " Maintainer: Shintaro Kaneko <kaneshin0120@gmail.com>
 " Description:
+"   This is my vim run command file.
 " ToDo:
-"   選択した行を実行
-" Note:
-"   1.  I'd like to make a plugin(At first, making here) that collect ToDo
-"       from current buffer.
+"   - [plugin]Run a selected line.
+"   - [plugin]Collect ToDo from current buffer.
+"   - [display]I need to think about the tabline and statusline.
+"   - [mapping]I should go through my key mapping on Vim.
+"   ToDo:
+"     - Backspace
+"     - Return Normal mode
 "===========================================================================
 "
 " ##### basic setting
@@ -19,28 +23,29 @@ filetype plugin indent on
 "
 " ##### utilities {{{
 " ########## variables {{{
+" Windows (not on terminal)
+let s:is_win = has( 'win32' ) || has( 'win64' )
 " Mac (not on terminal)
 let s:is_mac = has( 'mac' )
-" Windows (not on terminal)
-let s:is_win = ( has( 'win32' ) || has( 'win64' ) )
 " UNIX
 let s:is_unix = has( 'unix' ) && !s:is_mac && !s:is_win
 " $MYVIM
+" NOTE:
+"   Windows->     vimfiles/
+"   Mac, Linux->  .vim/
 let $MYVIM = s:is_win ? expand( '$HOME/vimfiles' ) : expand( '$HOME/.vim' )
 " $MYHOME
+" NOTE:
+"   for $DROPBOX; Sometimes, I set up a Dropbox folder into other one.
 if !exists( '$MYHOME' )
   if s:is_win
     if ( $USERDOMAIN == 'KANESHIN-ASUS' )
-      let $MYHOME = 'C:\Users\kaneshin'
+      let $MYHOME = $HOME
     elseif ( $USERDOMAIN == 'KANESHIN-HP')
       let $MYHOME = 'C:\home\kaneshin'
     endif
-  elseif s:is_mac
-    let $MYHOME = '/Users/kaneshin0120'
-  elseif s:is_unix
-    let $MYHOME = '/home/kaneshin'
   else
-    echoe "Can't find $MYHOME in .vimrc."
+    let $MYHOME = $HOME
   endif
 endif
 " $DROPBOX
@@ -53,6 +58,37 @@ endif
 " change directory when you open that file.
 autocmd BufEnter * execute ':lcd ' . expand('%:p:h')
 " /=commands }}}
+"
+" ########## functions {{{
+" tab label
+function! MyTabLabel(n)
+  let buflist = tabpagebuflist(a:n)
+  let winnr = tabpagewinnr(a:n)
+  let mod = len(filter(copy(buflist), 'getbufvar(v:val, "&modified")')) ? '+ ' : ''
+  let fname = bufname(buflist[winnr - 1])
+  let tablb = mod . pathshorten(fname != '' ? fname : 'New File')
+  let hi = (a:n == tabpagenr() ? '%#TabLineSel#' : '%#TabLine#' )
+  return '%'.a:n.'T' . hi . ' ' . tablb . ' ' . '%T%#TabLineFill#'
+endfunction
+function! MyTabLine()
+  let tabrange = range(1, tabpagenr('$'))
+  let sep = ' '
+  let tabln = ' '
+  for i in tabrange
+    let tabln .= MyTabLabel(i)
+    let tabln .= sep
+  endfor
+  let tabln .= '%=%<@*['.@*.'] '
+  return tabln
+endfunction
+"
+" status line
+function! MyStatusLine()
+  let sl_left = "%t\ %m%r%h%w%y%{'['.(&fenc!=''?&fenc:&enc).':'.&ff.']'}[0x\%02.2B]"
+  let sl_right = "%=%<%{'@\"['.@\".']\ @/[/'.@/.']'}"
+  return sl_left . sl_right
+endfunction
+" /=functions }}}
 "
 " ########## macros {{{
 " normal mode
@@ -110,6 +146,8 @@ nnoremap <silent> <C-n> :bnext<CR>
 nnoremap <silent> <C-p> :bprevious<CR>
 nnoremap <silent> d<C-r> :let @"=""<CR>
 
+nnoremap <ESC><ESC> :nohlsearch<CR>
+
 " emacs key bind in command mode
 cnoremap <C-a> <Home>
 cnoremap <C-e> <End>
@@ -155,6 +193,8 @@ if finddir('view', $MYVIM) != ''
   set viewdir=$MYVIM/view
 "  autocmd BufWritePost * mkview
 "  autocmd BufReadPost * loadview
+else
+  echoe "Can't save as a fold file."
 endif
 "
 " ########## encoding
@@ -174,26 +214,6 @@ endif
 " ########## display#tabline
 set showtabline=2
 set tabline=%!MyTabLine()
-function! MyTabLabel(n)
-  let buflist = tabpagebuflist(a:n)
-  let winnr = tabpagewinnr(a:n)
-  let mod = len(filter(copy(buflist), 'getbufvar(v:val, "&modified")')) ? '+ ' : ''
-  let fname = bufname(buflist[winnr - 1])
-  let tablb = mod . pathshorten(fname != '' ? fname : 'New File')
-  let hi = (a:n == tabpagenr() ? '%#TabLineSel#' : '%#TabLine#' )
-  return '%'.a:n.'T' . hi . ' ' . tablb . ' ' . '%T%#TabLineFill#'
-endfunction
-function! MyTabLine()
-  let tabrange = range(1, tabpagenr('$'))
-  let sep = ' '
-  let tabln = ' '
-  for i in tabrange
-    let tabln .= MyTabLabel(i)
-    let tabln .= sep
-  endfor
-  let tabln .= '%=%<@*['.@*.'] '
-  return tabln
-endfunction
 "
 " ########## display#main
 set splitbelow
@@ -208,11 +228,6 @@ set listchars=eol:\ ,tab:>\ ,trail:S,extends:<
 set laststatus=2
 set cmdheight=2
 set statusline=%!MyStatusLine()
-function! MyStatusLine()
-  let stsln = "%t\ %m%r%h%w%y%{'['.(&fenc!=''?&fenc:&enc).':'.&ff.']'}[0x\%02.2B]"
-      \ ."%=%<%{'@\"['.@\".']\ @/[/'.@/.']'}"
-  return stsln
-endfunction
 set ruler
 set showcmd
 set wildmenu
@@ -227,7 +242,6 @@ set ignorecase
 set smartcase
 set nowrapscan
 set incsearch
-nnoremap <ESC><ESC> :nohlsearch<CR>
 "
 " ########## edit
 set autoindent
