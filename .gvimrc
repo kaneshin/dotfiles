@@ -2,49 +2,59 @@
 " vim:set foldmethod=marker foldmarker={{{,}}}:
 "===========================================================================
 " File: .gvimrc
-" Last Change: 08-Mar-2012.
+" Last Change: 10-Mar-2012.
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 "===========================================================================
 
 " ##### basic setting
 scriptencoding utf-8
-
-" ##### options
 set guioptions=agirLt
 
-" ########## display {{{
+" ##### variables {{{
+" Windows (not on terminal)
+let s:is_win = has( 'win32' ) || has( 'win64' )
+" Mac (not on terminal)
+let s:is_mac = has( 'mac' )
+" UNIX
+let s:is_unix = has( 'unix' ) && !s:is_mac && !s:is_win
+" /=variables }}}
+
+" ##### display {{{
 set linespace=1
 set columns=90
 set lines=40
 set cmdheight=2
 colorscheme desert
-colorscheme molokai
-if has( 'mac' )
+if s:is_win
+  colorscheme molokai
+elseif s:is_mac
   set transparency=5
+  set linespace=2
+  " colorscheme Wombat
+  colorscheme molokai
 endif
 " /=display }}}
-if has( 'gui_running' )
-  nnoremap <silent> <C-F11> :call MyGuioptions()<CR>
-  function! MyGuioptions()
-    if &guioptions =~ 'm'
-      exec 'set guioptions-=m'
-    else
-      exec 'set guioptions+=m'
-    endif
-  endfunction
-endif
 
-" ########## cursor color {{{
+nnoremap <silent> <C-F11> :call MyGuioptions()<CR>
+function! MyGuioptions()
+  if &guioptions =~ 'm'
+    exec 'set guioptions-=m'
+  else
+    exec 'set guioptions+=m'
+  endif
+endfunction
+
+" ##### cursor color {{{
 if has( 'multi_byte_ime' )
   highlight cursor guifg=NONE guibg=Gray
   highlight cursorIM guifg=NONE guibg=Purple
 endif
 " /=cursor color }}}
 
-" ########## font {{{
+" ##### font {{{
 " Consolas
 function! s:font_consolas()
-  if has( 'win32' ) || has( 'win64' )
+  if s:is_win
     set guifont=Consolas:h10:cSHIFTJIS
     if has( 'kaoriya' )
       set ambiwidth=auto
@@ -56,12 +66,12 @@ endfunction
 " Ricty
 command! FontRicty :call <SID>font_ricty()
 function! s:font_ricty()
-  if has( 'win32' ) || has( 'win64' )
+  if s:is_win
     set guifont=Ricty:h11:cSHIFTJIS
     if has( 'kaoriya' )
       set ambiwidth=auto
     endif
-  elseif has( 'mac' )
+  elseif s:is_mac
     set guifont=Ricty:h14
     if has( 'kaoriya' )
       set ambiwidth=auto
