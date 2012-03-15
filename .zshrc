@@ -1,5 +1,5 @@
 # vim:set ts=8 sts=2 sw=2 tw=0:
-#===========================================================================
+#==========================================================================
 # File: .zshrc
 # Last Change: 22-Nov-2011.
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
@@ -78,15 +78,7 @@ alias ls='ls -F'
 alias la='ls -a'
 alias ll='ls -la'
 alias ce='cd ../'
-alias cy='cd /cygdrive/'
-
-#====================
-# Node.js
-PATH=$PATH:~/.nave
-alias nave='nave.sh'
-
-#====================
-# CUTEr
-# source ~/optim/.cuterrc
 
 # EOF
+
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
