@@ -2,7 +2,7 @@
 " vim:set foldmethod=marker foldmarker={{{,}}}:
 "===========================================================================
 " File: .vimrc
-" Last Change: 10-Mar-2012.
+" Last Change: 16-Mar-2012.
 " Maintainer: Shintaro Kaneko <kaneshin0120@gmail.com>
 " Description:
 "   This is my vim run command file.
@@ -218,7 +218,7 @@ set tabline=%!MyTabLine()
 " ########## display#main
 set splitbelow
 set splitright
-set number
+set nonumber
 set scrolloff=3
 set linespace=1
 set wrap
