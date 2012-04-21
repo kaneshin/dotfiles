@@ -1,7 +1,7 @@
 # vim:set ts=8 sts=2 sw=2 tw=0:
 #===========================================================================
 # File: .screenrc
-# Last Change: 20-Nov-2011.
+# Last Change: 23-Mar-2012.
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 #===========================================================================
 
@@ -36,3 +36,9 @@ hardstatus alwayslastline "%{= wk}[screen@$USER]%` %`%-w%{= ck}%n %t%{-}%+w %=[$
 # key mappings
 ##############################
 escape 
+bindkey  command -c emacs
+bind -c emacs 0 remove
+bind -c emacs 1 only
+bind -c emacs 2 split
+bind -c emacs 3 split -v
+bindkey  focus
