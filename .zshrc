@@ -1,7 +1,7 @@
 # vim:set ts=8 sts=2 sw=2 tw=0:
 #==========================================================================
 # File: .zshrc
-# Last Change: 22-Nov-2011.
+# Last Change: 17-Mar-2012.
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 #===========================================================================
 
@@ -78,7 +78,5 @@ alias ls='ls -F'
 alias la='ls -a'
 alias ll='ls -la'
 alias ce='cd ../'
-
-# EOF
 
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
