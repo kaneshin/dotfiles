@@ -2,14 +2,13 @@
 " vim:set foldmethod=marker foldmarker={{{,}}}:
 "===========================================================================
 " File: .vimrc
-" Last Change: 16-Mar-2012.
+" Last Change: 19-Apr-2012.
 " Maintainer: Shintaro Kaneko <kaneshin0120@gmail.com>
 " Description:
 "   This is my vim run command file.
 " ToDo:
 "   - [plugin]Run a selected line.
 "   - [plugin]Collect ToDo from current buffer.
-"   - [display]I need to think about the tabline and statusline.
 "   - [mapping]I should go through my key mapping on Vim.
 "   ToDo:
 "     - Backspace
@@ -30,12 +29,12 @@ let s:is_mac = has( 'mac' )
 " UNIX
 let s:is_unix = has( 'unix' ) && !s:is_mac && !s:is_win
 " $MYVIM
-" NOTE:
 "   Windows->     vimfiles/
 "   Mac, Linux->  .vim/
-let $MYVIM = s:is_win ? expand( '$HOME/vimfiles' ) : expand( '$HOME/.vim' )
+if !exists( '$MYVIM' )
+  let $MYVIM = s:is_win ? expand( '$HOME/vimfiles' ) : expand( '$HOME/.vim' )
+endif
 " $MYHOME
-" NOTE:
 "   for $DROPBOX; Sometimes, I set up a Dropbox folder into other one.
 if !exists( '$MYHOME' )
   if s:is_win
@@ -60,6 +59,24 @@ autocmd BufEnter * execute ':lcd ' . expand('%:p:h')
 " /=commands }}}
 "
 " ########## functions {{{
+" status line
+function! MyRegD(str)
+  let str = a:str
+  let mylen = 10
+  " Remove leading spaces and ending linefeed and Add one space to head.
+  let str = substitute(substitute(str, '^ \+', ' ', ''), '\n$', '', '')
+  return strlen(str) > mylen ? str[:mylen-1].'..>' : str[:mylen-1]
+endfunction
+function! MyStatusLine()
+  return "%t\ %m%r%h%w%y"
+        \."%{'['.(&fenc!=''?&fenc:&enc).':'.&ff.']'}"
+        \."[0x\%02.2B]"
+        \."%=%<"
+        \."%{'@\"['.MyRegD(@\").']"
+        \."\ @/[/'.@/.']'}"
+        \."[%l/%L]"
+endfunction
+"
 " tab label
 function! MyTabLabel(n)
   let buflist = tabpagebuflist(a:n)
@@ -72,21 +89,13 @@ function! MyTabLabel(n)
 endfunction
 function! MyTabLine()
   let tabrange = range(1, tabpagenr('$'))
+  let tabstr = ' '
   let sep = ' '
-  let tabln = ' '
   for i in tabrange
-    let tabln .= MyTabLabel(i)
-    let tabln .= sep
+    let tabstr .= MyTabLabel(i)
+    let tabstr .= sep
   endfor
-  let tabln .= '%=%<@*['.@*.'] '
-  return tabln
-endfunction
-"
-" status line
-function! MyStatusLine()
-  let sl_left = "%t\ %m%r%h%w%y%{'['.(&fenc!=''?&fenc:&enc).':'.&ff.']'}[0x\%02.2B]"
-  let sl_right = "%=%<%{'@\"['.@\".']\ @/[/'.@/.']'}"
-  return sl_left . sl_right
+  return tabstr."%=".fnamemodify(getcwd(), ":~").' '
 endfunction
 " /=functions }}}
 "
@@ -112,6 +121,7 @@ imap <silent> <Leader>date <C-r>=strftime('%Y/%m/%d(%a)')<CR>
 imap <silent> <Leader>time <C-r>=strftime('%H:%M')<CR>
 imap <silent> <Leader>line- <C-r>=repeat('-', 75)<CR>
 imap <silent> <Leader>line= <C-r>=repeat('=', 75)<CR>
+imap <silent> <Leader>reg <ESC>:registers<CR>
 " command mode
 cnoremap <Leader>email kaneshin0120@gmail.com
 cnoremap <Leader>ado kaneshin0120@gmail.com
@@ -120,10 +130,10 @@ cmap <C-z> <C-r>=expand('%:p:r')<CR>
 " /=macros }}}
 "
 " ########## key mapping {{{
+inoremap <C-y> <C-k>
 inoremap <C-a> <Home>
 inoremap <C-e> <End>
-" inoremap <C-s> <BS>
-inoremap <C-d> <ESC><S-d><S-a>
+inoremap <C-b> <BS>
 inoremap <C-f> <ESC>
 inoremap <C-g> <CR>
 inoremap <C-h> <Left>
@@ -131,14 +141,12 @@ inoremap <C-j> <Down>
 inoremap <C-k> <Up>
 inoremap <C-l> <Right>
 inoremap <C-r><C-r> <C-r>"
-inoremap <Leader>reg <ESC>:registers<CR>
-inoremap // //<Space>
 
 nnoremap <silent> <C-x>0 :close<CR>
 nnoremap <silent> <C-x>1 :only<CR>
 nnoremap <silent> <C-x>2 :split<CR>
 nnoremap <silent> <C-x>3 :vsplit<CR>
-nnoremap <silent> <C-x>4 :BufExplorer<CR>
+nnoremap <silent> <C-x>4 :tabe<CR>:BufExplorer<CR>
 nnoremap <silent> <C-x>n :new<CR>
 nnoremap <silent> <C-x>v :vnew<CR>
 nnoremap <silent> <C-x>c :close<CR>
@@ -146,7 +154,9 @@ nnoremap <silent> <C-n> :bnext<CR>
 nnoremap <silent> <C-p> :bprevious<CR>
 nnoremap <silent> d<C-r> :let @"=""<CR>
 
-nnoremap <ESC><ESC> :nohlsearch<CR>
+nnoremap <silent> <ESC><ESC> :nohlsearch<CR>
+nnoremap <silent> <C-u> <C-u>zz
+nnoremap <silent> <C-f> <C-f>zz
 
 " emacs key bind in command mode
 cnoremap <C-a> <Home>
@@ -171,7 +181,6 @@ cnoremap '' ''<Left>
 cnoremap <> <><Left>
 cnoremap %% %%<Left>
 " /=key mapping }}}
-"
 " /=utilities }}}
 "
 " ##### options {{{
@@ -220,7 +229,6 @@ set splitbelow
 set splitright
 set nonumber
 set scrolloff=3
-set linespace=1
 set wrap
 set list
 set listchars=eol:\ ,tab:>\ ,trail:S,extends:<
@@ -267,6 +275,11 @@ set nrformats+=alpha
 set nrformats+=octal
 set nrformats+=hex
 set history=300
+"
+" ########## Mac
+if s:is_mac
+  set nomigemo
+end
 " /=options }}}
 "
 " ##### file type {{{
@@ -274,6 +287,7 @@ set history=300
 function! s:my_common()
 endfunction
 " }}}
+"
 " ########## vim {{{
 autocmd FileType vim call s:filetype_vim()
 function! s:filetype_vim()
@@ -281,6 +295,14 @@ function! s:filetype_vim()
   setlocal shiftwidth=2
 endfunction
 " /=vim }}}
+"
+" ########## javascript {{{
+autocmd FileType javascript call s:filetype_javascript()
+function! s:filetype_javascript()
+  setlocal tabstop=2
+  setlocal shiftwidth=2
+endfunction
+" /=javascript }}}
 " /=file type }}}
 "
 " ##### plugin {{{
@@ -295,22 +317,15 @@ Bundle 'mattn/vimplenote-vim'
 Bundle 'mattn/gist-vim'
 Bundle 'mattn/zencoding-vim'
 Bundle 'mattn/sonictemplate-vim'
-Bundle 'mattn/calendar-vim'
 Bundle 'thinca/vim-quickrun'
 Bundle 'thinca/vim-ref'
 Bundle 'thinca/vim-prettyprint'
 Bundle 'tyru/restart.vim'
-Bundle 'tyru/caw.vim'
 Bundle 'markabe/bufexplorer'
 Bundle 'Lokaltog/vim-easymotion'
-Bundle 'kaneshin/hahhah-vim'
 " testing
 Bundle 'tpope/vim-repeat'
-Bundle 't9md/vim-quickhl'
-Bundle 'dannyob/quickfixstatus'
-Bundle 'vim-scripts/Highlight-UnMatched-Brackets'
 Bundle 'c9s/perlomni.vim'
-Bundle 'kana/vim-smartchr'
 Bundle 'motemen/git-vim'
 " www.vim.org
 Bundle 'TwitVim'
