@@ -2,7 +2,7 @@
 " vim:set foldmethod=marker foldmarker={{{,}}}:
 "===========================================================================
 " File: .vimrc
-" Last Change: 19-Apr-2012.
+" Last Change: 24-Apr-2012.
 " Maintainer: Shintaro Kaneko <kaneshin0120@gmail.com>
 " Description:
 "   This is my vim run command file.
@@ -55,7 +55,7 @@ endif
 "
 " ########## autocmds {{{
 " change directory when you open that file.
-autocmd BufEnter * execute ':lcd ' . expand('%:p:h')
+autocmd BufEnter * execute ':lcd '.expand( '%:p:h' )
 " /=commands }}}
 "
 " ########## functions {{{
