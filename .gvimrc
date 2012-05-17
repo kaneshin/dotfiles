@@ -2,7 +2,7 @@
 " vim:set foldmethod=marker foldmarker={{{,}}}:
 "===========================================================================
 " File: .gvimrc
-" Last Change: 10-Mar-2012.
+" Last Change: 11-May-2012.
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 "===========================================================================
 
@@ -30,8 +30,8 @@ if s:is_win
 elseif s:is_mac
   set transparency=5
   set linespace=2
-  " colorscheme Wombat
-  colorscheme molokai
+  colorscheme Wombat
+  " colorscheme molokai
 endif
 " /=display }}}
 
