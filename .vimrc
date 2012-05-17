@@ -2,7 +2,7 @@
 " vim:set foldmethod=marker foldmarker={{{,}}}:
 "===========================================================================
 " File: .vimrc
-" Last Change: 10-May-2012.
+" Last Change: 17-May-2012.
 " Maintainer: Shintaro Kaneko <kaneshin0120@gmail.com>
 " Description:
 "   This is my vim run command file.
@@ -100,6 +100,28 @@ endfunction
 " /=functions }}}
 "
 " ########## macros {{{
+" pre-plugin
+function! s:tab_to_space()
+  " let lines = getline(1, '$')
+  let lines = getbufline(bufnr(bufname('%')), 1, "$")
+  let result = []
+  for line in lines
+    call add(result, substitute(line, "\t", "    ", "g"))
+  endfor
+  call setline(1, result)
+endfunction
+
+function! s:remove_no_mean_space()
+  let lines = getbufline(bufnr(bufname('%')), 1, "$")
+  let result = []
+  for line in lines
+    call add(result, substitute(line, " *$", "", ""))
+  endfor
+  call setline(1, result)
+endfunction
+command! -nargs=? TabToSpace call s:tab_to_space(<f-args>)
+command! -nargs=0 RemoveSpace call s:remove_no_mean_space()
+"
 " normal mode
 if filereadable( expand( '$DROPBOX/dev/dotfiles/.vimrc' ) )
   command! EditVimrc :tabe $DROPBOX/dev/dotfiles/.vimrc
