@@ -65,6 +65,7 @@ function! MyRegD(str)
   let mylen = 10
   " Remove leading spaces and ending linefeed and Add one space to head.
   let str = substitute(substitute(str, '^ \+', ' ', ''), '\n$', '', '')
+  let str = substitute(str, '\n', '', 'g')
   return strlen(str) > mylen ? str[:mylen-1].'..>' : str[:mylen-1]
 endfunction
 function! MyStatusLine()
