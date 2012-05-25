@@ -1,0 +1,23 @@
+" vim:set ts=8 sts=2 sw=2 tw=0:
+" vim:set foldmethod=marker foldmarker={{{,}}}:
+"===========================================================================
+" File: .vimrc
+" Last Change: 22-May-2012.
+" Maintainer: Shintaro Kaneko <kaneshin0120@gmail.com>
+" Description:
+"   This is my pure vim run command file.
+"===========================================================================
+"
+" ##### basic setting
+scriptencoding utf-8
+syntax on
+filetype plugin indent on
+
+set nobackup
+set noswapfile
+
+set fileencodings=utf-8,euc-jp,cp932,shiftjis,iso-2022-jp,latin1
+set fileformats=unix,dos,mac
+
+set title
+
