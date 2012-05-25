@@ -36,9 +36,8 @@ hardstatus alwayslastline "%{= wk}[screen@$USER]%` %`%-w%{= ck}%n %t%{-}%+w %=[$
 # key mappings
 ##############################
 escape 
-bindkey  command -c emacs
-bind -c emacs 0 remove
-bind -c emacs 1 only
-bind -c emacs 2 split
-bind -c emacs 3 split -v
-bindkey  focus
+bind 0 remove
+bind 1 only
+bind 2 split
+bind 3 split -v
+bind 4 focus
