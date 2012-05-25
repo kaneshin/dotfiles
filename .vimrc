@@ -2,7 +2,7 @@
 " vim:set foldmethod=marker foldmarker={{{,}}}:
 "===========================================================================
 " File: .vimrc
-" Last Change: 17-May-2012.
+" Last Change: 22-May-2012.
 " Maintainer: Shintaro Kaneko <kaneshin0120@gmail.com>
 " Description:
 "   This is my vim run command file.
@@ -152,16 +152,18 @@ cmap <C-z> <C-r>=expand('%:p:r')<CR>
 " /=macros }}}
 "
 " ########## key mapping {{{
-inoremap <C-y> <C-k>
-inoremap <C-a> <Home>
-inoremap <C-e> <End>
-inoremap <C-b> <BS>
+" inoremap <C-y> <C-k>
+" inoremap <C-b> <BS>
 inoremap <C-f> <ESC>
-inoremap <C-g> <CR>
-inoremap <C-h> <Left>
-inoremap <C-j> <Down>
-inoremap <C-k> <Up>
-inoremap <C-l> <Right>
+" inoremap <C-g> <CR>
+inoremap <c-l><c-l> <right>
+inoremap <c-l><c-a> <home>
+inoremap <c-l><c-e> <end>
+inoremap <c-l><c-k> <up><end>
+inoremap <c-l><c-j> <esc>O
+
+inoremap <c-l><c-h> <Left>
+
 inoremap <C-r><C-r> <C-r>"
 
 nnoremap <silent> <C-x>0 :close<CR>
@@ -172,9 +174,8 @@ nnoremap <silent> <C-x>4 :tabe<CR>:BufExplorer<CR>
 nnoremap <silent> <C-x>n :new<CR>
 nnoremap <silent> <C-x>v :vnew<CR>
 nnoremap <silent> <C-x>c :close<CR>
-nnoremap <silent> <C-n> :bnext<CR>
-nnoremap <silent> <C-p> :bprevious<CR>
-nnoremap <silent> d<C-r> :let @"=""<CR>
+" nnoremap <silent> <C-n> :bnext<CR>
+" nnoremap <silent> <C-p> :bprevious<CR>
 
 nnoremap <silent> <ESC><ESC> :nohlsearch<CR>
 nnoremap <silent> <C-u> <C-u>zz
@@ -187,6 +188,7 @@ cnoremap <C-b> <Left>
 cnoremap <C-f> <Right>
 cnoremap <C-n> <Down>
 cnoremap <C-p> <Up>
+cnoremap <C-h> <BS>
 
 inoremap {} {}<Left>
 inoremap [] []<Left>
@@ -321,8 +323,8 @@ endfunction
 " ########## javascript {{{
 autocmd FileType javascript call s:filetype_javascript()
 function! s:filetype_javascript()
-  setlocal tabstop=2
-  setlocal shiftwidth=2
+  setlocal tabstop=4
+  setlocal shiftwidth=4
 endfunction
 " /=javascript }}}
 " /=file type }}}
@@ -344,9 +346,10 @@ Bundle 'thinca/vim-ref'
 Bundle 'tyru/restart.vim'
 Bundle 'markabe/bufexplorer'
 Bundle 'Lokaltog/vim-easymotion'
-" testing
 Bundle 'tpope/vim-repeat'
 Bundle 'motemen/git-vim'
+Bundle 'kien/ctrlp.vim'
+Bundle 'mattn/ctrlp-launcher'
 " www.vim.org
 Bundle 'TwitVim'
 " colorscheme
@@ -419,13 +422,14 @@ let g:restart_sessionoptions
 let g:EasyMotion_leader_key = '<Leader>'
 " }}}
 "
-" ########## kana/vim-smartchr {{{
-" inoremap <buffer> <expr> = smartchr#one_of('=', ' = ', ' == ')
+" ########## mattn/sonictemplate-vim {{{
+inoremap {{in {{_input_:}}<Left><Left>
+inoremap {{cur {{_cursor_}}
 " }}}
 "
-" ########## thinca/vim-quickrun {{{
+" ########## mattn/ctrlp-launcher {{{
+nnoremap <c-e> :<c-u>CtrlPLauncher<cr>
 " }}}
-"
 "
 " /=plugin }}}
 "
