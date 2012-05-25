@@ -1,12 +1,16 @@
 #!/bin/bash
 
 cd $(dirname ${0})
-for dotfile in .?*
-do
-    if [[ $dotfile != '..' ]] && [[ $dotfile != '.git' ]] && [[ $dotfile != '.gitignore' ]] && [[ $dotfile != '.doskey' ]]
-    then
-        ln -Fis "$PWD/$dotfile" ~/
-    fi
+for dotfile in .?*; do
+    case "$dotfile" in
+        ".." )
+            continue ;;
+        \.git* )
+            continue ;;
+        ".doskey" )
+            continue ;;
+        * )
+            ln -Fis "$PWD/$dotfile" $HOME ;;
+    esac
 done
 
-# EOF
