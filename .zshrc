@@ -78,5 +78,6 @@ alias ls='ls -F'
 alias la='ls -a'
 alias ll='ls -la'
 alias ce='cd ../'
+alias pvim='vim -u NONE'
 
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
