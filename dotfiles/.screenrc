@@ -1,43 +1,44 @@
-# vim:set ts=8 sts=2 sw=2 tw=0:
-#===========================================================================
-# File: .screenrc
-# Last Change: 23-Mar-2012.
+# vim:set fdm=marker:
+#
+# File:        .screenrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-#===========================================================================
+# Last Change: 28-May-2012.
 
-##############################
-# encoding setting
-##############################
-defutf8 on
+# encoding
+encoding utf-8
 defencoding utf8
-encoding utf-8 utf-8
+defkanji utf8
 
-##############################
-# switch on/off
-##############################
+# do you wanna see the copyright? I don't wanna do.
 startup_message off
-vbell off
-autodetach on
-hardstatus on
 
-##############################
-# scrollback
-##############################
-scrollback 5000
+# automatically detach if hung-up
+autodetach on
+
+# viewable bell
+vbell off
+
+# default size of scrollback buffer
 defscrollback 5000
 
-##############################
-# status line
-##############################
+# terminal
+term xterm-256color
+
+# shell title
 shelltitle "$|zsh"
+
+# status line
 hardstatus alwayslastline "%{= wk}[screen@$USER]%` %`%-w%{= ck}%n %t%{-}%+w %=[$LANG][%m/%d %02c:%s]"
 
-##############################
-# key mappings
-##############################
+# escape
 escape 
+
+# key bind with escape
 bind 0 remove
 bind 1 only
 bind 2 split
 bind 3 split -v
-bind 4 focus
+
+# key bind without escape
+bindkey  focus
+
