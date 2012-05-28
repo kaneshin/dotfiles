@@ -1,7 +1,7 @@
 # vim:set ts=8 sts=2 sw=2 tw=0:
 #==========================================================================
 # File: .zshrc
-# Last Change: 17-Mar-2012.
+# Last Change: 27-May-2012.
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 #===========================================================================
 
@@ -71,13 +71,6 @@ zstyle ':completion:*' list-colors ${(s.:.)LSCOLORS}
 zstyle ':completion:*:default' menu select=3
 
 #====================
-# alias
-alias sl="ls"
-alias ls="ls -G"
-alias ls='ls -F'
-alias la='ls -a'
-alias ll='ls -la'
-alias ce='cd ../'
-alias pvim='vim -u $HOME/.pvimrc'
+source ~/.shrc.common
 
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting

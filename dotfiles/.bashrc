@@ -1,7 +1,7 @@
 # vim:set ts=8 sts=2 sw=2 tw=0:
 #===========================================================================
 # File: .bashrc
-# Last Change: 14-Mar-2012.
+# Last Change: 27-May-2012.
 # Maintainer: Shintaro Kaneko <kaneshin0120@gmail.com>
 #===========================================================================
 
@@ -101,11 +101,7 @@ if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
 fi
 
 # aliases
-alias ls="ls -G"
-alias ls='ls -F'
-alias la='ls -a'
-alias ll='ls -la'
-alias ce='cd ../'
+source ~/.shrc.common
 
 # EOF
 

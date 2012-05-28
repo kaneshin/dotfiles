@@ -192,16 +192,16 @@ command! -nargs=0 RemoveBracketsSpace call s:RemoveBracketsSpace()
 "
 " ########## key mapping {{{
 " .vimrc
-if filereadable(expand('$DROPBOX/dev/dotfiles/.vimrc'))
-  command! EditVimrc :tabe $DROPBOX/dev/dotfiles/.vimrc
-  command! ReadVimrc :source $DROPBOX/dev/dotfiles/.vimrc
+if filereadable(expand('$DROPBOX/dev/dotfiles/dotfiles/.vimrc'))
+  command! EditVimrc :tabe $DROPBOX/dev/dotfiles/dotfiles/.vimrc
+  command! ReadVimrc :source $DROPBOX/dev/dotfiles/dotfiles/.vimrc
   nnoremap <silent> ,ev :EditVimrc<CR>
   nnoremap <silent> ,rv :ReadVimrc<CR>
 endif
 " .gvimrc
-if filereadable(expand('$DROPBOX/dev/dotfiles/.gvimrc'))
-  command! EditGVimrc :tabe $DROPBOX/dev/dotfiles/.gvimrc
-  command! ReadGVimrc :source $DROPBOX/dev/dotfiles/.gvimrc
+if filereadable(expand('$DROPBOX/dev/dotfiles/dotfiles/.gvimrc'))
+  command! EditGVimrc :tabe $DROPBOX/dev/dotfiles/dotfiles/.gvimrc
+  command! ReadGVimrc :source $DROPBOX/dev/dotfiles/dotfiles/.gvimrc
   nnoremap <silent> ,eg :EditGVimrc<CR>
   nnoremap <silent> ,rg :ReadGVimrc<CR>
 endif

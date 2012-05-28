@@ -1,0 +1,10 @@
+# alias
+alias sl="ls"
+alias ls="ls -G"
+alias ls='ls -F'
+alias la='ls -a'
+alias ll='ls -la'
+alias ce='cd ../'
+alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'
+alias pvim='vim -u $HOME/.pvimrc'
+
