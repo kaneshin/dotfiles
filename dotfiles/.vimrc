@@ -1,38 +1,35 @@
 " vim:set ts=8 sts=2 sw=2 tw=0:
-" vim:set foldmethod=marker foldmarker={{{,}}}:
+" vim:set fdm=marker:
 "
-" File: .vimrc
-" Maintainer: Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 27-May-2012.
-" Description:
-"   This is my vim run command file.
-"
-" ##### basic setting
+" File:        .vimrc
+" Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
+" Last Change: 28-May-2012.
+
 scriptencoding utf-8
 syntax on
 filetype plugin on
 filetype indent on
-"
-" ##### utilities {{{
-" ########## variables {{{
+
+" utilities {{{
+" ##### variables {{{
 " Windows (not on terminal)
-let s:is_win = has('win32') || has('win64')
+let s:is_win = has( 'win32' ) || has( 'win64' )
 " Mac (not on terminal)
-let s:is_mac = has('mac')
+let s:is_mac = has( 'mac' )
 " UNIX or on terminal
-let s:is_unix = has('unix') && !s:is_mac && !s:is_win
+let s:is_unix = has( 'unix' ) && !s:is_mac && !s:is_win
 " $MYVIM
-"   Windows->     vimfiles/
-"   Mac, Linux->  .vim/
-if !exists('$MYVIM')
-  let $MYVIM = s:is_win ? expand('$HOME/vimfiles') : expand('$HOME/.vim')
+"     Windows  -> vimfiles/
+"   Mac, Linux -> .vim/
+if !exists( '$MYVIM' )
+  let $MYVIM = s:is_win ? expand( '$HOME/vimfiles' ) : expand( '$HOME/.vim' )
 endif
 " $MYHOME
-if !exists('$MYHOME')
+if !exists( '$MYHOME' )
   if s:is_win
-    if ($USERDOMAIN == 'KANESHIN-ASUS')
+    if ( $USERDOMAIN == 'KANESHIN-ASUS' )
       let $MYHOME = $HOME
-    elseif ($USERDOMAIN == 'KANESHIN-HP')
+    elseif ( $USERDOMAIN == 'KANESHIN-HP' )
       let $MYHOME = 'C:\home\kaneshin'
     endif
   else
@@ -40,12 +37,12 @@ if !exists('$MYHOME')
   endif
 endif
 " $DROPBOX
-if !exists('$DROPBOX') && filewritable(expand('$MYHOME/Dropbox'))
+if !exists( '$DROPBOX' ) && filewritable( expand( '$MYHOME/Dropbox' ) )
   let $DROPBOX = $MYHOME.'/Dropbox'
 endif
 " /=variables }}}
 "
-" ########## functions {{{
+" ##### functions {{{
 " status line
 function! MyStatusReg(str)
   let str = a:str
@@ -92,12 +89,12 @@ function! MyTabLine()
   if (len(tabrange) < 4)
     return tabstr."%=".g:Sticky().sep
   else
-    return tabstr."%=".DirInfo()sep
+    return tabstr."%=".DirInfo().sep
   endif
 endfunction
 " /=functions }}}
 "
-" ########## semi-plugin {{{
+" ##### semi-plugin {{{
 " sticky
 let g:sticky_mode = "ours"
 let s:stickypos = 0
@@ -182,7 +179,7 @@ endfunction
 command! -nargs=0 RemoveBracketsSpace call s:RemoveBracketsSpace()
 " }}}
 "
-" ########## key mapping {{{
+" ##### key mapping {{{
 " .vimrc
 if filereadable(expand('$DROPBOX/dev/dotfiles/dotfiles/.vimrc'))
   command! EditVimrc :tabe $DROPBOX/dev/dotfiles/dotfiles/.vimrc
@@ -197,7 +194,6 @@ if filereadable(expand('$DROPBOX/dev/dotfiles/dotfiles/.gvimrc'))
   nnoremap <silent> ,eg :EditGVimrc<CR>
   nnoremap <silent> ,rg :ReadGVimrc<CR>
 endif
-"
 " insertion mode
 inoremap <C-f> <ESC>
 inoremap <c-l><c-h> <Left>
@@ -207,7 +203,6 @@ inoremap <c-l><c-l> <right>
 inoremap <c-l><c-a> <home>
 inoremap <c-l><c-e> <end>
 inoremap <C-r><C-r> <C-r>"
-"
 " normal node
 nnoremap <silent> <C-x>0 :close<CR>
 nnoremap <silent> <C-x>1 :only<CR>
@@ -222,11 +217,9 @@ nnoremap <silent> <C-s> :confirm browse saveas<CR>
 nnoremap <silent> <C-u> <C-u>zz
 nnoremap <silent> <C-f> <C-f>zz
 nnoremap ; :
-"
 " command mode
 cmap <C-x> <C-r>=expand('%:p:h')<CR>/
 cmap <C-z> <C-r>=expand('%:p:r')<CR>
-
 " emacs key bind in command mode
 cnoremap <C-a> <Home>
 cnoremap <C-e> <End>
@@ -235,7 +228,6 @@ cnoremap <C-f> <Right>
 cnoremap <C-n> <Down>
 cnoremap <C-p> <Up>
 cnoremap <C-h> <BS>
-
 " brackets and else
 inoremap {} {}<Left>
 inoremap [] []<Left>
@@ -253,10 +245,9 @@ cnoremap <> <><Left>
 cnoremap %% %%<Left>
 " /=key mapping }}}
 "
-" ########## autocmds {{{
+" ##### autocmds {{{
 " change directory if you open a file.
 autocmd BufEnter * execute ':lcd '.expand('%:p:h')
-"
 " automatically open a quickfix
 autocmd QuickfixCmdPost make,grep,grepadd,vimgrep
       \if len(getqflist()) != 0 | copen | endif
@@ -264,8 +255,8 @@ autocmd QuickfixCmdPost make,grep,grepadd,vimgrep
 "
 " /=utilities }}}
 "
-" ##### options {{{
-" ########## backup, swap
+" options {{{
+" ##### backup, swap
 if finddir('backup', $MYVIM) != ''
   set backup
   set backupext=.bak
@@ -277,8 +268,8 @@ else
   set nobackup
   set noswapfile
 endif
-"
-" ########## fold
+
+" ##### fold
 if finddir('view', $MYVIM) != ''
   set viewdir=$MYVIM/view
 "  autocmd BufWritePost * mkview
@@ -287,25 +278,25 @@ else
   echoe "Can't save as a fold file."
 endif
 "
-" ########## encoding
+" ##### encoding
 set fileencodings=utf-8,euc-jp,cp932,shiftjis,iso-2022-jp,latin1
 set fileformats=unix,dos,mac
 " set encoding=utf-8
 " set fileencoding=utf-8
 " set fileformat=unix
 "
-" ########## display#title
+" ##### display#title
 set title
 set titlelen=90
 if 0 && s:is_win
   set titlestring=[%l/%L:%c/%{col('$')-1}]\ %t%(\ %M%)\ (%F)%=%<(kaneshin)
 endif
 "
-" ########## display#tabline
+" ##### display#tabline
 set showtabline=2
 set tabline=%!MyTabLine()
 "
-" ########## display#main
+" ##### display#main
 set splitbelow
 set splitright
 set nonumber
@@ -313,7 +304,7 @@ set scrolloff=3
 set wrap
 set list
 set listchars=eol:\ ,tab:>\ ,trail:S,extends:<
-" ########## display#below
+" ##### display#below
 set laststatus=2
 set cmdheight=2
 set statusline=%!MyStatusLine()
@@ -322,17 +313,17 @@ set showcmd
 set wildmenu
 set wildmode=list:longest
 "
-" ########## cursor
+" ##### cursor
 set cursorline
 set nocursorcolumn
 "
-" ########## search
+" ##### search
 set ignorecase
 set smartcase
 set nowrapscan
 set incsearch
 "
-" ########## edit
+" ##### edit
 set autoindent
 set smartindent
 set showmatch
@@ -341,14 +332,14 @@ set clipboard=unnamed
 set pastetoggle=<F12>
 set formatoptions+=mM
 "
-" ########## <Tab>
+" ##### <Tab>
 set tabstop=4
 set shiftwidth=4
 set softtabstop=0
 set expandtab
 set smarttab
 "
-" ########## etc
+" ##### etc
 " NOTE: Vim turn off the compatible mode, if Vim find vimrc or gvimrc.
 " set nocompatible
 set noshellslash
@@ -357,14 +348,14 @@ set nrformats+=octal
 set nrformats+=hex
 set history=300
 "
-" ########## Mac
+" ##### Mac
 if s:is_mac
   set nomigemo
 end
 " /=options }}}
 "
-" ##### plugin {{{
-" ########## gmarik/vundle {{{
+" plugin {{{
+" ##### gmarik/vundle {{{
 filetype off
 set rtp+=$MYVIM/bundle/vundle
 call vundle#rc( '$MYVIM/bundle' )
@@ -394,7 +385,7 @@ Bundle 'TwitVim'
 filetype plugin indent on
 " /=gmarik/vundle }}}
 
-" ########## TwitVim {{{
+" ##### TwitVim {{{
 let g:twitvim_count = 50
 if s:is_win
   let g:twitvim_browser_cmd
@@ -422,7 +413,7 @@ function! s:my_twitvim()
 endfunction
 " /=TwitVim }}}
 "
-" ########## mattn/vimplenote-vim {{{
+" ##### mattn/vimplenote-vim {{{
 nmap ,vl :<C-u>VimpleNote -l<CR>\ado<CR>
 nnoremap ,vd :<C-u>VimpleNote -d<CR>
 nnoremap ,vD :<C-u>VimpleNote -D<CR>
@@ -432,7 +423,7 @@ nnoremap ,vu :<C-u>VimpleNote -u<CR>
 nnoremap ,vs :<C-u>VimpleNote -s<CR>
 " /=mattn/vimplenote-vim }}}
 "
-" ########## mattn/gist-vim {{{
+" ##### mattn/gist-vim {{{
 " --- gist setting ---
 " let g:github_user = 'kaneshin'
 " let g:github_token = ''
@@ -447,21 +438,21 @@ nnoremap ,gd :<C-u>Gist -d<CR>
 nnoremap ,gf :<C-u>Gist -f<CR>
 " /=mattn/gist-vim }}}
 "
-" ########## tyru/restart.vim {{{
+" ##### tyru/restart.vim {{{
 let g:restart_sessionoptions
     \ = 'blank,buffers,curdir,folds,help,localoptions,tabpages'
 " /=tyru/restart.vim }}}
 "
-" ########## Lokaltog/vim-easymotion {{{
+" ##### Lokaltog/vim-easymotion {{{
 let g:EasyMotion_leader_key = '<Leader>'
 " }}}
 "
-" ########## mattn/sonictemplate-vim {{{
+" ##### mattn/sonictemplate-vim {{{
 inoremap {{in {{_input_:}}<Left><Left>
 inoremap {{cur {{_cursor_}}
 " }}}
 "
-" ########## mattn/ctrlp-launcher {{{
+" ##### mattn/ctrlp-launcher {{{
 nnoremap <c-e> :<c-u>CtrlPLauncher<cr>
 " }}}
 "

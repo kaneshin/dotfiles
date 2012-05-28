@@ -1,23 +1,70 @@
 " vim:set ts=8 sts=2 sw=2 tw=0:
-" vim:set foldmethod=marker foldmarker={{{,}}}:
-"===========================================================================
-" File: .vimrc
-" Last Change: 22-May-2012.
-" Maintainer: Shintaro Kaneko <kaneshin0120@gmail.com>
-" Description:
-"   This is my pure vim run command file.
-"===========================================================================
+" vim:set fdm=marker:
 "
-" ##### basic setting
+" File:        .pvimrc
+" Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
+" Last Change: 28-May-2012.
+
 scriptencoding utf-8
 syntax on
-filetype plugin indent on
+filetype plugin on
+filetype indent on
 
-set nobackup
-set noswapfile
+" backup, swap
+if finddir('backup', $MYVIM) != ''
+  set backup
+  set backupext=.bak
+  set backupdir=$MYVIM/backup
+  set swapfile
+  set directory=$MYVIM/backup
+else
+  set nobackup
+  set noswapfile
+endif
 
+" encoding
 set fileencodings=utf-8,euc-jp,cp932,shiftjis,iso-2022-jp,latin1
 set fileformats=unix,dos,mac
 
-set title
+" display
+set showtabline=2
+set splitbelow
+set splitright
+set nonumber
+set scrolloff=3
+set wrap
+set list
+set listchars=eol:\ ,tab:>\ ,trail:S,extends:<
+set laststatus=2
+set cmdheight=2
+set ruler
+set showcmd
+set wildmenu
+set wildmode=list:longest
+
+" cursor
+set cursorline
+set nocursorcolumn
+
+" search
+set ignorecase
+set smartcase
+set nowrapscan
+set incsearch
+
+" edit
+set autoindent
+set smartindent
+set showmatch
+set backspace=indent,eol,start
+set clipboard=unnamed
+set formatoptions+=mM
+
+" etc
+set nocompatible
+set noshellslash
+set nrformats+=alpha
+set nrformats+=octal
+set nrformats+=hex
+set history=300
 
