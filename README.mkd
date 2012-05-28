@@ -1,15 +1,8 @@
-DOTFILES
+dotfiles
 ========
 
-- .vimrc
-- .gvimrc
-- .zshrc
-- .bashrc
-- .screenrc
+Maintainer
+----------
 
-ETC.
-----
-
-- set_symbolic_link.sh
-- symklink.bat
+Shintaro Kaneko <kaneshin0120@gmail.com>
 
