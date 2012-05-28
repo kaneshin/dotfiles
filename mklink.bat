@@ -9,9 +9,11 @@
 @if not exist "%HOME%" @set HOME=%HOMEDRIVE%%HOMEPATH%
 
 @rem Get the absolute path to the directory of this file.
-@set DOTDIR=%~dp0
+@set CWD=%~dp0
+@set DOTDIR=dotfiles\
+@set DOTDOTDIR=%CWD%%DOTDIR%
 
 @rem Make a symbolic links.
-@for %%i in (.vimrc .gvimrc) do @mklink %HOME%\%%i %DOTDIR%%%i
+@for %%i in (.vimrc .gvimrc) do @mklink %HOME%\%%i %DOTDOTDIR%%%i
 
 @pause
