@@ -1,10 +1,25 @@
+# vim:set fdm=marker:
+#
+# File:        .shrc.common
+# Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
+# Last Change: 28-May-2012.
+
 # alias
+alias ce='cd ../'
+
+alias ls="ls -G --color=auto"
 alias sl="ls"
-alias ls="ls -G"
 alias ls='ls -F'
 alias la='ls -a'
 alias ll='ls -la'
-alias ce='cd ../'
+
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
 alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'
 alias pvim='vim -u $HOME/.pvimrc'
+
+# Add RVM to PATH for scripting
+PATH=$PATH:$HOME/.rvm/bin
 

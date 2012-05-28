@@ -1,22 +1,21 @@
-# vim:set ts=8 sts=2 sw=2 tw=0:
-#==========================================================================
-# File: .zshrc
-# Last Change: 27-May-2012.
+# vim:set fdm=marker:
+#
+# File:        .zshrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-#===========================================================================
+# Last Change: 28-May-2012.
 
-#====================
-# basic setting
+# source common shell run command
+source ~/.shrc_common
+
 # export LANG=ja_JP.UTF-8
 export LANG="en_US.UTF-8"
-bindkey -v # vi key map
-# bindkey -e # emacs key map
+# bindkey -v # vi key map
+bindkey -e # emacs key map
 
-#====================
 # history
 export HISTFILE=~/.zsh_history
-export HISTSIZE=3000
-export SAVEHIST=3000
+export HISTSIZE=5000
+export SAVEHIST=5000
 setopt append_history
 setopt extended_history
 setopt hist_ignore_all_dups
@@ -31,14 +30,12 @@ zle -N history-beginning-search-forward-end history-search-end
 bindkey "^P" history-beginning-search-backward-end
 bindkey "^N" history-beginning-search-forward-end
 
-#====================
 # Display
 PS1='%{]0;%/
 [32m%}(%n@%m)[%h] %{[33m%}%~%{[0m%}
 $ '
 export LSCOLORS=gxfxcxdxbxegedabagacad
 
-#====================
 # options
 setopt auto_pushd
 setopt auto_cd
@@ -60,7 +57,6 @@ setopt print_eight_bit
 setopt extended_glob
 setopt globdots
 
-#====================
 # others
 autoload -Uz compinit
 compinit
@@ -70,7 +66,3 @@ zstyle ':completion:*' use-cache true
 zstyle ':completion:*' list-colors ${(s.:.)LSCOLORS}
 zstyle ':completion:*:default' menu select=3
 
-#====================
-source ~/.shrc.common
-
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
