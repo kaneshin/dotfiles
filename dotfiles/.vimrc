@@ -1,13 +1,11 @@
 " vim:set ts=8 sts=2 sw=2 tw=0:
 " vim:set foldmethod=marker foldmarker={{{,}}}:
-"===========================================================================
+"
 " File: .vimrc
-" Last Change: 27-May-2012.
 " Maintainer: Shintaro Kaneko <kaneshin0120@gmail.com>
+" Last Change: 27-May-2012.
 " Description:
 "   This is my vim run command file.
-" ToDo:
-"===========================================================================
 "
 " ##### basic setting
 scriptencoding utf-8
@@ -15,12 +13,6 @@ syntax on
 filetype plugin on
 filetype indent on
 "
-" TODO: for runtimepath on terminal
-" if ($VIM == '/usr/bin/vim')
-"   let $VIM = '/Applications/MacVim.app/Contents/Resources/vim'
-"   let $VIMRUNTIME = '/Applications/MacVim.app/Contents/Resources/vim/runtime'
-" endif
-
 " ##### utilities {{{
 " ########## variables {{{
 " Windows (not on terminal)
@@ -84,7 +76,7 @@ function! MyTabLabel(n)
   let buflist = tabpagebuflist(a:n)
   let winnr = tabpagewinnr(a:n)
   let mod = filter(copy(buflist), 'getbufvar(v:val, "&modified")')
-  let fname = substitute(bufname(buflist[winnr-1]), "\/.*\/", "", "")
+  let fname = substitute(bufname(buflist[winnr-1]), ".*\\/", "", "")
   let tablb = (len(mod) ? '+ ' : '').(fname != '' ? fname : 'New File')
   let hi = (a:n == tabpagenr() ? '%#TabLineSel#' : '%#TabLine#' )
   return '%'.a:n.'T'.hi.' '.tablb.' '.'%T%#TabLineFill#'
@@ -268,20 +260,6 @@ autocmd BufEnter * execute ':lcd '.expand('%:p:h')
 " automatically open a quickfix
 autocmd QuickfixCmdPost make,grep,grepadd,vimgrep
       \if len(getqflist()) != 0 | copen | endif
-"
-" vim
-autocmd FileType vim call s:filetype_vim()
-function! s:filetype_vim()
-  setlocal tabstop=8
-  setlocal shiftwidth=2
-  setlocal softtabstop=2
-endfunction
-"
-" ruby
-augroup rubysyntaxcheck
-  autocmd!
-  autocmd BufWrite *.rb w !ruby -c
-augroup END
 " /=autocmds }}}
 "
 " /=utilities }}}
@@ -411,9 +389,6 @@ Bundle 'motemen/git-vim'
 Bundle 'tpope/vim-surround'
 " www.vim.org
 Bundle 'TwitVim'
-" colorscheme
-Bundle 'mrtazz/molokai.vim'
-Bundle 'Wombat'
 " playspace
 " Bundle 'koron/nyancat-vim'
 filetype plugin indent on
