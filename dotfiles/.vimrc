@@ -64,8 +64,8 @@ function! MyStatusLine()
 endfunction
 "
 " tab label
-function! DirInfo()
-  let dirlim =25
+function! DirInfo(...)
+  let dirlim = a:0 > 0 ? a:1 : &titlelen-20
   let dirinfo = fnamemodify(getcwd(), ":~")
   return strlen(dirinfo) > dirlim ? pathshorten(dirinfo) : dirinfo
 endfunction
@@ -82,71 +82,73 @@ function! MyTabLine()
   let tabrange = range(1, tabpagenr('$'))
   let tabstr = ''
   let sep = ' '
-  for i in tabrange
+  let len = &titlelen - 20
+  if (len(tabrange) > 2)
     let tabstr .= sep
-    let tabstr .= MyTabLabel(i)
-  endfor
-  if (len(tabrange) < 4)
-    return tabstr."%=".g:Sticky().sep
+    let tabstr .= MyTabLabel(tabpagenr())
   else
-    return tabstr."%=".DirInfo().sep
+    for i in tabrange
+      let tabstr .= sep
+      let tabstr .= MyTabLabel(i)
+    endfor
   endif
+  return tabstr."%=".DirInfo(len).sep."%{fugitive#statusline()}"
 endfunction
 " /=functions }}}
 "
 " ##### semi-plugin {{{
 " sticky
-let g:sticky_mode = "ours"
-let s:stickypos = 0
-let s:sticky = {
-        \"eng": [
-            \"I'm gonna go to Japan.",
-            \"I'm gonna be here.",
-            \"Should be ok.",
-            \"Could be ok."
-        \],
-        \"ours": [
-\"Elevator buttons and morning air",
-\"Stranger's silence makes me wanna take the stairs",
-\"If you were here, we'd laugh about their vacant stares",
-\"But right now, my time is theirs",
-\"Seems like there's always someone who disapproves",
-\"They'll judge it like they know about me and you",
-\"And the verdict comes from those with nothing else to do",
-\"The jury's out, but my choice is you",
-\"So don't you worry your pretty little mind",
-\"People throw rocks at things that shine",
-\"And life makes love look hard",
-\"The stakes are high, the water's rough, but this love is ours",
-\"You never know what people have up their sleeves",
-\"Ghosts from your past gonna jump out at me",
-\"Lurking in the shadows with their lip gloss smiles",
-\"But I don't care 'cause right now you're mine",
-\"And you'll say don't you worry your pretty little mind",
-\"People throw rocks at things that shine",
-\"And life makes love look hard",
-\"The stakes are high, the water's rough, but this love is ours",
-\"And it's not theirs to speculate if it's wrong and",
-\"Your hands are tough but they are where mine belong in",
-\"I'll fight their doubt and give you faith with this song for you",
-\"'Cause I love the gap between your teeth",
-\"And I love the riddles that you speak",
-\"And any snide remarks from my father about your tattoos will be ignored",
-\"'Cause my heart is yours",
-\"So don't you worry your pretty little mind",
-\"People throw rocks at things that shine",
-\"And life makes love look hard",
-\"And don't you worry your pretty little mind",
-\"People throw rocks at things that shine",
-\"But they can't take what's ours, they can't take what's ours",
-\"The stakes are high, the water's rough, but this love is ours",
-\]
-    \}
-function! g:Sticky()
-  let s:stickypos += 1
-  let s:stickypos = s:stickypos % len(s:sticky[g:sticky_mode])
-  return s:sticky[g:sticky_mode][s:stickypos]
-endfunction
+" let g:sticky_mode = "ours"
+" let s:stickypos = 0
+" let s:sticky = {
+"         \"eng": [
+"             \"I'm gonna go to Japan.",
+"             \"I'm gonna be here.",
+"             \"Should be ok.",
+"             \"Could be ok."
+"         \],
+"         \"ours": [
+" \"Elevator buttons and morning air",
+" \"Stranger's silence makes me wanna take the stairs",
+" \"If you were here, we'd laugh about their vacant stares",
+" \"But right now, my time is theirs",
+" \"Seems like there's always someone who disapproves",
+" \"They'll judge it like they know about me and you",
+" \"And the verdict comes from those with nothing else to do",
+" \"The jury's out, but my choice is you",
+" \"So don't you worry your pretty little mind",
+" \"People throw rocks at things that shine",
+" \"And life makes love look hard",
+" \"The stakes are high, the water's rough, but this love is ours",
+" \"You never know what people have up their sleeves",
+" \"Ghosts from your past gonna jump out at me",
+" \"Lurking in the shadows with their lip gloss smiles",
+" \"But I don't care 'cause right now you're mine",
+" \"And you'll say don't you worry your pretty little mind",
+" \"People throw rocks at things that shine",
+" \"And life makes love look hard",
+" \"The stakes are high, the water's rough, but this love is ours",
+" \"And it's not theirs to speculate if it's wrong and",
+" \"Your hands are tough but they are where mine belong in",
+" \"I'll fight their doubt and give you faith with this song for you",
+" \"'Cause I love the gap between your teeth",
+" \"And I love the riddles that you speak",
+" \"And any snide remarks from my father about your tattoos will be ignored",
+" \"'Cause my heart is yours",
+" \"So don't you worry your pretty little mind",
+" \"People throw rocks at things that shine",
+" \"And life makes love look hard",
+" \"And don't you worry your pretty little mind",
+" \"People throw rocks at things that shine",
+" \"But they can't take what's ours, they can't take what's ours",
+" \"The stakes are high, the water's rough, but this love is ours",
+" \]
+"     \}
+" function! g:Sticky()
+"   let s:stickypos += 1
+"   let s:stickypos = s:stickypos % len(s:sticky[g:sticky_mode])
+"   return s:sticky[g:sticky_mode][s:stickypos]
+" endfunction
 "
 " tab to space
 function! s:TabToSpace(...)
@@ -154,7 +156,7 @@ function! s:TabToSpace(...)
   let result = []
   for line in lines
     call add(result, substitute(line, "\t",
-                \"                "[: (a:0 > 0 ? a:1 - 1 : 3)], "g"))
+          \repeat(' ', (a:0 > 0 ? a:1 : &shiftwidth)), "g"))
   endfor
   call setline(1, result)
 endfunction
@@ -365,7 +367,8 @@ Bundle 'mattn/webapi-vim'
 Bundle 'mattn/vimplenote-vim'
 Bundle 'mattn/gist-vim'
 Bundle 'mattn/zencoding-vim'
-Bundle 'kaneshin/sonictemplate-vim'
+" Bundle 'kaneshin/sonictemplate-vim'
+set rtp+=$DROPBOX/dev/prj/sonictemplate-vim
 Bundle 'thinca/vim-quickrun'
 Bundle 'thinca/vim-ref'
 Bundle 'kien/ctrlp.vim'
@@ -376,6 +379,7 @@ Bundle 'tyru/restart.vim'
 Bundle 'markabe/bufexplorer'
 Bundle 'Lokaltog/vim-easymotion'
 Bundle 'tpope/vim-repeat'
+Bundle 'tpope/vim-fugitive'
 Bundle 'motemen/git-vim'
 Bundle 'tpope/vim-surround'
 " www.vim.org
