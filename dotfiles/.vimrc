@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 28-May-2012.
+" Last Change: 03-Jun-2012.
 
 scriptencoding utf-8
 syntax on
@@ -41,33 +41,26 @@ if !exists( '$DROPBOX' ) && filewritable( expand( '$MYHOME/Dropbox' ) )
   let $DROPBOX = $MYHOME.'/Dropbox'
 endif
 " /=variables }}}
-"
+
 " ##### functions {{{
 " status line
-function! MyStatusReg(str)
-  let str = a:str
-  let reglim = 10
-  " Remove leading spaces and linefeeds and Add one space to head.
-  let str = substitute(str, '^ \+', ' ', '')
-  let str = substitute(str, '\n$', '', '')
-  let str = substitute(str, '\n', '', 'g')
-  return strlen(str) > reglim ? str[: reglim-1].'..>' : str[: reglim-1]
+function! GetShortenRegister(reg)
+  return substitute(substitute(a:reg, '\n', '', 'g'), '^ *\(.\{,15\}\).*$', '\1', '')
 endfunction
 function! MyStatusLine()
   return "%t\ %m%r%h%w%y"
         \."%{'['.(&fenc!=''?&fenc:&enc).':'.&ff.']'}"
         \."[0x\%02.2B]"
         \."%=%<"
-        \."%{'@\"['.MyStatusReg(@\").']"
-        \."\ @/[/'.@/.']'}"
+        \."%{'@\"['.GetShortenRegister(@\").']"
+        \."\ @/[/'.GetShortenRegister(@/).']'}"
         \."[%l/%L]"
 endfunction
-"
+
 " tab label
 function! DirInfo(...)
-  let dirlim = a:0 > 0 ? a:1 : &titlelen-20
   let dirinfo = fnamemodify(getcwd(), ":~")
-  return strlen(dirinfo) > dirlim ? pathshorten(dirinfo) : dirinfo
+  return strlen(dirinfo) > (a:0 > 0 ? a:1 : &titlelen - 20) ? pathshorten(dirinfo) : dirinfo
 endfunction
 function! MyTabLabel(n)
   let buflist = tabpagebuflist(a:n)
@@ -84,12 +77,10 @@ function! MyTabLine()
   let sep = ' '
   let len = &titlelen - 20
   if (len(tabrange) > 2)
-    let tabstr .= sep
-    let tabstr .= MyTabLabel(tabpagenr())
+    let tabstr .= sep.'Tab:'.tabpagenr().'/'.tabpagenr('$').sep.MyTabLabel(tabpagenr())
   else
     for i in tabrange
-      let tabstr .= sep
-      let tabstr .= MyTabLabel(i)
+      let tabstr .= sep.MyTabLabel(i)
     endfor
   endif
   return tabstr."%=".DirInfo(len).sep."%{fugitive#statusline()}"
@@ -357,6 +348,9 @@ end
 " /=options }}}
 "
 " plugin {{{
+set rtp+=$DROPBOX/dev/prj/sonictemplate-vim
+set rtp+=$DROPBOX/dev/prj/ctrlp-tabbed
+set rtp+=$DROPBOX/dev/prj/ctrlp-sonictemplate
 " ##### gmarik/vundle {{{
 filetype off
 set rtp+=$MYVIM/bundle/vundle
@@ -364,11 +358,9 @@ call vundle#rc( '$MYVIM/bundle' )
 " github
 Bundle 'gmarik/vundle'
 Bundle 'mattn/webapi-vim'
-Bundle 'mattn/vimplenote-vim'
 Bundle 'mattn/gist-vim'
 Bundle 'mattn/zencoding-vim'
 " Bundle 'kaneshin/sonictemplate-vim'
-set rtp+=$DROPBOX/dev/prj/sonictemplate-vim
 Bundle 'thinca/vim-quickrun'
 Bundle 'thinca/vim-ref'
 Bundle 'kien/ctrlp.vim'
@@ -380,7 +372,6 @@ Bundle 'markabe/bufexplorer'
 Bundle 'Lokaltog/vim-easymotion'
 Bundle 'tpope/vim-repeat'
 Bundle 'tpope/vim-fugitive'
-Bundle 'motemen/git-vim'
 Bundle 'tpope/vim-surround'
 " www.vim.org
 Bundle 'TwitVim'
@@ -442,6 +433,43 @@ nnoremap ,gd :<C-u>Gist -d<CR>
 nnoremap ,gf :<C-u>Gist -f<CR>
 " /=mattn/gist-vim }}}
 "
+" ##### thinca/vim-quickrun {{{
+" let g:loaded_quicklaunch = 1
+" 1. b:quickrun_config
+" 2. 'filetype'
+" 3. g:quickrun_config._type_
+" 4. g:quickrun#default_conig._type_
+" 5. g:quickrunconfig.
+" 6. g:quickrun#defaultonig.
+let b:quickrun_config = {}
+let g:quickrun_config = {
+\ '_': {
+\   'outputter' : 'buffer',
+\   'outputter/buffer/split': 'rightbelow 10sp',
+\   'runner': 'system',
+\ },
+\ 'c': {
+\   'command': 'gcc',
+\   'exec': ['%c %o %s -o %s:p:r', '%s:p:r %a', 'rm -f %s:p:r'],
+\   'cmdopt': '-Wall',
+\   'tempfile': '%{tempname()}.c',
+\ },
+\ 'cpp': {
+\   'command': 'g++',
+\   'exec': ['%c %o %s -o %s:p:r', '%s:p:r %a', 'rm -f %s:p:r'],
+\   'cmdopt': '-Wall',
+\   'tempfile': '%{tempname()}.cpp',
+\ },
+\ 'ruby': {
+\   'command': 'ruby',
+\   'exec': ['%c %o %s %a'],
+\   'cmdopt': '',
+\   'tempfile': '%{tempname()}.rb',
+\ },
+\}
+
+" /=thinca/vim-quickrun }}}
+"
 " ##### tyru/restart.vim {{{
 let g:restart_sessionoptions
     \ = 'blank,buffers,curdir,folds,help,localoptions,tabpages'
@@ -452,13 +480,34 @@ let g:EasyMotion_leader_key = '<Leader>'
 " }}}
 "
 " ##### mattn/sonictemplate-vim {{{
+" for editing
 inoremap {{in {{_input_:}}<Left><Left>
 inoremap {{cur {{_cursor_}}
 " }}}
 "
-" ##### mattn/ctrlp-launcher {{{
-nnoremap <c-e> :<c-u>CtrlPLauncher<cr>
+" ##### kien/ctrlp.vim {{{
+let g:ctrlp_extensions = [
+      \'tabbed',
+      \'sonictemplate',
+      \'register',
+      \'launcher',
+      \]
 " }}}
 "
+" ##### mattn/ctrlp-launcher {{{
+" nnoremap <c-e> :<c-u>CtrlPLauncher<cr>
+" }}}
+"
+" ##### kaneshin/ctrlp-tabbed {{{
+nnoremap <c-b> :<c-u>CtrlPTabbed<cr>
+" }}}
+"
+" ##### kaneshin/ctrlp-sonictemplate {{{
+nnoremap <c-e> :<c-u>CtrlPSonictemplate<cr>
+" }}}
+"
+" ##### mattn/sonictemplate-vim {{{
+" let g:sonictemplate_key = <c-y>s
+" }}}
 " /=plugin }}}
 
