@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 06-Jun-2012.
+" Last Change: 07-Jun-2012.
 
 scriptencoding utf-8
 syntax on
@@ -243,8 +243,8 @@ cnoremap <> <><Left>
 " change directory if you open a file.
 autocmd BufEnter * execute ':lcd '.expand('%:p:h')
 " automatically open a quickfix
-autocmd QuickfixCmdPost make,grep,grepadd,vimgrep
-      \if len(getqflist()) != 0 | copen | endif
+" autocmd QuickfixCmdPost make,grep,grepadd,vimgrep
+"       \if len(getqflist()) != 0 | copen | endif
 " autocmd FileType perl :map <C-n> <ESC>:!perl -cw %<CR>
 " autocmd FileType perl :map <C-e> <ESC>:!perl %<CR>
 " autocmd FileType ruby :map <C-n> <ESC>:!ruby -cW %<CR>
