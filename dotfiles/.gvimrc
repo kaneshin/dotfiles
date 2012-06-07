@@ -45,7 +45,7 @@ function! s:setFont_default()
   elseif s:is_mac
     set guifont=Courier:h14
   else
-    set guifont=Courier
+    set guifont=Monospace
   endif
 endfunction
 command! FontDefault :call s:setFont_default()
