@@ -2,7 +2,7 @@
 #
 # File:        .shrc.common
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 28-May-2012.
+# Last Change: 06-Jun-2012.
 
 # alias
 alias ce='cd ../'
@@ -17,7 +17,12 @@ alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
-alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'
+sw_vers=`which sw_vers 2>&1`
+if [[ $? != 0 ]]; then
+    # alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'
+else
+    alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'
+fi
 alias pvim='vim -u $HOME/.pvimrc'
 
 # Add RVM to PATH for scripting

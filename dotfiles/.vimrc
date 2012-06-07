@@ -1,28 +1,42 @@
-" vim:set ts=8 sts=2 sw=2 tw=0:
+" vim:set ts=2 sts=2 sw=2 tw=0:
 " vim:set fdm=marker:
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 03-Jun-2012.
+" Last Change: 06-Jun-2012.
 
 scriptencoding utf-8
 syntax on
 filetype plugin on
 filetype indent on
 
-" utilities {{{
-" ##### variables {{{
+" Languages
+" language en_US
+" language ca_ES
+" language ja_JP
+
+" variables {{{
 " Windows (not on terminal)
 let s:is_win = has( 'win32' ) || has( 'win64' )
 " Mac (not on terminal)
 let s:is_mac = has( 'mac' )
 " UNIX or on terminal
 let s:is_unix = has( 'unix' ) && !s:is_mac && !s:is_win
-" $MYVIM
-"     Windows  -> vimfiles/
+" $VIMHOME
+"   Windows    -> vimfiles/
 "   Mac, Linux -> .vim/
-if !exists( '$MYVIM' )
-  let $MYVIM = s:is_win ? expand( '$HOME/vimfiles' ) : expand( '$HOME/.vim' )
+if !exists( '$VIMHOME' )
+  if s:is_win
+    if finddir('vimfiles', $HOME) == ''
+      cal mkdir(expand('$HOME/vimfiles'), "p")
+    endif
+    let $VIMHOME = expand('$HOME/vimfiles')
+  else
+    if finddir('.vim', $HOME) == ''
+      cal mkdir(expand('$HOME/.vim'), "p")
+    endif
+    let $VIMHOME = expand('$HOME/.vim')
+  endif
 endif
 " $MYHOME
 if !exists( '$MYHOME' )
@@ -37,12 +51,16 @@ if !exists( '$MYHOME' )
   endif
 endif
 " $DROPBOX
-if !exists( '$DROPBOX' ) && filewritable( expand( '$MYHOME/Dropbox' ) )
+if !exists( '$DROPBOX' )
   let $DROPBOX = $MYHOME.'/Dropbox'
+endif
+" $DOTFILES
+if !exists( '$DOTFILES' )
+  let $DOTFILES = $DROPBOX.'/dev/dotfiles/dotfiles'
 endif
 " /=variables }}}
 
-" ##### functions {{{
+" functions {{{
 " status line
 function! GetShortenRegister(reg)
   return substitute(substitute(a:reg, '\n', '', 'g'), '^ *\(.\{,15\}\).*$', '\1', '')
@@ -56,7 +74,6 @@ function! MyStatusLine()
         \."\ @/[/'.GetShortenRegister(@/).']'}"
         \."[%l/%L]"
 endfunction
-
 " tab label
 function! DirInfo(...)
   let dirinfo = fnamemodify(getcwd(), ":~")
@@ -87,60 +104,23 @@ function! MyTabLine()
 endfunction
 " /=functions }}}
 "
-" ##### semi-plugin {{{
+" semi-function {{{
 " sticky
-" let g:sticky_mode = "ours"
+" let g:sticky_mode = "eng"
 " let s:stickypos = 0
 " let s:sticky = {
 "         \"eng": [
-"             \"I'm gonna go to Japan.",
 "             \"I'm gonna be here.",
 "             \"Should be ok.",
 "             \"Could be ok."
 "         \],
-"         \"ours": [
-" \"Elevator buttons and morning air",
-" \"Stranger's silence makes me wanna take the stairs",
-" \"If you were here, we'd laugh about their vacant stares",
-" \"But right now, my time is theirs",
-" \"Seems like there's always someone who disapproves",
-" \"They'll judge it like they know about me and you",
-" \"And the verdict comes from those with nothing else to do",
-" \"The jury's out, but my choice is you",
-" \"So don't you worry your pretty little mind",
-" \"People throw rocks at things that shine",
-" \"And life makes love look hard",
-" \"The stakes are high, the water's rough, but this love is ours",
-" \"You never know what people have up their sleeves",
-" \"Ghosts from your past gonna jump out at me",
-" \"Lurking in the shadows with their lip gloss smiles",
-" \"But I don't care 'cause right now you're mine",
-" \"And you'll say don't you worry your pretty little mind",
-" \"People throw rocks at things that shine",
-" \"And life makes love look hard",
-" \"The stakes are high, the water's rough, but this love is ours",
-" \"And it's not theirs to speculate if it's wrong and",
-" \"Your hands are tough but they are where mine belong in",
-" \"I'll fight their doubt and give you faith with this song for you",
-" \"'Cause I love the gap between your teeth",
-" \"And I love the riddles that you speak",
-" \"And any snide remarks from my father about your tattoos will be ignored",
-" \"'Cause my heart is yours",
-" \"So don't you worry your pretty little mind",
-" \"People throw rocks at things that shine",
-" \"And life makes love look hard",
-" \"And don't you worry your pretty little mind",
-" \"People throw rocks at things that shine",
-" \"But they can't take what's ours, they can't take what's ours",
-" \"The stakes are high, the water's rough, but this love is ours",
-" \]
+"         \"": []
 "     \}
 " function! g:Sticky()
 "   let s:stickypos += 1
 "   let s:stickypos = s:stickypos % len(s:sticky[g:sticky_mode])
 "   return s:sticky[g:sticky_mode][s:stickypos]
 " endfunction
-"
 " tab to space
 function! s:TabToSpace(...)
   let lines = getbufline(bufnr(bufname('%')), 1, "$")
@@ -152,7 +132,6 @@ function! s:TabToSpace(...)
   call setline(1, result)
 endfunction
 command! -nargs=? TabToSpace call s:TabToSpace(<f-args>)
-"
 " remove spaces
 function! s:RemoveSpace()
   let lines = getbufline(bufnr(bufname('%')), 1, "$")
@@ -164,30 +143,30 @@ function! s:RemoveSpace()
 endfunction
 command! -nargs=0 RemoveSpace call s:RemoveSpace()
 " remove spaces of brackets
-function! s:RemoveBracketsSpace()
-  let line = getline(".")
-  let line = substitute(line, "( \\+\\(.\\+\\) \\+)", "(\\1)", "")
-  call setline(".", line)
-endfunction
-command! -nargs=0 RemoveBracketsSpace call s:RemoveBracketsSpace()
+" function! s:RemoveBracketsSpace()
+"   let line = getline(".")
+"   let line = substitute(line, "( \\+\\(.\\+\\) \\+)", "(\\1)", "")
+"   call setline(".", line)
+" endfunction
+" command! -nargs=0 RemoveBracketsSpace call s:RemoveBracketsSpace()
 " }}}
 "
-" ##### key mapping {{{
+" key mapping {{{
 " .vimrc
-if filereadable(expand('$DROPBOX/dev/dotfiles/dotfiles/.vimrc'))
-  command! EditVimrc :tabe $DROPBOX/dev/dotfiles/dotfiles/.vimrc
-  command! ReadVimrc :source $DROPBOX/dev/dotfiles/dotfiles/.vimrc
+if filereadable(expand('$DOTFILES/.vimrc'))
+  command! EditVimrc :tabe   $DOTFILES/.vimrc
+  command! ReadVimrc :source $DOTFILES/.vimrc
   nnoremap <silent> ,ev :EditVimrc<CR>
   nnoremap <silent> ,rv :ReadVimrc<CR>
 endif
 " .gvimrc
-if filereadable(expand('$DROPBOX/dev/dotfiles/dotfiles/.gvimrc'))
-  command! EditGVimrc :tabe $DROPBOX/dev/dotfiles/dotfiles/.gvimrc
-  command! ReadGVimrc :source $DROPBOX/dev/dotfiles/dotfiles/.gvimrc
+if filereadable(expand('$DOTFILES/.gvimrc'))
+  command! EditGVimrc :tabe   $DOTFILES/.gvimrc
+  command! ReadGVimrc :source $DOTFILES/.gvimrc
   nnoremap <silent> ,eg :EditGVimrc<CR>
   nnoremap <silent> ,rg :ReadGVimrc<CR>
 endif
-" insertion mode
+" insert mode
 inoremap <C-f> <ESC>
 inoremap <c-l><c-h> <Left>
 inoremap <c-l><c-j> <esc>O
@@ -197,6 +176,26 @@ inoremap <c-l><c-a> <home>
 inoremap <c-l><c-e> <end>
 inoremap <C-r><C-r> <C-r>"
 " normal node
+nnoremap <C-f> <ESC>
+nnoremap <up> 30k
+nnoremap <c-k> dd<up>
+nnoremap <down> 30j
+nnoremap <c-j> o<esc>
+nnoremap <left> 0
+nnoremap <c-h> 0
+nnoremap <right> $
+nnoremap <c-l> $
+nnoremap <c-g> g;zz
+
+nnoremap <c-space> i<space><esc><right>
+nnoremap ; :
+nnoremap <silent> <c-s> :cal setline('.',substitute(getline('.'),@/,@",'g'))<cr>
+
+nnoremap n nzz
+nnoremap N Nzz
+nnoremap <silent> <C-u> <C-u>zz
+nnoremap <silent> <C-f> <C-f>zz
+
 nnoremap <silent> <C-x>0 :close<CR>
 nnoremap <silent> <C-x>1 :only<CR>
 nnoremap <silent> <C-x>2 :split<CR>
@@ -206,10 +205,9 @@ nnoremap <silent> <C-x>n :bnext<CR>
 nnoremap <silent> <C-x>p :bprevious<CR>
 nnoremap <silent> <C-x>k :close<CR>
 nnoremap <silent> <ESC><ESC> :nohlsearch<CR>
-nnoremap <silent> <C-s> :confirm browse saveas<CR>
-nnoremap <silent> <C-u> <C-u>zz
-nnoremap <silent> <C-f> <C-f>zz
-nnoremap ; :
+" visual mode
+vnoremap <silent> > >gv
+vnoremap <silent> < <gv
 " command mode
 cmap <C-x> <C-r>=expand('%:p:h')<CR>/
 cmap <C-z> <C-r>=expand('%:p:r')<CR>
@@ -221,21 +219,24 @@ cnoremap <C-f> <Right>
 cnoremap <C-n> <Down>
 cnoremap <C-p> <Up>
 cnoremap <C-h> <BS>
+"
 " brackets and else
-inoremap {} {}<Left>
-inoremap [] []<Left>
 inoremap () ()<Left>
-inoremap "" ""<Left>
-inoremap '' ''<Left>
-inoremap <> <><Left>
-inoremap %% %%<Left>
-cnoremap {} {}<Left>
-cnoremap [] []<Left>
+inoremap (); ();<Left><Left>
+inoremap (){ ()<space>{<cr>}<esc>kA<left><left><left>
 cnoremap () ()<Left>
+inoremap {} {}<Left>
+cnoremap {} {}<Left>
+inoremap [] []<Left>
+cnoremap [] []<Left>
+inoremap "" ""<Left>
 cnoremap "" ""<Left>
+inoremap '' ''<Left>
 cnoremap '' ''<Left>
+inoremap <> <><Left>
 cnoremap <> <><Left>
-cnoremap %% %%<Left>
+" inoremap %% %%<Left>
+" cnoremap %% %%<Left>
 " /=key mapping }}}
 "
 " ##### autocmds {{{
@@ -244,32 +245,30 @@ autocmd BufEnter * execute ':lcd '.expand('%:p:h')
 " automatically open a quickfix
 autocmd QuickfixCmdPost make,grep,grepadd,vimgrep
       \if len(getqflist()) != 0 | copen | endif
+" autocmd FileType perl :map <C-n> <ESC>:!perl -cw %<CR>
+" autocmd FileType perl :map <C-e> <ESC>:!perl %<CR>
+" autocmd FileType ruby :map <C-n> <ESC>:!ruby -cW %<CR>
+" autocmd FileType ruby :map <C-e> <ESC>:!ruby %<CR>
 " /=autocmds }}}
-"
-" /=utilities }}}
 "
 " options {{{
 " ##### backup, swap
-if finddir('backup', $MYVIM) != ''
-  set backup
-  set backupext=.bak
-  set backupdir=$MYVIM/backup
-  set swapfile
-  set directory=$MYVIM/backup
-else
-  echoe "Can't save as a backup file."
-  set nobackup
-  set noswapfile
+if finddir('backup', $VIMHOME) == ''
+  cal mkdir(expand('$VIMHOME/backup'), "p")
 endif
+set backup
+set backupext=.bak
+set backupdir=$VIMHOME/backup
+set swapfile
+set directory=$VIMHOME/backup
 
 " ##### fold
-if finddir('view', $MYVIM) != ''
-  set viewdir=$MYVIM/view
-"  autocmd BufWritePost * mkview
-"  autocmd BufReadPost * loadview
-else
-  echoe "Can't save as a fold file."
+if finddir('view', $VIMHOME) == ''
+  cal mkdir(expand('$VIMHOME/view'), "p")
 endif
+set viewdir=$VIMHOME/view
+" autocmd BufWritePost * mkview
+" autocmd BufReadPost * loadview
 "
 " ##### encoding
 set fileencodings=utf-8,euc-jp,cp932,shiftjis,iso-2022-jp,latin1
@@ -340,6 +339,10 @@ set nrformats+=alpha
 set nrformats+=octal
 set nrformats+=hex
 set history=300
+
+set undolevels=2000
+set iminsert=0
+set imsearch=0
 "
 " ##### Mac
 if s:is_mac
@@ -351,10 +354,11 @@ end
 set rtp+=$DROPBOX/dev/prj/sonictemplate-vim
 set rtp+=$DROPBOX/dev/prj/ctrlp-tabbed
 set rtp+=$DROPBOX/dev/prj/ctrlp-sonictemplate
+set rtp+=$DROPBOX/dev/prj/ctrlp-filetype
 " ##### gmarik/vundle {{{
 filetype off
-set rtp+=$MYVIM/bundle/vundle
-call vundle#rc( '$MYVIM/bundle' )
+set rtp+=$VIMHOME/bundle/vundle
+call vundle#rc( '$VIMHOME/bundle' )
 " github
 Bundle 'gmarik/vundle'
 Bundle 'mattn/webapi-vim'
@@ -455,7 +459,7 @@ let g:quickrun_config = {
 \   'tempfile': '%{tempname()}.c',
 \ },
 \ 'cpp': {
-\   'command': 'g++',
+\   'command': 'clang++',
 \   'exec': ['%c %o %s -o %s:p:r', '%s:p:r %a', 'rm -f %s:p:r'],
 \   'cmdopt': '-Wall',
 \   'tempfile': '%{tempname()}.cpp',
@@ -480,34 +484,44 @@ let g:EasyMotion_leader_key = '<Leader>'
 " }}}
 "
 " ##### mattn/sonictemplate-vim {{{
+" let g:sonictemplate_key = <c-y>s
 " for editing
 inoremap {{in {{_input_:}}<Left><Left>
 inoremap {{cur {{_cursor_}}
 " }}}
 "
-" ##### kien/ctrlp.vim {{{
+" ##### kien/ctrlp.vim and Extensions {{{
+" Set this to 0 to show the match window at the top of the screen
+let g:ctrlp_match_window_bottom = 1
+" Change the listing order of the files in the match window
+let g:ctrlp_match_window_reversed = 1
+" Set the maximum height of the match window
+let g:ctrlp_max_height = 20
+let g:ctrlp_switch_buffer = 2
+let g:ctrlp_working_path_mode = 2
+let g:ctrlp_use_caching = 1
+let g:ctrlp_max_files = 10000
+let g:ctrlp_mruf_max = 250
+let g:ctrlp_max_depth = 40
+let g:ctrlp_use_migemo = 0
+if finddir('.cache/ctrlp', $VIMHOME) == ''
+  cal mkdir(expand('$HOME/.cache/ctrlp'), "p")
+endif
+let g:ctrlp_cache_dir = $VIMHOME.'/.cache/ctrlp'
 let g:ctrlp_extensions = [
       \'tabbed',
       \'sonictemplate',
+      \'filetype',
       \'register',
       \'launcher',
+      \'mark',
       \]
+"
+nnoremap <c-e>p :<c-u>CtrlPLauncher<cr>
+nnoremap <c-e>b :<c-u>CtrlPTabbed<cr>
+nnoremap <c-e>t :<c-u>CtrlPSonictemplate<cr>
+nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
 " }}}
 "
-" ##### mattn/ctrlp-launcher {{{
-" nnoremap <c-e> :<c-u>CtrlPLauncher<cr>
-" }}}
-"
-" ##### kaneshin/ctrlp-tabbed {{{
-nnoremap <c-b> :<c-u>CtrlPTabbed<cr>
-" }}}
-"
-" ##### kaneshin/ctrlp-sonictemplate {{{
-nnoremap <c-e> :<c-u>CtrlPSonictemplate<cr>
-" }}}
-"
-" ##### mattn/sonictemplate-vim {{{
-" let g:sonictemplate_key = <c-y>s
-" }}}
 " /=plugin }}}
 
