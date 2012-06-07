@@ -3,7 +3,7 @@
 "
 " File:        .gvimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 28-May-2012.
+" Last Change: 07-Jun-2012.
 
 scriptencoding utf-8
 set guioptions=agirLt
@@ -65,5 +65,8 @@ endfunction
 command! FontRicty :call s:setFont_Ricty()
 " set font
 call s:setFont_Ricty()
+if s:is_unix
+  call s:setFont_default()
+endif
 " /=font }}}
 
