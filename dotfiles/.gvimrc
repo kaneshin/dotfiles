@@ -3,7 +3,7 @@
 "
 " File:        .gvimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 07-Jun-2012.
+" Last Change: 11-Jun-2012.
 
 scriptencoding utf-8
 set guioptions=agirLt
@@ -27,7 +27,17 @@ elseif s:is_mac
   set transparency=5
   set linespace=2
   colorscheme Wombat
+  nnoremap <silent> <up> :call <SID>UpTransparency()<cr>
+  nnoremap <silent> <down> :call <SID>DownTransparency()<cr>
 endif
+let transsplit = 20
+let g:translevel = 100 / transsplit
+function! s:UpTransparency()
+  let &transparency = &transparency - (&transparency % g:translevel) + g:translevel
+endfunction
+function! s:DownTransparency()
+  let &transparency = &transparency - (&transparency % g:translevel) - g:translevel
+endfunction
 
 " cursor color
 if has( 'multi_byte_ime' )
@@ -64,8 +74,9 @@ function! s:setFont_Ricty()
 endfunction
 command! FontRicty :call s:setFont_Ricty()
 " set font
-call s:setFont_Ricty()
-if s:is_unix
+if s:is_mac || s:is_win
+  call s:setFont_Ricty()
+elseif s:is_unix
   call s:setFont_default()
 endif
 " /=font }}}

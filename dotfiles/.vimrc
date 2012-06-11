@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 07-Jun-2012.
+" Last Change: 09-Jun-2012.
 
 scriptencoding utf-8
 syntax on
@@ -75,6 +75,22 @@ function! MyStatusLine()
         \."[%l/%L]"
 endfunction
 " tab label
+let g:tabnum = 2
+let g:tabdir = 1
+let s:tabtoggle = 1
+function! TabExpand()
+  if s:tabtoggle == 1
+    let g:tabnum = 5
+    let g:tabdir = 0
+    let s:tabtoggle = 0
+  else
+    let g:tabnum = 2
+    let g:tabdir = 1
+    let s:tabtoggle = 1
+  endif
+  let &tabline="%!MyTabLine()"
+endfunction
+command! TabExpand cal TabExpand()
 function! DirInfo(...)
   let dirinfo = fnamemodify(getcwd(), ":~")
   return strlen(dirinfo) > (a:0 > 0 ? a:1 : &titlelen - 20) ? pathshorten(dirinfo) : dirinfo
@@ -93,14 +109,14 @@ function! MyTabLine()
   let tabstr = ''
   let sep = ' '
   let len = &titlelen - 20
-  if (len(tabrange) > 2)
+  if (len(tabrange) > g:tabnum)
     let tabstr .= sep.'Tab:'.tabpagenr().'/'.tabpagenr('$').sep.MyTabLabel(tabpagenr())
   else
     for i in tabrange
       let tabstr .= sep.MyTabLabel(i)
     endfor
   endif
-  return tabstr."%=".DirInfo(len).sep."%{fugitive#statusline()}"
+  return tabstr."%=".(g:tabdir == 1 ? DirInfo(len).sep : "")."%{fugitive#statusline()}"
 endfunction
 " /=functions }}}
 "
@@ -149,6 +165,43 @@ command! -nargs=0 RemoveSpace call s:RemoveSpace()
 "   call setline(".", line)
 " endfunction
 " command! -nargs=0 RemoveBracketsSpace call s:RemoveBracketsSpace()
+"
+" ===== Mathematics, Algorithm
+" Factorial
+function! Factorial(n)
+  return a:n == 1 ? 1 : a:n * s:Factorial(a:n - 1)
+endfunction
+command! -nargs=1 Factorial :echo Factorial(<f-args>)
+" FizzBuzz
+function! FizzBuzz(n)
+  let fb = []
+  let i = 1
+  while i <= a:n
+    if i % 3 == 0
+      cal add(fb, 'Fizz')
+    elseif i % 5 == 0
+      cal add(fb, 'Buzz')
+    elseif i % 15 == 0
+      cal add(fb, 'FizzBuzz')
+    else
+      cal add(fb, ''.i)
+    endif
+    let i = i + 1
+  endwhile
+  return fb
+endfunction
+command! -nargs=1 FizzBuzz :echo FizzBuzz(<f-args>)
+" Greatest Common Divisor
+function! GreatestCommonDivisor(a, b)
+  let r = a:a % a:b
+  return r == 0 ? a:b : GreatestCommonDivisor(a:b, r)
+endfunction
+command! -nargs=+ GreatestCommonDivisor :echo GreatestCommonDivisor(<f-args>)
+" Fibonacci
+function! Fibonacci(n)
+  return a:n < 2 || a:n < 0 || a:n > 27 ? 1 : Fibonacci(a:n - 1) + Fibonacci(a:n - 2)
+endfunction
+command! -nargs=1 Fibonacci :echo Fibonacci(<f-args>)
 " }}}
 "
 " key mapping {{{
@@ -176,13 +229,16 @@ inoremap <c-l><c-a> <home>
 inoremap <c-l><c-e> <end>
 inoremap <C-r><C-r> <C-r>"
 " normal node
-nnoremap <C-f> <ESC>
+nnoremap <silent> <c-t> :TabExpand<cr>
+nnoremap <c-f> <ESC>
 nnoremap <up> 30k
 nnoremap <c-k> dd<up>
 nnoremap <down> 30j
 nnoremap <c-j> o<esc>
 nnoremap <left> 0
 nnoremap <c-h> 0
+nnoremap <silent> <m-h> :tabprev<cr>
+nnoremap <silent> <m-l> :tabnext<cr>
 nnoremap <right> $
 nnoremap <c-l> $
 nnoremap <c-g> g;zz
@@ -206,6 +262,7 @@ nnoremap <silent> <C-x>p :bprevious<CR>
 nnoremap <silent> <C-x>k :close<CR>
 nnoremap <silent> <ESC><ESC> :nohlsearch<CR>
 " visual mode
+vnoremap ; :
 vnoremap <silent> > >gv
 vnoremap <silent> < <gv
 " command mode
@@ -330,6 +387,7 @@ set shiftwidth=4
 set softtabstop=0
 set expandtab
 set smarttab
+set shiftround
 "
 " ##### etc
 " NOTE: Vim turn off the compatible mode, if Vim find vimrc or gvimrc.
@@ -347,6 +405,7 @@ set imsearch=0
 " ##### Mac
 if s:is_mac
   set nomigemo
+  set macmeta
 end
 " /=options }}}
 "
@@ -357,10 +416,15 @@ set rtp+=$DROPBOX/dev/prj/ctrlp-sonictemplate
 set rtp+=$DROPBOX/dev/prj/ctrlp-filetype
 " ##### gmarik/vundle {{{
 filetype off
-set rtp+=$VIMHOME/bundle/vundle
+" set rtp+=$VIMHOME/bundle/vundle
+set rtp+=$DROPBOX/dev/prj/vundle
 call vundle#rc( '$VIMHOME/bundle' )
 " github
-Bundle 'gmarik/vundle'
+" if 0
+"   Bundle 'zolrath/vundle'
+" else
+"   Bundle 'gmarik/vundle'
+" endif
 Bundle 'mattn/webapi-vim'
 Bundle 'mattn/gist-vim'
 Bundle 'mattn/zencoding-vim'
@@ -525,3 +589,96 @@ nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
 "
 " /=plugin }}}
 
+" --- " How to use 's:' or '<SID>'
+" --- "--------------------
+" --- " s:
+" --- " :autocmd, :command, :function/:endfunction
+" --- command! -nargs=1 Foo :call s:foo(<f-args>)
+" --- function! s:foo(bar)
+" ---   let l:baz = 0
+" ---   " ...
+" ---   return s:foo(l:baz)
+" --- endfunction
+" --- "--------------------
+" --- " <SID>
+" --- " :map, :menu
+" --- cnoremap foo call <SID>foo("qux")<CR>
+" --- "--------------------
+
+" let s:en_enc = 'cp932'
+" let s:crlf = "\r\n"
+" let s:temporary_filename = 'vimever.tmp'
+" 
+" " command line
+" function! s:cmdline_evernote(init_str)
+" 	" call inputsave()
+" 	let l:msg = input('Post Evernote: ', a:init_str)
+" 	" call inputrestore()
+" 	let s:temp = s:post_evernote(l:msg, l:msg)
+" endfunction
+" 
+" " current line
+" function! s:curline_evernote(init_str)
+" 	let l:msg = a:init_str
+" 	let s:temp = s:post_evernote(l:msg, l:msg)
+" endfunction
+" 
+" " buffer
+" function! s:buffer_evernote()
+" 	let l:title = fnamemodify(expand('%:p'), ':t')
+" 	let l:body = join(getline(1, '$'), s:crlf)
+" 	let s:temp = s:post_evernote(l:title, l:body)
+" endfunction
+" 
+" " arguments
+" function! s:args_evernote(...)
+" 	let s:temp = s:post_evernote(a:1, a:2)
+" endfunction
+" 
+" " full path of ENScript.exe
+" function! s:get_enscript_path()
+" 	if exists('g:enscript_path') && g:enscript_path != ''
+" 		return g:enscript_path
+" 	else
+" 		echo 'Please add a full path of ENScript.exe to .vimrc'
+" 		echo 'e.g.) "let enscript_path = ''C:\Program Files\Evernote\Evernote3.5\ENScript.exe''"'
+" 		return ''
+" 	endif
+" endfunction
+" 
+" " post to evernote
+" function! s:post_evernote(title, body)
+" 	let l:en_title = iconv(a:title, &encoding, s:en_enc)
+" 	let l:en_body = iconv(a:body, &encoding, s:en_enc)
+" 	let l:enscript = s:get_enscript_path()
+" 	if l:enscript == ''
+" 		return
+" 	endif
+" 	if expand('%:h') != ''
+" 		let l:target_path = expand('%:h') . '\' . s:temporary_filename . '.txt'
+" 	else
+" 		let l:target_path = $VIM . '\' . s:temporary_filename . '.txt'
+" 	endif
+" 	call writefile(split(l:en_body, s:crlf), l:target_path, 'b')
+" 	let l:cmd = '"' . shellescape(l:enscript) . ' createNote /s ' . shellescape(l:target_path) . ' /i ' . shellescape(l:en_title) . '"'
+" 	echo l:cmd
+" 	call system(l:cmd)
+" 	call delete(l:target_path)
+" endfunction
+" 
+" " define command
+" if !exists(":PosttoEvernote")
+" 	command! PosttoEvernote :call <SID>cmdline_evernote('')
+" endif
+" 
+" if !exists(":CPosttoEvernote")
+" 	command! CPosttoEvernote :call <SID>curline_evernote(getline('.'))
+" endif
+" 
+" if !exists(":BPosttoEvernote")
+" 	command! BPosttoEvernote :call <SID>buffer_evernote()
+" endif
+" 
+" if !exists(":APosttoEvernote")
+" 	command! -nargs=+ APosttoEvernote :call <SID>args_evernote(<f-args>)
+" endif
