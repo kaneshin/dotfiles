@@ -3,13 +3,13 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 09-Jun-2012.
+" Last Change: 11-Jun-2012.
 
 scriptencoding utf-8
 syntax on
 filetype plugin on
 filetype indent on
-
+  
 " Languages
 " language en_US
 " language ca_ES
@@ -118,9 +118,7 @@ function! MyTabLine()
   endif
   return tabstr."%=".(g:tabdir == 1 ? DirInfo(len).sep : "")."%{fugitive#statusline()}"
 endfunction
-" /=functions }}}
-"
-" semi-function {{{
+
 " sticky
 " let g:sticky_mode = "eng"
 " let s:stickypos = 0
@@ -137,17 +135,19 @@ endfunction
 "   let s:stickypos = s:stickypos % len(s:sticky[g:sticky_mode])
 "   return s:sticky[g:sticky_mode][s:stickypos]
 " endfunction
+"
 " tab to space
-function! s:TabToSpace(...)
-  let lines = getbufline(bufnr(bufname('%')), 1, "$")
-  let result = []
-  for line in lines
-    call add(result, substitute(line, "\t",
-          \repeat(' ', (a:0 > 0 ? a:1 : &shiftwidth)), "g"))
-  endfor
-  call setline(1, result)
-endfunction
-command! -nargs=? TabToSpace call s:TabToSpace(<f-args>)
+" function! s:TabToSpace(...)
+"   let lines = getbufline(bufnr(bufname('%')), 1, "$")
+"   let result = []
+"   for line in lines
+"     call add(result, substitute(line, "\t",
+"           \repeat(' ', (a:0 > 0 ? a:1 : &shiftwidth)), "g"))
+"   endfor
+"   call setline(1, result)
+" endfunction
+" command! -nargs=? TabToSpace call s:TabToSpace(<f-args>)
+
 " remove spaces
 function! s:RemoveSpace()
   let lines = getbufline(bufnr(bufname('%')), 1, "$")
@@ -265,6 +265,7 @@ nnoremap <silent> <ESC><ESC> :nohlsearch<CR>
 vnoremap ; :
 vnoremap <silent> > >gv
 vnoremap <silent> < <gv
+vnoremap f <esc>
 " command mode
 cmap <C-x> <C-r>=expand('%:p:h')<CR>/
 cmap <C-z> <C-r>=expand('%:p:r')<CR>
@@ -296,7 +297,7 @@ cnoremap <> <><Left>
 " cnoremap %% %%<Left>
 " /=key mapping }}}
 "
-" ##### autocmds {{{
+" autocmds {{{
 " change directory if you open a file.
 autocmd BufEnter * execute ':lcd '.expand('%:p:h')
 " automatically open a quickfix
@@ -309,111 +310,144 @@ autocmd BufEnter * execute ':lcd '.expand('%:p:h')
 " /=autocmds }}}
 "
 " options {{{
-" ##### backup, swap
-if finddir('backup', $VIMHOME) == ''
-  cal mkdir(expand('$VIMHOME/backup'), "p")
-endif
-set backup
-set backupext=.bak
-set backupdir=$VIMHOME/backup
-set swapfile
-set directory=$VIMHOME/backup
+if !(exists('g:loaded_vimrc') && g:loaded_vimrc)
+  let g:loaded_vimrc = 1
+  " ##### backup, swap
+  if finddir('backup', $VIMHOME) == ''
+    cal mkdir(expand('$VIMHOME/backup'), "p")
+  endif
+  set backup
+  set backupext=.bak
+  set backupdir=$VIMHOME/backup
+  set swapfile
+  set directory=$VIMHOME/backup
 
-" ##### fold
-if finddir('view', $VIMHOME) == ''
-  cal mkdir(expand('$VIMHOME/view'), "p")
-endif
-set viewdir=$VIMHOME/view
-" autocmd BufWritePost * mkview
-" autocmd BufReadPost * loadview
-"
-" ##### encoding
-set fileencodings=utf-8,euc-jp,cp932,shiftjis,iso-2022-jp,latin1
-set fileformats=unix,dos,mac
-" set encoding=utf-8
-" set fileencoding=utf-8
-" set fileformat=unix
-"
-" ##### display#title
-set title
-set titlelen=90
-if 0 && s:is_win
-  set titlestring=[%l/%L:%c/%{col('$')-1}]\ %t%(\ %M%)\ (%F)%=%<(kaneshin)
-endif
-"
-" ##### display#tabline
-set showtabline=2
-set tabline=%!MyTabLine()
-"
-" ##### display#main
-set splitbelow
-set splitright
-set nonumber
-set scrolloff=3
-set wrap
-set list
-set listchars=eol:\ ,tab:>\ ,trail:S,extends:<
-" ##### display#below
-set laststatus=2
-set cmdheight=2
-set statusline=%!MyStatusLine()
-set ruler
-set showcmd
-set wildmenu
-set wildmode=list:longest
-"
-" ##### cursor
-set cursorline
-set nocursorcolumn
-"
-" ##### search
-set ignorecase
-set smartcase
-set nowrapscan
-set incsearch
-"
-" ##### edit
-set autoindent
-set smartindent
-set showmatch
-set backspace=indent,eol,start
-set clipboard=unnamed
-set pastetoggle=<F12>
-set formatoptions+=mM
-"
-" ##### <Tab>
-set tabstop=4
-set shiftwidth=4
-set softtabstop=0
-set expandtab
-set smarttab
-set shiftround
-"
-" ##### etc
-" NOTE: Vim turn off the compatible mode, if Vim find vimrc or gvimrc.
-" set nocompatible
-set noshellslash
-set nrformats+=alpha
-set nrformats+=octal
-set nrformats+=hex
-set history=300
+  " ##### fold
+  if finddir('view', $VIMHOME) == ''
+    cal mkdir(expand('$VIMHOME/view'), "p")
+  endif
+  set viewdir=$VIMHOME/view
+  " autocmd BufWritePost * mkview
+  " autocmd BufReadPost * loadview
+  "
+  " ##### encoding
+  set fileencodings=utf-8,euc-jp,cp932,shiftjis,iso-2022-jp,latin1
+  set fileformats=unix,dos,mac
+  " set encoding=utf-8
+  " set fileencoding=utf-8
+  " set fileformat=unix
+  "
+  " ##### display#title
+  set title
+  set titlelen=90
+  if 0 && s:is_win
+    set titlestring=[%l/%L:%c/%{col('$')-1}]\ %t%(\ %M%)\ (%F)%=%<(kaneshin)
+  endif
+  "
+  " ##### display#tabline
+  set showtabline=2
+  set tabline=%!MyTabLine()
+  "
+  " ##### display#main
+  set splitbelow
+  set splitright
+  set nonumber
+  set scrolloff=3
+  set wrap
+  set list
+  set listchars=eol:\ ,tab:>\ ,trail:S,extends:<
+  " ##### display#below
+  set laststatus=2
+  set cmdheight=2
+  set statusline=%!MyStatusLine()
+  set ruler
+  set showcmd
+  set wildmenu
+  set wildmode=list:longest
+  "
+  " ##### cursor
+  set cursorline
+  set nocursorcolumn
+  "
+  " ##### search
+  set ignorecase
+  set smartcase
+  set nowrapscan
+  set incsearch
+  "
+  " ##### edit
+  set autoindent
+  set smartindent
+  set showmatch
+  set backspace=indent,eol,start
+  set clipboard=unnamed
+  set pastetoggle=<F12>
+  set formatoptions+=mM
+  "
+  " ##### <Tab>
+  set tabstop=4
+  set shiftwidth=4
+  set softtabstop=0
+  set expandtab
+  set smarttab
+  set shiftround
+  "
+  " ##### etc
+  " NOTE: Vim turn off the compatible mode, if Vim find vimrc or gvimrc.
+  " set nocompatible
+  set noshellslash
+  set nrformats+=alpha
+  set nrformats+=octal
+  set nrformats+=hex
+  set history=300
 
-set undolevels=2000
-set iminsert=0
-set imsearch=0
-"
-" ##### Mac
-if s:is_mac
-  set nomigemo
-  set macmeta
-end
+  set undolevels=2000
+  set iminsert=0
+  set imsearch=0
+  "
+  " ##### Mac
+  if s:is_mac
+    set nomigemo
+    set macmeta
+  end
+endif
 " /=options }}}
 "
+" filetype {{{
+let s:progmap_toggle = {
+      \  'c': 0
+      \, 'ruby': 0
+      \}
+function! s:progmap_statements(...)
+  let ft = &ft
+  let ps = a:0 > 0 ? a:1 : 0
+  if ft == 'c' || ps == 1
+    let &ft = 'c'
+    if s:progmap_toggle[&ft] == 0
+      let s:progmap_toggle[&ft] = 1
+      inoremap printf printf();<left><left>
+      inoremap for for<space>()<space>{<cr>}<esc>kA<left><left><left>
+    else
+      let s:progmap_toggle[&ft] = 0
+      iunmap printf
+      iunmap for
+    endif
+  elseif ft == 'ruby' || ps == 2
+    let &ft = 'ruby'
+    if s:progmap_toggle[&ft] == 0
+      let s:progmap_toggle[&ft] = 1
+      inoremap each .each<space>{\|x\|<cr>}<esc>kI
+    else
+      let s:progmap_toggle[&ft] = 0
+      iunmap each
+    endif
+  endif
+endfunction
+command! -nargs=* Progmapping call s:progmap_statements(<f-args>)
+nnoremap <silnet> <c-i>1 :Progmapping 1<cr>
+" /=filetype }}}
+
 " plugin {{{
-set rtp+=$DROPBOX/dev/prj/sonictemplate-vim
-set rtp+=$DROPBOX/dev/prj/ctrlp-tabbed
-set rtp+=$DROPBOX/dev/prj/ctrlp-sonictemplate
-set rtp+=$DROPBOX/dev/prj/ctrlp-filetype
 " ##### gmarik/vundle {{{
 filetype off
 " set rtp+=$VIMHOME/bundle/vundle
@@ -425,22 +459,26 @@ call vundle#rc( '$VIMHOME/bundle' )
 " else
 "   Bundle 'gmarik/vundle'
 " endif
+set rtp+=$DROPBOX/dev/prj/sonictemplate-vim
+" Bundle 'kaneshin/sonictemplate-vim'
 Bundle 'mattn/webapi-vim'
 Bundle 'mattn/gist-vim'
 Bundle 'mattn/zencoding-vim'
-" Bundle 'kaneshin/sonictemplate-vim'
 Bundle 'thinca/vim-quickrun'
-Bundle 'thinca/vim-ref'
+Bundle 'markabe/bufexplorer'
 Bundle 'kien/ctrlp.vim'
 Bundle 'mattn/ctrlp-launcher'
 Bundle 'mattn/ctrlp-register'
 Bundle 'mattn/ctrlp-mark'
-Bundle 'tyru/restart.vim'
-Bundle 'markabe/bufexplorer'
+Bundle 'kaneshin/ctrlp-tabbed'
+Bundle 'kaneshin/ctrlp-sonictemplate'
+Bundle 'kaneshin/ctrlp-filetype'
 Bundle 'Lokaltog/vim-easymotion'
-Bundle 'tpope/vim-repeat'
-Bundle 'tpope/vim-fugitive'
 Bundle 'tpope/vim-surround'
+Bundle 'tpope/vim-fugitive'
+Bundle 'tpope/vim-repeat'
+Bundle 'tyru/restart.vim'
+Bundle 'thinca/vim-ref'
 " www.vim.org
 Bundle 'TwitVim'
 " playspace
@@ -448,11 +486,46 @@ Bundle 'TwitVim'
 filetype plugin indent on
 " /=gmarik/vundle }}}
 
+" ##### mattn/sonictemplate-vim {{{
+let g:sonictemplate_vim_template_dir = [
+      \expand('$VIMHOME/template'),
+      \expand('$DROPBOX/dev/dotfiles/dotfiles/.vim/template'),
+      \]
+" let g:sonictemplate_key = <c-y>t
+let g:sonic_dict = {
+      \  'name': '{{_name_}}'
+      \, 'cursor': '{{_cursor_}}'
+      \, 'input': '{{_input_:}}'
+      \, 'expr': '{{_expr_:}}'
+      \, 'if': '{{_if_:;;}}'
+      \, 'inline': '{{_inline_}}'
+      \}
+function! s:sonickeys_complete(lead, cmdline, curpos) abort
+  let candidate = []
+  for key in keys(g:sonic_dict)
+    if key =~ '^'.a:lead
+      call add(candidate, key)
+    endif
+  endfor
+  if len(candidate) == 0
+    candidate = keys(g:sonic_dict)
+  endif
+  return candidate
+endfunction
+function! s:put_sonicvalue(key)
+  silent! exec "normal! a\<c-r>=g:sonic_dict[a:key]\<cr>"
+endfunction
+command! -nargs=1 -complete=customlist,s:sonickeys_complete Sonicvalue call s:put_sonicvalue(<f-args>)
+" }}}
+
 " ##### TwitVim {{{
 let g:twitvim_count = 50
 if s:is_win
   let g:twitvim_browser_cmd
       \ = $HOME.'\AppData\Local\Google\Chrome\Application\chrome.exe'
+elseif s:is_mac
+  let g:twitvim_browser_cmd
+      \ = '/Applications/Safari.app'
 elseif s:is_unix
   let g:twitvim_browser_cmd
       \ = ''
@@ -475,16 +548,6 @@ function! s:my_twitvim()
   nnoremap <buffer> <C-p> :<C-u>BackTwitter<CR>
 endfunction
 " /=TwitVim }}}
-"
-" ##### mattn/vimplenote-vim {{{
-nmap ,vl :<C-u>VimpleNote -l<CR>\ado<CR>
-nnoremap ,vd :<C-u>VimpleNote -d<CR>
-nnoremap ,vD :<C-u>VimpleNote -D<CR>
-nnoremap ,vt :<C-u>VimpleNote -t<CR>
-nnoremap ,vn :<C-u>VimpleNote -n<CR>
-nnoremap ,vu :<C-u>VimpleNote -u<CR>
-nnoremap ,vs :<C-u>VimpleNote -s<CR>
-" /=mattn/vimplenote-vim }}}
 "
 " ##### mattn/gist-vim {{{
 " --- gist setting ---
@@ -523,7 +586,7 @@ let g:quickrun_config = {
 \   'tempfile': '%{tempname()}.c',
 \ },
 \ 'cpp': {
-\   'command': 'clang++',
+\   'command': 'g++',
 \   'exec': ['%c %o %s -o %s:p:r', '%s:p:r %a', 'rm -f %s:p:r'],
 \   'cmdopt': '-Wall',
 \   'tempfile': '%{tempname()}.cpp',
@@ -535,7 +598,6 @@ let g:quickrun_config = {
 \   'tempfile': '%{tempname()}.rb',
 \ },
 \}
-
 " /=thinca/vim-quickrun }}}
 "
 " ##### tyru/restart.vim {{{
@@ -545,13 +607,6 @@ let g:restart_sessionoptions
 "
 " ##### Lokaltog/vim-easymotion {{{
 let g:EasyMotion_leader_key = '<Leader>'
-" }}}
-"
-" ##### mattn/sonictemplate-vim {{{
-" let g:sonictemplate_key = <c-y>s
-" for editing
-inoremap {{in {{_input_:}}<Left><Left>
-inoremap {{cur {{_cursor_}}
 " }}}
 "
 " ##### kien/ctrlp.vim and Extensions {{{
@@ -573,14 +628,13 @@ if finddir('.cache/ctrlp', $VIMHOME) == ''
 endif
 let g:ctrlp_cache_dir = $VIMHOME.'/.cache/ctrlp'
 let g:ctrlp_extensions = [
-      \'tabbed',
-      \'sonictemplate',
-      \'filetype',
-      \'register',
       \'launcher',
+      \'register',
       \'mark',
+      \'filetype',
+      \'sonictemplate',
+      \'tabbed',
       \]
-"
 nnoremap <c-e>p :<c-u>CtrlPLauncher<cr>
 nnoremap <c-e>b :<c-u>CtrlPTabbed<cr>
 nnoremap <c-e>t :<c-u>CtrlPSonictemplate<cr>
@@ -589,6 +643,7 @@ nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
 "
 " /=plugin }}}
 
+" storage {{{
 " --- " How to use 's:' or '<SID>'
 " --- "--------------------
 " --- " s:
@@ -608,77 +663,79 @@ nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
 " let s:en_enc = 'cp932'
 " let s:crlf = "\r\n"
 " let s:temporary_filename = 'vimever.tmp'
-" 
+"
 " " command line
 " function! s:cmdline_evernote(init_str)
-" 	" call inputsave()
-" 	let l:msg = input('Post Evernote: ', a:init_str)
-" 	" call inputrestore()
-" 	let s:temp = s:post_evernote(l:msg, l:msg)
+"   " call inputsave()
+"   let l:msg = input('Post Evernote: ', a:init_str)
+"   " call inputrestore()
+"   let s:temp = s:post_evernote(l:msg, l:msg)
 " endfunction
-" 
+"
 " " current line
 " function! s:curline_evernote(init_str)
-" 	let l:msg = a:init_str
-" 	let s:temp = s:post_evernote(l:msg, l:msg)
+"   let l:msg = a:init_str
+"   let s:temp = s:post_evernote(l:msg, l:msg)
 " endfunction
-" 
+"
 " " buffer
 " function! s:buffer_evernote()
-" 	let l:title = fnamemodify(expand('%:p'), ':t')
-" 	let l:body = join(getline(1, '$'), s:crlf)
-" 	let s:temp = s:post_evernote(l:title, l:body)
+"   let l:title = fnamemodify(expand('%:p'), ':t')
+"   let l:body = join(getline(1, '$'), s:crlf)
+"   let s:temp = s:post_evernote(l:title, l:body)
 " endfunction
-" 
+"
 " " arguments
 " function! s:args_evernote(...)
-" 	let s:temp = s:post_evernote(a:1, a:2)
+"   let s:temp = s:post_evernote(a:1, a:2)
 " endfunction
-" 
+"
 " " full path of ENScript.exe
 " function! s:get_enscript_path()
-" 	if exists('g:enscript_path') && g:enscript_path != ''
-" 		return g:enscript_path
-" 	else
-" 		echo 'Please add a full path of ENScript.exe to .vimrc'
-" 		echo 'e.g.) "let enscript_path = ''C:\Program Files\Evernote\Evernote3.5\ENScript.exe''"'
-" 		return ''
-" 	endif
+"   if exists('g:enscript_path') && g:enscript_path != ''
+"       return g:enscript_path
+"   else
+"       echo 'Please add a full path of ENScript.exe to .vimrc'
+"       echo 'e.g.) "let enscript_path = ''C:\Program Files\Evernote\Evernote3.5\ENScript.exe''"'
+"       return ''
+"   endif
 " endfunction
-" 
+"
 " " post to evernote
 " function! s:post_evernote(title, body)
-" 	let l:en_title = iconv(a:title, &encoding, s:en_enc)
-" 	let l:en_body = iconv(a:body, &encoding, s:en_enc)
-" 	let l:enscript = s:get_enscript_path()
-" 	if l:enscript == ''
-" 		return
-" 	endif
-" 	if expand('%:h') != ''
-" 		let l:target_path = expand('%:h') . '\' . s:temporary_filename . '.txt'
-" 	else
-" 		let l:target_path = $VIM . '\' . s:temporary_filename . '.txt'
-" 	endif
-" 	call writefile(split(l:en_body, s:crlf), l:target_path, 'b')
-" 	let l:cmd = '"' . shellescape(l:enscript) . ' createNote /s ' . shellescape(l:target_path) . ' /i ' . shellescape(l:en_title) . '"'
-" 	echo l:cmd
-" 	call system(l:cmd)
-" 	call delete(l:target_path)
+"   let l:en_title = iconv(a:title, &encoding, s:en_enc)
+"   let l:en_body = iconv(a:body, &encoding, s:en_enc)
+"   let l:enscript = s:get_enscript_path()
+"   if l:enscript == ''
+"       return
+"   endif
+"   if expand('%:h') != ''
+"       let l:target_path = expand('%:h') . '\' . s:temporary_filename . '.txt'
+"   else
+"       let l:target_path = $VIM . '\' . s:temporary_filename . '.txt'
+"   endif
+"   call writefile(split(l:en_body, s:crlf), l:target_path, 'b')
+"   let l:cmd = '"' . shellescape(l:enscript) . ' createNote /s ' . shellescape(l:target_path) . ' /i ' . shellescape(l:en_title) . '"'
+"   echo l:cmd
+"   call system(l:cmd)
+"   call delete(l:target_path)
 " endfunction
-" 
+"
 " " define command
 " if !exists(":PosttoEvernote")
-" 	command! PosttoEvernote :call <SID>cmdline_evernote('')
+"   command! PosttoEvernote :call <SID>cmdline_evernote('')
 " endif
-" 
+"
 " if !exists(":CPosttoEvernote")
-" 	command! CPosttoEvernote :call <SID>curline_evernote(getline('.'))
+"   command! CPosttoEvernote :call <SID>curline_evernote(getline('.'))
 " endif
-" 
+"
 " if !exists(":BPosttoEvernote")
-" 	command! BPosttoEvernote :call <SID>buffer_evernote()
+"   command! BPosttoEvernote :call <SID>buffer_evernote()
 " endif
-" 
+"
 " if !exists(":APosttoEvernote")
-" 	command! -nargs=+ APosttoEvernote :call <SID>args_evernote(<f-args>)
+"   command! -nargs=+ APosttoEvernote :call <SID>args_evernote(<f-args>)
 " endif
+" /=storage }}}
+
