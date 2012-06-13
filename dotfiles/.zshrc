@@ -2,7 +2,7 @@
 #
 # File:        .zshrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 28-May-2012.
+# Last Change: 12-Jun-2012.
 
 # source common shell run command
 source ~/.shrc_common
@@ -33,7 +33,7 @@ bindkey "^N" history-beginning-search-forward-end
 # Display
 PS1='%{]0;%/
 [32m%}(%n@%m)[%h] %{[33m%}%~%{[0m%}
-$ '
+( ^o^).. '
 export LSCOLORS=gxfxcxdxbxegedabagacad
 
 # options
