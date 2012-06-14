@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 11-Jun-2012.
+" Last Change: 13-Jun-2012.
 
 scriptencoding utf-8
 syntax on
@@ -333,9 +333,13 @@ if !(exists('g:loaded_vimrc') && g:loaded_vimrc)
   " ##### encoding
   set fileencodings=utf-8,euc-jp,cp932,shiftjis,iso-2022-jp,latin1
   set fileformats=unix,dos,mac
-  " set encoding=utf-8
+  set encoding=utf-8
   " set fileencoding=utf-8
-  " set fileformat=unix
+  if !s:is_win
+    set fileformat=unix
+  else
+    set fileformat=dos
+  endif
   "
   " ##### display#title
   set title
@@ -413,7 +417,7 @@ if !(exists('g:loaded_vimrc') && g:loaded_vimrc)
 endif
 " /=options }}}
 "
-" filetype {{{
+" something 1 {{{
 let s:progmap_toggle = {
       \  'c': 0
       \, 'ruby': 0
@@ -445,22 +449,46 @@ function! s:progmap_statements(...)
 endfunction
 command! -nargs=* Progmapping call s:progmap_statements(<f-args>)
 nnoremap <silnet> <c-i>1 :Progmapping 1<cr>
-" /=filetype }}}
+" }}}
 
+" something 2 {{{
+let s:comment_str = {
+      \  'c': '//'
+      \, 'cpp': '//'
+      \, 'ruby': '#'
+      \, 'vim': '"'
+      \}
+function! s:to_comment(...)
+  let ft = &ft
+  let sw = &shiftwidth
+  let comm = s:comment_str[ft]
+  let line = getline('.')
+  if line =~ '^\s*'.comm
+    cal setline('.', substitute(line, comm.' ', "", ""))
+  else
+    cal setline('.', comm.' '.line)
+  endif
+endfunction
+command! -nargs=* Comment call s:to_comment(<f-args>)
+nnoremap <silnet> ,co :Comment<cr>
+function! s:to_comment_v(...) range
+  let ft = &ft
+  let sw = &shiftwidth
+  let comm = s:comment_str[ft]
+  exe (a:firstline + 1).",".a:lastline.'s/^/'.escape(comm, '/').'/g'
+endfunction
+command! -nargs=* VComment call s:to_comment_v(<f-args>)
+vnoremap <silnet> b :'<,'>VComment<cr>
+" }}}
+"
 " plugin {{{
 " ##### gmarik/vundle {{{
 filetype off
-" set rtp+=$VIMHOME/bundle/vundle
-set rtp+=$DROPBOX/dev/prj/vundle
+set rtp+=$VIMHOME/bundle/vundle
 call vundle#rc( '$VIMHOME/bundle' )
 " github
-" if 0
-"   Bundle 'zolrath/vundle'
-" else
-"   Bundle 'gmarik/vundle'
-" endif
-set rtp+=$DROPBOX/dev/prj/sonictemplate-vim
-" Bundle 'kaneshin/sonictemplate-vim'
+Bundle 'kaneshin/vundle'
+Bundle 'kaneshin/sonictemplate-vim'
 Bundle 'mattn/webapi-vim'
 Bundle 'mattn/gist-vim'
 Bundle 'mattn/zencoding-vim'
@@ -624,7 +652,7 @@ let g:ctrlp_mruf_max = 250
 let g:ctrlp_max_depth = 40
 let g:ctrlp_use_migemo = 0
 if finddir('.cache/ctrlp', $VIMHOME) == ''
-  cal mkdir(expand('$HOME/.cache/ctrlp'), "p")
+  cal mkdir(expand('$VIMHOME/.cache/ctrlp'), "p")
 endif
 let g:ctrlp_cache_dir = $VIMHOME.'/.cache/ctrlp'
 let g:ctrlp_extensions = [
