@@ -1,15 +1,17 @@
-" vim:set ts=2 sts=2 sw=2 tw=0:
+" vim:set ts=8 sts=2 sw=2 tw=0:
 " vim:set fdm=marker:
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 13-Jun-2012.
+" Last Change: 21-Jun-2012.
+" TODO:
+" 	Improve g:tabnum (See something length, set the value)
 
 scriptencoding utf-8
 syntax on
 filetype plugin on
 filetype indent on
-  
+
 " Languages
 " language en_US
 " language ca_ES
@@ -220,11 +222,8 @@ if filereadable(expand('$DOTFILES/.gvimrc'))
   nnoremap <silent> ,rg :ReadGVimrc<CR>
 endif
 " insert mode
-inoremap <C-f> <ESC>
-inoremap <c-l><c-h> <Left>
-inoremap <c-l><c-j> <esc>O
-inoremap <c-l><c-k> <up><end>
-inoremap <c-l><c-l> <right>
+inoremap <c-f> <right>
+inoremap <c-b> <Left>
 inoremap <c-l><c-a> <home>
 inoremap <c-l><c-e> <end>
 inoremap <C-r><C-r> <C-r>"
@@ -487,8 +486,8 @@ filetype off
 set rtp+=$VIMHOME/bundle/vundle
 call vundle#rc( '$VIMHOME/bundle' )
 " github
-Bundle 'kaneshin/vundle'
-Bundle 'kaneshin/sonictemplate-vim'
+" Bundle 'kaneshin/vundle'
+Bundle 'mattn/sonictemplate-vim'
 Bundle 'mattn/webapi-vim'
 Bundle 'mattn/gist-vim'
 Bundle 'mattn/zencoding-vim'
