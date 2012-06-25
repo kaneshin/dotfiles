@@ -3,7 +3,7 @@
 "
 " File:        .gvimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 21-Jun-2012.
+" Last Change: 26-Jun-2012.
 
 scriptencoding utf-8
 set guioptions=agirLt
@@ -26,7 +26,7 @@ if s:is_win || s:is_unix
 elseif s:is_mac
   set transparency=5
   set linespace=2
-  colorscheme shin
+  colorscheme cosine
   nnoremap <silent> <up> :call <SID>UpTransparency()<cr>
   nnoremap <silent> <down> :call <SID>DownTransparency()<cr>
 endif
