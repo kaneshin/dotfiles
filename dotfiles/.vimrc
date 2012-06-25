@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 21-Jun-2012.
+" Last Change: 24-Jun-2012.
 " TODO:
 " 	Improve g:tabnum (See something length, set the value)
 
@@ -634,6 +634,15 @@ let g:restart_sessionoptions
 "
 " ##### Lokaltog/vim-easymotion {{{
 let g:EasyMotion_leader_key = '<Leader>'
+" }}}
+"
+" ##### thinca/ref.vim {{{
+let g:ref_source_webdict_sites = {
+      \'wikipedia:en': 'http://en.wikipedia.org/wiki/%s',
+      \'wikipedia:ja': 'http://ja.wikipedia.org/wiki/%s',
+      \'alc': 'http://eow.alc.co.jp/search?q=%s',
+      \'Oxford': 'http://oxforddictionaries.com/definition/%s',
+      \}
 " }}}
 "
 " ##### kien/ctrlp.vim and Extensions {{{
