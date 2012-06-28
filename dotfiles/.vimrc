@@ -3,9 +3,8 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 24-Jun-2012.
+" Last Change: 29-Jun-2012.
 " TODO:
-" 	Improve g:tabnum (See something length, set the value)
 
 scriptencoding utf-8
 syntax on
@@ -22,11 +21,9 @@ filetype indent on
 let s:is_win = has( 'win32' ) || has( 'win64' )
 " Mac (not on terminal)
 let s:is_mac = has( 'mac' )
-" UNIX or on terminal
+" UNIX like
 let s:is_unix = has( 'unix' ) && !s:is_mac && !s:is_win
 " $VIMHOME
-"   Windows    -> vimfiles/
-"   Mac, Linux -> .vim/
 if !exists( '$VIMHOME' )
   if s:is_win
     if finddir('vimfiles', $HOME) == ''
@@ -42,271 +39,17 @@ if !exists( '$VIMHOME' )
 endif
 " $MYHOME
 if !exists( '$MYHOME' )
-  if s:is_win
-    if ( $USERDOMAIN == 'KANESHIN-ASUS' )
-      let $MYHOME = $HOME
-    elseif ( $USERDOMAIN == 'KANESHIN-HP' )
-      let $MYHOME = 'C:\home\kaneshin'
-    endif
-  else
-    let $MYHOME = $HOME
-  endif
+  let $MYHOME = $HOME
 endif
 " $DROPBOX
-if !exists( '$DROPBOX' )
+if !exists( '$DROPBOX' ) && finddir('Dropbox', $MYHOME) != ''
   let $DROPBOX = $MYHOME.'/Dropbox'
 endif
 " $DOTFILES
-if !exists( '$DOTFILES' )
+if !exists( '$DOTFILES' ) && finddir('dev/dotfiles/dotfiles', $DROPBOX) != ''
   let $DOTFILES = $DROPBOX.'/dev/dotfiles/dotfiles'
 endif
 " /=variables }}}
-
-" functions {{{
-" status line
-function! GetShortenRegister(reg)
-  return substitute(substitute(a:reg, '\n', '', 'g'), '^ *\(.\{,15\}\).*$', '\1', '')
-endfunction
-function! MyStatusLine()
-  return "%t\ %m%r%h%w%y"
-        \."%{'['.(&fenc!=''?&fenc:&enc).':'.&ff.']'}"
-        \."[0x\%02.2B]"
-        \."%=%<"
-        \."%{'@\"['.GetShortenRegister(@\").']"
-        \."\ @/[/'.GetShortenRegister(@/).']'}"
-        \."[%l/%L]"
-endfunction
-" tab label
-let g:tabnum = 2
-let g:tabdir = 1
-let s:tabtoggle = 1
-function! TabExpand()
-  if s:tabtoggle == 1
-    let g:tabnum = 5
-    let g:tabdir = 0
-    let s:tabtoggle = 0
-  else
-    let g:tabnum = 2
-    let g:tabdir = 1
-    let s:tabtoggle = 1
-  endif
-  let &tabline="%!MyTabLine()"
-endfunction
-command! TabExpand cal TabExpand()
-function! DirInfo(...)
-  let dirinfo = fnamemodify(getcwd(), ":~")
-  return strlen(dirinfo) > (a:0 > 0 ? a:1 : &titlelen - 20) ? pathshorten(dirinfo) : dirinfo
-endfunction
-function! MyTabLabel(n)
-  let buflist = tabpagebuflist(a:n)
-  let winnr = tabpagewinnr(a:n)
-  let mod = filter(copy(buflist), 'getbufvar(v:val, "&modified")')
-  let fname = substitute(bufname(buflist[winnr-1]), ".*\\/", "", "")
-  let tablb = (len(mod) ? '+ ' : '').(fname != '' ? fname : 'New File')
-  let hi = (a:n == tabpagenr() ? '%#TabLineSel#' : '%#TabLine#' )
-  return '%'.a:n.'T'.hi.' '.tablb.' '.'%T%#TabLineFill#'
-endfunction
-function! MyTabLine()
-  let tabrange = range(1, tabpagenr('$'))
-  let tabstr = ''
-  let sep = ' '
-  let len = &titlelen - 20
-  if (len(tabrange) > g:tabnum)
-    let tabstr .= sep.'Tab:'.tabpagenr().'/'.tabpagenr('$').sep.MyTabLabel(tabpagenr())
-  else
-    for i in tabrange
-      let tabstr .= sep.MyTabLabel(i)
-    endfor
-  endif
-  return tabstr."%=".(g:tabdir == 1 ? DirInfo(len).sep : "")."%{fugitive#statusline()}"
-endfunction
-
-" sticky
-" let g:sticky_mode = "eng"
-" let s:stickypos = 0
-" let s:sticky = {
-"         \"eng": [
-"             \"I'm gonna be here.",
-"             \"Should be ok.",
-"             \"Could be ok."
-"         \],
-"         \"": []
-"     \}
-" function! g:Sticky()
-"   let s:stickypos += 1
-"   let s:stickypos = s:stickypos % len(s:sticky[g:sticky_mode])
-"   return s:sticky[g:sticky_mode][s:stickypos]
-" endfunction
-"
-" tab to space
-" function! s:TabToSpace(...)
-"   let lines = getbufline(bufnr(bufname('%')), 1, "$")
-"   let result = []
-"   for line in lines
-"     call add(result, substitute(line, "\t",
-"           \repeat(' ', (a:0 > 0 ? a:1 : &shiftwidth)), "g"))
-"   endfor
-"   call setline(1, result)
-" endfunction
-" command! -nargs=? TabToSpace call s:TabToSpace(<f-args>)
-
-" remove spaces
-function! s:RemoveSpace()
-  let lines = getbufline(bufnr(bufname('%')), 1, "$")
-  let result = []
-  for line in lines
-    call add(result, substitute(line, " \\+$", "", ""))
-  endfor
-  call setline(1, result)
-endfunction
-command! -nargs=0 RemoveSpace call s:RemoveSpace()
-" remove spaces of brackets
-" function! s:RemoveBracketsSpace()
-"   let line = getline(".")
-"   let line = substitute(line, "( \\+\\(.\\+\\) \\+)", "(\\1)", "")
-"   call setline(".", line)
-" endfunction
-" command! -nargs=0 RemoveBracketsSpace call s:RemoveBracketsSpace()
-"
-" ===== Mathematics, Algorithm
-" Factorial
-function! Factorial(n)
-  return a:n == 1 ? 1 : a:n * s:Factorial(a:n - 1)
-endfunction
-command! -nargs=1 Factorial :echo Factorial(<f-args>)
-" FizzBuzz
-function! FizzBuzz(n)
-  let fb = []
-  let i = 1
-  while i <= a:n
-    if i % 3 == 0
-      cal add(fb, 'Fizz')
-    elseif i % 5 == 0
-      cal add(fb, 'Buzz')
-    elseif i % 15 == 0
-      cal add(fb, 'FizzBuzz')
-    else
-      cal add(fb, ''.i)
-    endif
-    let i = i + 1
-  endwhile
-  return fb
-endfunction
-command! -nargs=1 FizzBuzz :echo FizzBuzz(<f-args>)
-" Greatest Common Divisor
-function! GreatestCommonDivisor(a, b)
-  let r = a:a % a:b
-  return r == 0 ? a:b : GreatestCommonDivisor(a:b, r)
-endfunction
-command! -nargs=+ GreatestCommonDivisor :echo GreatestCommonDivisor(<f-args>)
-" Fibonacci
-function! Fibonacci(n)
-  return a:n < 2 || a:n < 0 || a:n > 27 ? 1 : Fibonacci(a:n - 1) + Fibonacci(a:n - 2)
-endfunction
-command! -nargs=1 Fibonacci :echo Fibonacci(<f-args>)
-" }}}
-"
-" key mapping {{{
-" .vimrc
-if filereadable(expand('$DOTFILES/.vimrc'))
-  command! EditVimrc :tabe   $DOTFILES/.vimrc
-  command! ReadVimrc :source $DOTFILES/.vimrc
-  nnoremap <silent> ,ev :EditVimrc<CR>
-  nnoremap <silent> ,rv :ReadVimrc<CR>
-endif
-" .gvimrc
-if filereadable(expand('$DOTFILES/.gvimrc'))
-  command! EditGVimrc :tabe   $DOTFILES/.gvimrc
-  command! ReadGVimrc :source $DOTFILES/.gvimrc
-  nnoremap <silent> ,eg :EditGVimrc<CR>
-  nnoremap <silent> ,rg :ReadGVimrc<CR>
-endif
-" insert mode
-inoremap <c-f> <right>
-inoremap <c-b> <Left>
-inoremap <c-l><c-a> <home>
-inoremap <c-l><c-e> <end>
-inoremap <C-r><C-r> <C-r>"
-" normal node
-nnoremap <silent> <c-t> :TabExpand<cr>
-nnoremap <c-f> <ESC>
-nnoremap <up> 30k
-nnoremap <c-k> dd<up>
-nnoremap <down> 30j
-nnoremap <c-j> o<esc>
-nnoremap <left> 0
-nnoremap <c-h> 0
-nnoremap <silent> <m-h> :tabprev<cr>
-nnoremap <silent> <m-l> :tabnext<cr>
-nnoremap <right> $
-nnoremap <c-l> $
-nnoremap <c-g> g;zz
-
-nnoremap <c-space> i<space><esc><right>
-nnoremap ; :
-nnoremap <silent> <c-s> :cal setline('.',substitute(getline('.'),@/,@",'g'))<cr>
-
-nnoremap n nzz
-nnoremap N Nzz
-nnoremap <silent> <C-u> <C-u>zz
-nnoremap <silent> <C-f> <C-f>zz
-
-nnoremap <silent> <C-x>0 :close<CR>
-nnoremap <silent> <C-x>1 :only<CR>
-nnoremap <silent> <C-x>2 :split<CR>
-nnoremap <silent> <C-x>3 :vsplit<CR>
-nnoremap <silent> <C-x>4 :tabe<CR>:BufExplorer<CR>
-nnoremap <silent> <C-x>n :bnext<CR>
-nnoremap <silent> <C-x>p :bprevious<CR>
-nnoremap <silent> <C-x>k :close<CR>
-nnoremap <silent> <ESC><ESC> :nohlsearch<CR>
-" visual mode
-vnoremap ; :
-vnoremap <silent> > >gv
-vnoremap <silent> < <gv
-vnoremap f <esc>
-" command mode
-cmap <C-x> <C-r>=expand('%:p:h')<CR>/
-cmap <C-z> <C-r>=expand('%:p:r')<CR>
-" emacs key bind in command mode
-cnoremap <C-a> <Home>
-cnoremap <C-e> <End>
-cnoremap <C-b> <Left>
-cnoremap <C-f> <Right>
-cnoremap <C-n> <Down>
-cnoremap <C-p> <Up>
-cnoremap <C-h> <BS>
-"
-" brackets and else
-inoremap () ()<Left>
-inoremap (); ();<Left><Left>
-inoremap (){ ()<space>{<cr>}<esc>kA<left><left><left>
-cnoremap () ()<Left>
-inoremap {} {}<Left>
-cnoremap {} {}<Left>
-inoremap [] []<Left>
-cnoremap [] []<Left>
-inoremap "" ""<Left>
-cnoremap "" ""<Left>
-inoremap '' ''<Left>
-cnoremap '' ''<Left>
-inoremap <> <><Left>
-cnoremap <> <><Left>
-" inoremap %% %%<Left>
-" cnoremap %% %%<Left>
-" /=key mapping }}}
-"
-" autocmds {{{
-" change directory if you open a file.
-autocmd BufEnter * execute ':lcd '.expand('%:p:h')
-" automatically open a quickfix
-" autocmd QuickfixCmdPost make,grep,grepadd,vimgrep
-"       \if len(getqflist()) != 0 | copen | endif
-" autocmd FileType perl :map <C-n> <ESC>:!perl -cw %<CR>
-" autocmd FileType perl :map <C-e> <ESC>:!perl %<CR>
-" autocmd FileType ruby :map <C-n> <ESC>:!ruby -cW %<CR>
-" autocmd FileType ruby :map <C-e> <ESC>:!ruby %<CR>
-" /=autocmds }}}
 "
 " options {{{
 if !(exists('g:loaded_vimrc') && g:loaded_vimrc)
@@ -416,6 +159,245 @@ if !(exists('g:loaded_vimrc') && g:loaded_vimrc)
 endif
 " /=options }}}
 "
+" key mapping {{{
+" .vimrc
+if filereadable(expand('$DOTFILES/.vimrc'))
+  command! EditVimrc :tabe   $DOTFILES/.vimrc
+  command! ReadVimrc :source $DOTFILES/.vimrc
+  nnoremap <silent> ,ev :EditVimrc<CR>
+  nnoremap <silent> ,rv :ReadVimrc<CR>
+endif
+" .gvimrc
+if filereadable(expand('$DOTFILES/.gvimrc'))
+  command! EditGVimrc :tabe   $DOTFILES/.gvimrc
+  command! ReadGVimrc :source $DOTFILES/.gvimrc
+  nnoremap <silent> ,eg :EditGVimrc<CR>
+  nnoremap <silent> ,rg :ReadGVimrc<CR>
+endif
+" insert mode
+inoremap <c-f> <right>
+inoremap <c-b> <Left>
+inoremap <c-l><c-a> <home>
+inoremap <c-l><c-e> <end>
+inoremap <C-r><C-r> <C-r>"
+" normal node
+nnoremap <silent> <c-t> :TabExpand<cr>
+nnoremap <c-f> <ESC>
+nnoremap <up> 30k
+nnoremap <c-k> dd<up>
+nnoremap <down> 30j
+nnoremap <c-j> o<esc>
+nnoremap <left> 0
+nnoremap <c-h> 0
+nnoremap <silent> <m-h> :tabprev<cr>
+nnoremap <silent> <m-l> :tabnext<cr>
+nnoremap <right> $
+nnoremap <c-l> $
+nnoremap <c-g> g;zz
+
+nnoremap <c-space> i<space><esc><right>
+nnoremap ; :
+nnoremap <silent> <c-s> :cal setline('.',substitute(getline('.'),@/,@",'g'))<cr>
+
+nnoremap n nzz
+nnoremap N Nzz
+nnoremap <silent> <C-u> <C-u>zz
+nnoremap <silent> <C-f> <C-f>zz
+
+nnoremap <silent> <C-x>0 :close<CR>
+nnoremap <silent> <C-x>1 :only<CR>
+nnoremap <silent> <C-x>2 :split<CR>
+nnoremap <silent> <C-x>3 :vsplit<CR>
+nnoremap <silent> <C-x>4 :tabe<CR>:BufExplorer<CR>
+nnoremap <silent> <C-x>n :bnext<CR>
+nnoremap <silent> <C-x>p :bprevious<CR>
+nnoremap <silent> <C-x>k :close<CR>
+nnoremap <silent> <ESC><ESC> :nohlsearch<CR>
+" visual mode
+vnoremap ; :
+vnoremap <silent> > >gv
+vnoremap <silent> < <gv
+vnoremap f <esc>
+" command mode
+cmap <C-x> <C-r>=expand('%:p:h')<CR>/
+cmap <C-z> <C-r>=expand('%:p:r')<CR>
+" emacs key bind in command mode
+cnoremap <C-a> <Home>
+cnoremap <C-e> <End>
+cnoremap <C-b> <Left>
+cnoremap <C-f> <Right>
+cnoremap <C-n> <Down>
+cnoremap <C-p> <Up>
+cnoremap <C-h> <BS>
+"
+" brackets and else
+inoremap () ()<Left>
+inoremap (); ();<Left><Left>
+inoremap (){ ()<space>{<cr>}<esc>kA<left><left><left>
+cnoremap () ()<Left>
+inoremap {} {}<Left>
+cnoremap {} {}<Left>
+inoremap [] []<Left>
+cnoremap [] []<Left>
+inoremap "" ""<Left>
+cnoremap "" ""<Left>
+inoremap '' ''<Left>
+cnoremap '' ''<Left>
+inoremap <> <><Left>
+cnoremap <> <><Left>
+" inoremap %% %%<Left>
+" cnoremap %% %%<Left>
+" /=key mapping }}}
+"
+" functions {{{
+function! GetShortenRegister(reg)
+  return substitute(substitute(a:reg, '\n', '', 'g'), '^ *\(.\{,15\}\).*$', '\1', '')
+endfunction
+function! s:getTabname()
+  let fns = []
+  for i in range(1, tabpagenr('$'))
+    let fn = substitute(bufname(tabpagebuflist(i)[tabpagewinnr(i) - 1]), ".*\\/", "", "")
+    call add(fns, fn)
+  endfor
+  return fns
+endfunction
+function! s:getMaxLengthTabname()
+  let fns = s:getTabname()
+  let maxlfn = 0
+  for fn in fns
+    if len(fn) > maxlfn
+      let maxlfn = len(fn)
+    endif
+  endfor
+  return maxlfn
+endfunction
+" sticky
+" let g:sticky_mode = "eng"
+" let s:stickypos = 0
+" let s:sticky = {
+"         \"eng": [
+"             \"I'm gonna be here.",
+"             \"Should be ok.",
+"             \"Could be ok."
+"         \],
+"         \"": []
+"     \}
+" function! g:Sticky()
+"   let s:stickypos += 1
+"   let s:stickypos = s:stickypos % len(s:sticky[g:sticky_mode])
+"   return s:sticky[g:sticky_mode][s:stickypos]
+" endfunction
+"
+" tab to space
+" function! s:TabToSpace(...)
+"   let lines = getbufline(bufnr(bufname('%')), 1, "$")
+"   let result = []
+"   for line in lines
+"     call add(result, substitute(line, "\t",
+"           \repeat(' ', (a:0 > 0 ? a:1 : &shiftwidth)), "g"))
+"   endfor
+"   call setline(1, result)
+" endfunction
+" command! -nargs=? TabToSpace call s:TabToSpace(<f-args>)
+
+" remove spaces
+function! s:RemoveSpace()
+  let lines = getbufline(bufnr(bufname('%')), 1, "$")
+  let result = []
+  for line in lines
+    call add(result, substitute(line, " \\+$", "", ""))
+  endfor
+  call setline(1, result)
+endfunction
+command! -nargs=0 RemoveSpace call s:RemoveSpace()
+" remove spaces of brackets
+" function! s:RemoveBracketsSpace()
+"   let line = getline(".")
+"   let line = substitute(line, "( \\+\\(.\\+\\) \\+)", "(\\1)", "")
+"   call setline(".", line)
+" endfunction
+" command! -nargs=0 RemoveBracketsSpace call s:RemoveBracketsSpace()
+" }}}
+"
+" Tab line {{{
+function! MyTabLabel(n)
+  let buflist = tabpagebuflist(a:n)
+  let winnr = tabpagewinnr(a:n)
+  let mod = filter(copy(buflist), 'getbufvar(v:val, "&modified")')
+  let fname = substitute(bufname(buflist[winnr-1]), ".*\\/", "", "")
+  let tablb = (len(mod) ? '+ ' : '').(fname != '' ? fname : 'New File')
+  let hi = (a:n == tabpagenr() ? '%#TabLineSel#' : '%#TabLine#' )
+  return '%'.a:n.'T'.hi.' '.tablb.' '.'%T%#TabLineFill#'
+endfunction
+function! MyTabLine()
+  let s:tabnr = s:getTabnr()
+  let tabrange = range(1, tabpagenr('$'))
+  let sep = ' '
+  " left side of tab line
+  let tableft = ''
+  if len(tabrange) > s:tabnr
+    let tableft .= sep.'Tab:'.tabpagenr().'/'.tabpagenr('$').sep.MyTabLabel(tabpagenr())
+  else
+    for i in tabrange
+      let tableft .= sep.MyTabLabel(i)
+    endfor
+  endif
+  " right side of tab line
+  let tabright = ''
+  if s:tabdir
+    let fn = fnamemodify(getcwd(), ":~")
+    let tabright .= (len(fn) > 20 ? pathshorten(fn) : fn).sep
+  endif
+  let tabright .= "%{fugitive#statusline()}"
+  return tableft."%=".tabright
+endfunction
+function! s:getTabnr()
+  if s:tabtoggle
+    let fn = fnamemodify(getcwd(), ":~")
+    return ((&columns - len((len(fn) > 20 ? pathshorten(fn) : fn))) / s:getMaxLengthTabname())
+  else
+    return 20
+  endif
+endfunction
+let s:tabtoggle = 0
+function! TabExpand()
+  if s:tabtoggle
+    let s:tabdir = 0
+    let s:tabtoggle = 0
+  else
+    let s:tabdir = 1
+    let s:tabtoggle = 1
+  endif
+  let &tabline="%!MyTabLine()"
+endfunction
+cal TabExpand()
+command! TabExpand cal TabExpand()
+" /=Tab line }}}
+"
+" status line {{{
+function! MyStatusLine()
+  return "%t\ %m%r%h%w%y"
+        \."%{'['.(&fenc!=''?&fenc:&enc).':'.&ff.']'}"
+        \."[0x\%02.2B]"
+        \."%=%<"
+        \."%{'@\"['.GetShortenRegister(@\").']"
+        \."\ @/[/'.GetShortenRegister(@/).']'}"
+        \."[%l/%L]"
+endfunction
+" }}}
+"
+" autocmds {{{
+" change directory if you open a file.
+autocmd BufEnter * execute ':lcd '.expand('%:p:h')
+" automatically open a quickfix
+" autocmd QuickfixCmdPost make,grep,grepadd,vimgrep
+"       \if len(getqflist()) != 0 | copen | endif
+" autocmd FileType perl :map <C-n> <ESC>:!perl -cw %<CR>
+" autocmd FileType perl :map <C-e> <ESC>:!perl %<CR>
+" autocmd FileType ruby :map <C-n> <ESC>:!ruby -cW %<CR>
+" autocmd FileType ruby :map <C-e> <ESC>:!ruby %<CR>
+" /=autocmds }}}
+"
 " something 1 {{{
 let s:progmap_toggle = {
       \  'c': 0
@@ -480,6 +462,21 @@ command! -nargs=* VComment call s:to_comment_v(<f-args>)
 vnoremap <silnet> b :'<,'>VComment<cr>
 " }}}
 "
+" makesession {{{
+set sessionoptions=
+      \"blank,buffers,folds,help,localoptions,resize,tabpages"
+let g:session_file = "$VIMHOME/Session.vim"
+function! s:session()
+  let is_buf = search('[^ \t]', 'wn')
+  if is_buf
+    exe "mksession! ".g:session_file
+  else
+    exe "source ".g:session_file
+  endif
+endfunction
+command! Session call s:session()
+" }}}
+"
 " plugin {{{
 " ##### gmarik/vundle {{{
 filetype off
@@ -487,6 +484,7 @@ set rtp+=$VIMHOME/bundle/vundle
 call vundle#rc( '$VIMHOME/bundle' )
 " github
 " Bundle 'kaneshin/vundle'
+" set rtp+=$DROPBOX/dev/prj/vim-plugin/sonictemplate-vim
 Bundle 'mattn/sonictemplate-vim'
 Bundle 'mattn/webapi-vim'
 Bundle 'mattn/gist-vim'
@@ -500,12 +498,14 @@ Bundle 'mattn/ctrlp-mark'
 Bundle 'kaneshin/ctrlp-tabbed'
 Bundle 'kaneshin/ctrlp-sonictemplate'
 Bundle 'kaneshin/ctrlp-filetype'
+Bundle 'kaneshin/ctrlp-memolist'
 Bundle 'Lokaltog/vim-easymotion'
 Bundle 'tpope/vim-surround'
 Bundle 'tpope/vim-fugitive'
 Bundle 'tpope/vim-repeat'
 Bundle 'tyru/restart.vim'
 Bundle 'thinca/vim-ref'
+Bundle 'glidenote/memolist.vim'
 " www.vim.org
 Bundle 'TwitVim'
 " playspace
@@ -636,6 +636,16 @@ let g:restart_sessionoptions
 let g:EasyMotion_leader_key = '<Leader>'
 " }}}
 "
+" ##### glidenote/memolist.vim {{{
+let g:memolist_path = $DROPBOX.'/docs/memo'
+let g:memolist_memo_suffix = "mkd"
+let g:memolist_memo_date = "%Y-%m-%d %H:%M"
+let g:memolist_prompt_tags = 1
+let g:memolist_prompt_categories = 1
+" let g:memolist_qfixgrep = 1
+" let g:memolist_vimfiler = 1
+" }}}
+"
 " ##### thinca/ref.vim {{{
 let g:ref_source_webdict_sites = {
       \'wikipedia:en': 'http://en.wikipedia.org/wiki/%s',
@@ -670,11 +680,13 @@ let g:ctrlp_extensions = [
       \'filetype',
       \'sonictemplate',
       \'tabbed',
+      \'memolist',
       \]
 nnoremap <c-e>p :<c-u>CtrlPLauncher<cr>
 nnoremap <c-e>b :<c-u>CtrlPTabbed<cr>
 nnoremap <c-e>t :<c-u>CtrlPSonictemplate<cr>
 nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
+nnoremap <c-e>m :<c-u>CtrlPMemolist<cr>
 " }}}
 "
 " /=plugin }}}
@@ -774,4 +786,42 @@ nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
 "   command! -nargs=+ APosttoEvernote :call <SID>args_evernote(<f-args>)
 " endif
 " /=storage }}}
+
+" Mathematics, Algorithm {{{
+" Factorial
+function! Factorial(n)
+  return a:n == 1 ? 1 : a:n * s:Factorial(a:n - 1)
+endfunction
+command! -nargs=1 Factorial :echo Factorial(<f-args>)
+" FizzBuzz
+function! FizzBuzz(n)
+  let fb = []
+  let i = 1
+  while i <= a:n
+    if i % 3 == 0
+      cal add(fb, 'Fizz')
+    elseif i % 5 == 0
+      cal add(fb, 'Buzz')
+    elseif i % 15 == 0
+      cal add(fb, 'FizzBuzz')
+    else
+      cal add(fb, ''.i)
+    endif
+    let i = i + 1
+  endwhile
+  return fb
+endfunction
+command! -nargs=1 FizzBuzz :echo FizzBuzz(<f-args>)
+" Greatest Common Divisor
+function! GreatestCommonDivisor(a, b)
+  let r = a:a % a:b
+  return r == 0 ? a:b : GreatestCommonDivisor(a:b, r)
+endfunction
+command! -nargs=+ GreatestCommonDivisor :echo GreatestCommonDivisor(<f-args>)
+" Fibonacci
+function! Fibonacci(n)
+  return a:n < 2 || a:n < 0 || a:n > 27 ? 1 : Fibonacci(a:n - 1) + Fibonacci(a:n - 2)
+endfunction
+command! -nargs=1 Fibonacci :echo Fibonacci(<f-args>)
+" /=Mathematics, Algorithm }}}
 
