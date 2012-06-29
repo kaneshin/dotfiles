@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 29-Jun-2012.
+" Last Change: 30-Jun-2012.
 " TODO:
 
 scriptencoding utf-8
@@ -484,8 +484,8 @@ set rtp+=$VIMHOME/bundle/vundle
 call vundle#rc( '$VIMHOME/bundle' )
 " github
 " Bundle 'kaneshin/vundle'
-" set rtp+=$DROPBOX/dev/prj/vim-plugin/sonictemplate-vim
 Bundle 'mattn/sonictemplate-vim'
+" set rtp+=$DROPBOX/dev/prj/vim-plugin/sonictemplate-vim
 Bundle 'mattn/webapi-vim'
 Bundle 'mattn/gist-vim'
 Bundle 'mattn/zencoding-vim'
