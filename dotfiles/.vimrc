@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 30-Jun-2012.
+" Last Change: 04-Jul-2012.
 " TODO:
 
 scriptencoding utf-8
@@ -15,6 +15,9 @@ filetype indent on
 " language en_US
 " language ca_ES
 " language ja_JP
+"
+" time to wait after ESC (default value is 1000)
+set timeoutlen=350
 
 " variables {{{
 " Windows (not on terminal)
@@ -179,13 +182,18 @@ inoremap <c-f> <right>
 inoremap <c-b> <Left>
 inoremap <c-l><c-a> <home>
 inoremap <c-l><c-e> <end>
+inoremap <c-l><c-l> <end>
+inoremap <c-l>( <esc>:call<space>search("(", "w")<cr>a
+inoremap <c-l>) <esc>:call<space>search(")", "w")<cr>i
+inoremap <c-l><space> <esc>:call<space>search(" ", "w")<cr>i
+inoremap <c-l>, <esc>:call<space>search(",", "w")<cr>a
 inoremap <C-r><C-r> <C-r>"
 " normal node
 nnoremap <silent> <c-t> :TabExpand<cr>
 nnoremap <c-f> <ESC>
-nnoremap <up> 30k
+nnoremap <up> 20kzz
 nnoremap <c-k> dd<up>
-nnoremap <down> 30j
+nnoremap <down> 20jzz
 nnoremap <c-j> o<esc>
 nnoremap <left> 0
 nnoremap <c-h> 0
@@ -396,6 +404,9 @@ autocmd BufEnter * execute ':lcd '.expand('%:p:h')
 " autocmd FileType perl :map <C-e> <ESC>:!perl %<CR>
 " autocmd FileType ruby :map <C-n> <ESC>:!ruby -cW %<CR>
 " autocmd FileType ruby :map <C-e> <ESC>:!ruby %<CR>
+autocmd FileType javascript
+      \ setl shiftwidth=2 |
+      \ setl tabstop=2
 " /=autocmds }}}
 "
 " something 1 {{{
