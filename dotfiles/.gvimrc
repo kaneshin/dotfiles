@@ -3,7 +3,7 @@
 "
 " File:        .gvimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 26-Jun-2012.
+" Last Change: 04-Jul-2012.
 
 scriptencoding utf-8
 set guioptions=agirLt
@@ -21,7 +21,9 @@ set columns=80
 set lines=40
 set cmdheight=2
 colorscheme desert
-if s:is_win || s:is_unix
+if s:is_win
+  colorscheme cosine
+elseif s:is_unix
   colorscheme molokai
 elseif s:is_mac
   set transparency=5
