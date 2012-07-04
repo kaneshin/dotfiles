@@ -5,7 +5,7 @@
 "
 " File:         cosine.vim
 " Maintainer:   Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change:  26-Jun-2012.
+" Last Change:  04-Jul-2012.
 " Note:
 " This theme is based on the molokai theme by Tomas Restrepo
 
@@ -99,7 +99,7 @@ hi WarningMsg     guifg=#FFFFFF guibg=#333333 gui=none
 hi WildMenu       guifg=#66D9EF guibg=#000000
 
 hi Normal         guifg=#f6f3e8 guibg=#242424 gui=none
-hi Comment        guifg=#99968b gui=italic
+hi Comment        guifg=#99968b               gui=none
 hi CursorLine                   guibg=#293739
 hi CursorColumn                 guibg=#293739
 hi LineNr         guifg=#BCBCBC guibg=#232526
