@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 04-Jul-2012.
+" Last Change: 05-Jul-2012.
 " TODO:
 
 scriptencoding utf-8
@@ -501,7 +501,6 @@ Bundle 'mattn/webapi-vim'
 Bundle 'mattn/gist-vim'
 Bundle 'mattn/zencoding-vim'
 Bundle 'thinca/vim-quickrun'
-Bundle 'markabe/bufexplorer'
 Bundle 'kien/ctrlp.vim'
 Bundle 'mattn/ctrlp-launcher'
 Bundle 'mattn/ctrlp-register'
@@ -517,6 +516,7 @@ Bundle 'tpope/vim-repeat'
 Bundle 'tyru/restart.vim'
 Bundle 'thinca/vim-ref'
 Bundle 'glidenote/memolist.vim'
+Bundle 'markabe/bufexplorer'
 " www.vim.org
 Bundle 'TwitVim'
 " playspace
@@ -610,7 +610,7 @@ nnoremap ,gf :<C-u>Gist -f<CR>
 " 4. g:quickrun#default_conig._type_
 " 5. g:quickrunconfig.
 " 6. g:quickrun#defaultonig.
-let b:quickrun_config = {}
+" let b:quickrun_config = {}
 let g:quickrun_config = {
 \ '_': {
 \   'outputter' : 'buffer',
