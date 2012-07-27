@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 05-Jul-2012.
+" Last Change: 25-Jul-2012.
 " TODO:
 
 scriptencoding utf-8
@@ -187,6 +187,7 @@ inoremap <c-l>( <esc>:call<space>search("(", "w")<cr>a
 inoremap <c-l>) <esc>:call<space>search(")", "w")<cr>i
 inoremap <c-l><space> <esc>:call<space>search(" ", "w")<cr>i
 inoremap <c-l>, <esc>:call<space>search(",", "w")<cr>a
+inoremap <c-l>; <esc>:call<space>search(";", "w")<cr>a
 inoremap <C-r><C-r> <C-r>"
 " normal node
 nnoremap <silent> <c-t> :TabExpand<cr>
@@ -216,7 +217,6 @@ nnoremap <silent> <C-x>0 :close<CR>
 nnoremap <silent> <C-x>1 :only<CR>
 nnoremap <silent> <C-x>2 :split<CR>
 nnoremap <silent> <C-x>3 :vsplit<CR>
-nnoremap <silent> <C-x>4 :tabe<CR>:BufExplorer<CR>
 nnoremap <silent> <C-x>n :bnext<CR>
 nnoremap <silent> <C-x>p :bprevious<CR>
 nnoremap <silent> <C-x>k :close<CR>
@@ -395,6 +395,14 @@ endfunction
 " }}}
 "
 " autocmds {{{
+augroup FTOptions
+  autocmd!
+  autocmd FileType c,cpp        setlocal sw=4 sts=4 ts=8
+  autocmd FileType ruby         setlocal sw=2 sts=2 ts=2
+  autocmd FileType perl         setlocal sw=4 sts=4 ts=4
+  autocmd FileType javascript   setlocal sw=2 sts=2 ts=2
+  autocmd FileType vim          setlocal sw=2 sts=2 ts=8
+augroup END
 " change directory if you open a file.
 autocmd BufEnter * execute ':lcd '.expand('%:p:h')
 " automatically open a quickfix
@@ -404,9 +412,6 @@ autocmd BufEnter * execute ':lcd '.expand('%:p:h')
 " autocmd FileType perl :map <C-e> <ESC>:!perl %<CR>
 " autocmd FileType ruby :map <C-n> <ESC>:!ruby -cW %<CR>
 " autocmd FileType ruby :map <C-e> <ESC>:!ruby %<CR>
-autocmd FileType javascript
-      \ setl shiftwidth=2 |
-      \ setl tabstop=2
 " /=autocmds }}}
 "
 " something 1 {{{
@@ -473,6 +478,26 @@ command! -nargs=* VComment call s:to_comment_v(<f-args>)
 vnoremap <silnet> b :'<,'>VComment<cr>
 " }}}
 "
+" something 3 {{{
+let s:event_message = [
+      \'What',
+      \'Who',
+      \'Where',
+      \'When',
+      \'Which',
+      \'How long',
+      \'How many',
+      \'How much',
+      \]
+function! s:put_message()
+  for msg in s:event_message
+    cal setline('.', msg)
+    silent! exec "normal! o"
+  endfor
+endfunction
+command! -nargs=* Putmsg call s:put_message()
+" }}}
+"
 " makesession {{{
 set sessionoptions=
       \"blank,buffers,folds,help,localoptions,resize,tabpages"
@@ -494,29 +519,31 @@ filetype off
 set rtp+=$VIMHOME/bundle/vundle
 call vundle#rc( '$VIMHOME/bundle' )
 " github
-" Bundle 'kaneshin/vundle'
+Bundle 'gmarik/vundle'
 Bundle 'mattn/sonictemplate-vim'
 " set rtp+=$DROPBOX/dev/prj/vim-plugin/sonictemplate-vim
 Bundle 'mattn/webapi-vim'
 Bundle 'mattn/gist-vim'
 Bundle 'mattn/zencoding-vim'
-Bundle 'thinca/vim-quickrun'
-Bundle 'kien/ctrlp.vim'
 Bundle 'mattn/ctrlp-launcher'
 Bundle 'mattn/ctrlp-register'
 Bundle 'mattn/ctrlp-mark'
-Bundle 'kaneshin/ctrlp-tabbed'
-Bundle 'kaneshin/ctrlp-sonictemplate'
-Bundle 'kaneshin/ctrlp-filetype'
-Bundle 'kaneshin/ctrlp-memolist'
+Bundle 'thinca/vim-quickrun'
+Bundle 'thinca/vim-ref'
+Bundle 'tyru/restart.vim'
+Bundle 'tyru/open-browser.vim'
+Bundle 'basyura/TweetVim'
+Bundle 'basyura/twibill.vim'
+Bundle 'kien/ctrlp.vim'
 Bundle 'Lokaltog/vim-easymotion'
 Bundle 'tpope/vim-surround'
 Bundle 'tpope/vim-fugitive'
 Bundle 'tpope/vim-repeat'
-Bundle 'tyru/restart.vim'
-Bundle 'thinca/vim-ref'
 Bundle 'glidenote/memolist.vim'
-Bundle 'markabe/bufexplorer'
+Bundle 'kaneshin/ctrlp-tabbed'
+Bundle 'kaneshin/ctrlp-sonictemplate'
+Bundle 'kaneshin/ctrlp-filetype'
+Bundle 'kaneshin/ctrlp-memolist'
 " www.vim.org
 Bundle 'TwitVim'
 " playspace
@@ -796,6 +823,62 @@ nnoremap <c-e>m :<c-u>CtrlPMemolist<cr>
 " if !exists(":APosttoEvernote")
 "   command! -nargs=+ APosttoEvernote :call <SID>args_evernote(<f-args>)
 " endif
+"
+" File: alerm.vim
+"
+" if exists('g:loaded_alerm_vim')
+"   finish
+" endif
+" let g:loaded_alerm_vim = 1
+"
+" let s:MyStatusline = &statusline
+" command! -nargs=+ AlermVim :call <SID>Alerm(<f-args>)
+" function! s:Alerm(t, ...)
+"   if a:t !~ '^\d\+\(\|s\|sec\|m\|min\|h\|hour\)$'
+"     return
+"   endif
+"   let s:msg = len(a:000) > 0 ? a:1 : "Alerm"
+"   call s:SetTime(a:t)
+"   call s:SetAlerm()
+" endfunction
+"
+" function! s:SetTime(t)
+"   if a:t =~ '^\d\+$'
+"     let s:strf = 's'
+"     let s:time = a:t
+"   elseif a:t =~ '^\d\+\(s\|sec\)$'
+"     let s:strf = 's'
+"     let s:time = substitute(a:t, '\(s\|sec\)', '', '')
+"   elseif a:t =~ '^\d\+\(m\|min\)$'
+"     let s:strf = 'm'
+"     let s:time = substitute(a:t, '\(m\|min\)', '', '')
+"     let s:time = s:time * 60
+"   elseif a:t =~ '^\d\+\(h\|hour\)$'
+"     let s:strf = 'h'
+"     let s:time = substitute(a:t, '\(h\|hour\)', '', '')
+"     let s:time = s:time * 60 * 60
+"   else
+"     echo "REJECT"
+"     echo ":AlermVim 'positive value' 'alerm message'"
+"     return
+"   endif
+"   let s:et = localtime() + s:time
+" endfunction
+"
+" function! s:SetAlerm()
+"   let &statusline = s:MyStatusline.'[Alerm:%{g:DoAlerm()}s]'
+" endfunction
+"
+" function! g:DoAlerm()
+"   let s:limit = s:et - localtime()
+"   if s:limit > 0
+"     return s:limit
+"   else
+"     let &statusline = s:MyStatusline
+"     echohl ErrorMsg | echomsg s:msg | echohl None
+"   endif
+" endfunction
+"
 " /=storage }}}
 
 " Mathematics, Algorithm {{{
