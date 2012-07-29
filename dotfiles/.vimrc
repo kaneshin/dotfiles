@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 25-Jul-2012.
+" Last Change: 30-Jul-2012.
 " TODO:
 
 scriptencoding utf-8
@@ -13,7 +13,6 @@ filetype indent on
 
 " Languages
 " language en_US
-" language ca_ES
 " language ja_JP
 "
 " time to wait after ESC (default value is 1000)
