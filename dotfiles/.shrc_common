@@ -2,7 +2,7 @@
 #
 # File:        .shrc.common
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 06-Jun-2012.
+# Last Change: 30-Jul-2012.
 
 # alias
 alias ce='cd ../'
@@ -25,4 +25,5 @@ alias pvim='vim -u $HOME/.pvimrc'
 
 # Add RVM to PATH for scripting
 PATH=$PATH:$HOME/.rvm/bin
+source $HOME/.rvm/scripts/rvm
 
