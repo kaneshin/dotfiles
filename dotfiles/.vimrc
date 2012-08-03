@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 30-Jul-2012.
+" Last Change: 04-Aug-2012.
 " TODO:
 
 scriptencoding utf-8
@@ -14,6 +14,7 @@ filetype indent on
 " Languages
 " language en_US
 " language ja_JP
+" let $LANG='ja_JP.UTF-8'
 "
 " time to wait after ESC (default value is 1000)
 set timeoutlen=350
@@ -63,6 +64,7 @@ if !(exists('g:loaded_vimrc') && g:loaded_vimrc)
   set backup
   set backupext=.bak
   set backupdir=$VIMHOME/backup
+  set backupskip=/tmp/*,/private/tmp/*
   set swapfile
   set directory=$VIMHOME/backup
 
@@ -531,6 +533,8 @@ Bundle 'thinca/vim-quickrun'
 Bundle 'thinca/vim-ref'
 Bundle 'tyru/restart.vim'
 Bundle 'tyru/open-browser.vim'
+Bundle 'tyru/caw.vim'
+Bundle 'tyru/eskk.vim'
 Bundle 'basyura/TweetVim'
 Bundle 'basyura/twibill.vim'
 Bundle 'kien/ctrlp.vim'
@@ -642,6 +646,7 @@ let g:quickrun_config = {
 \   'outputter' : 'buffer',
 \   'outputter/buffer/split': 'rightbelow 10sp',
 \   'runner': 'system',
+\   'hook/output_encode/encoding': 'utf-8',
 \ },
 \ 'c': {
 \   'command': 'gcc',
@@ -726,6 +731,15 @@ nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
 nnoremap <c-e>m :<c-u>CtrlPMemolist<cr>
 " }}}
 "
+" ##### kaneshin/ctrlp-filetype.vim {{{
+let g:ctrlp_filetype = {
+      \'user': [
+      \   'c',
+      \   'ruby',
+      \   'javascript',
+      \],
+      \}
+" }}}
 " /=plugin }}}
 
 " storage {{{
