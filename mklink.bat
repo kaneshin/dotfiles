@@ -16,7 +16,7 @@
 @set DOTWINDIR=%CWD%%WINDIR%
 
 @rem Make a symbolic links from dotfiles and winenv.
-@for %%i in (.vimrc .gvimrc) do @mklink %HOME%\%%i %DOTDOTDIR%\%%i
+@for %%i in (.pvimrc .vimrc .gvimrc) do @mklink %HOME%\%%i %DOTDOTDIR%\%%i
 @for %%i in (.doskey) do @copy %DOTWINDIR%\%%i %HOME%
 
 @pause
