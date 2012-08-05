@@ -3,14 +3,14 @@
 "
 " File:        .gvimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 04-Jul-2012.
+" Last Change: 06-Aug-2012.
 
 scriptencoding utf-8
 set guioptions=agirLt
 
-" Windows (not on terminal)
+" Windows
 let s:is_win = has( 'win32' ) || has( 'win64' )
-" Mac (not on terminal)
+" Mac
 let s:is_mac = has( 'mac' )
 " UNIX
 let s:is_unix = has( 'unix' ) && !s:is_mac && !s:is_win

@@ -3,8 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 04-Aug-2012.
-" TODO:
+" Last Change: 06-Aug-2012.
 
 scriptencoding utf-8
 syntax on
@@ -15,154 +14,28 @@ filetype indent on
 " language en_US
 " language ja_JP
 " let $LANG='ja_JP.UTF-8'
-"
-" time to wait after ESC (default value is 1000)
-set timeoutlen=350
 
-" variables {{{
-" Windows (not on terminal)
+if filereadable(expand('$HOME/.pvimrc'))
+  source $HOME/.pvimrc
+else
+  " Where is your primary vimrc?
+  finish
+endif
+
+" Windows
 let s:is_win = has( 'win32' ) || has( 'win64' )
-" Mac (not on terminal)
+" Mac
 let s:is_mac = has( 'mac' )
-" UNIX like
+" UNIX
 let s:is_unix = has( 'unix' ) && !s:is_mac && !s:is_win
-" $VIMHOME
-if !exists( '$VIMHOME' )
-  if s:is_win
-    if finddir('vimfiles', $HOME) == ''
-      cal mkdir(expand('$HOME/vimfiles'), "p")
-    endif
-    let $VIMHOME = expand('$HOME/vimfiles')
-  else
-    if finddir('.vim', $HOME) == ''
-      cal mkdir(expand('$HOME/.vim'), "p")
-    endif
-    let $VIMHOME = expand('$HOME/.vim')
-  endif
-endif
-" $MYHOME
-if !exists( '$MYHOME' )
-  let $MYHOME = $HOME
-endif
-" $DROPBOX
-if !exists( '$DROPBOX' ) && finddir('Dropbox', $MYHOME) != ''
-  let $DROPBOX = $MYHOME.'/Dropbox'
-endif
-" $DOTFILES
-if !exists( '$DOTFILES' ) && finddir('dev/dotfiles/dotfiles', $DROPBOX) != ''
-  let $DOTFILES = $DROPBOX.'/dev/dotfiles/dotfiles'
-endif
-" /=variables }}}
-"
-" options {{{
-if !(exists('g:loaded_vimrc') && g:loaded_vimrc)
-  let g:loaded_vimrc = 1
-  " ##### backup, swap
-  if finddir('backup', $VIMHOME) == ''
-    cal mkdir(expand('$VIMHOME/backup'), "p")
-  endif
-  set backup
-  set backupext=.bak
-  set backupdir=$VIMHOME/backup
-  set backupskip=/tmp/*,/private/tmp/*
-  set swapfile
-  set directory=$VIMHOME/backup
 
-  " ##### fold
-  if finddir('view', $VIMHOME) == ''
-    cal mkdir(expand('$VIMHOME/view'), "p")
-  endif
-  set viewdir=$VIMHOME/view
-  " autocmd BufWritePost * mkview
-  " autocmd BufReadPost * loadview
-  "
-  " ##### encoding
-  set fileencodings=utf-8,euc-jp,cp932,shiftjis,iso-2022-jp,latin1
-  set fileformats=unix,dos,mac
-  set encoding=utf-8
-  " set fileencoding=utf-8
-  if !s:is_win
-    set fileformat=unix
-  else
-    set fileformat=dos
-  endif
-  "
-  " ##### display#title
-  set title
-  set titlelen=90
-  if 0 && s:is_win
-    set titlestring=[%l/%L:%c/%{col('$')-1}]\ %t%(\ %M%)\ (%F)%=%<(kaneshin)
-  endif
-  "
-  " ##### display#tabline
-  set showtabline=2
-  set tabline=%!MyTabLine()
-  "
-  " ##### display#main
-  set splitbelow
-  set splitright
-  set nonumber
-  set scrolloff=3
-  set wrap
-  set list
-  set listchars=eol:\ ,tab:>\ ,trail:S,extends:<
-  " ##### display#below
-  set laststatus=2
-  set cmdheight=2
-  set statusline=%!MyStatusLine()
-  set ruler
-  set showcmd
-  set wildmenu
-  set wildmode=list:longest
-  "
-  " ##### cursor
-  set cursorline
-  set nocursorcolumn
-  "
-  " ##### search
-  set ignorecase
-  set smartcase
-  set nowrapscan
-  set incsearch
-  "
-  " ##### edit
-  set autoindent
-  set smartindent
-  set showmatch
-  set backspace=indent,eol,start
-  set clipboard=unnamed
-  set pastetoggle=<F12>
-  set formatoptions+=mM
-  "
-  " ##### <Tab>
-  set tabstop=4
-  set shiftwidth=4
-  set softtabstop=0
-  set expandtab
-  set smarttab
-  set shiftround
-  "
-  " ##### etc
-  " NOTE: Vim turn off the compatible mode, if Vim find vimrc or gvimrc.
-  " set nocompatible
-  set noshellslash
-  set nrformats+=alpha
-  set nrformats+=octal
-  set nrformats+=hex
-  set history=300
-
-  set undolevels=2000
-  set iminsert=0
-  set imsearch=0
-  "
-  " ##### Mac
-  if s:is_mac
-    set nomigemo
-    set macmeta
-  end
+" setting of displays
+if s:is_win
+  set titlestring=[%l/%L:%c/%{col('$')-1}]\ %t%(\ %M%)\ (%F)%=%<(kaneshin)
 endif
-" /=options }}}
-"
+set tabline=%!MyTabLine()
+set statusline=%!MyStatusLine()
+
 " key mapping {{{
 " .vimrc
 if filereadable(expand('$DOTFILES/.vimrc'))
@@ -178,42 +51,46 @@ if filereadable(expand('$DOTFILES/.gvimrc'))
   nnoremap <silent> ,eg :EditGVimrc<CR>
   nnoremap <silent> ,rg :ReadGVimrc<CR>
 endif
-" insert mode
-inoremap <c-f> <right>
+
+" use emacs key bind during command mode and a movement of insert mode
+" start of line
+cnoremap <c-a> <Home>
+inoremap <c-a> <home>
+" back one character
+cnoremap <c-b> <Left>
 inoremap <c-b> <Left>
-inoremap <c-l><c-a> <home>
-inoremap <c-l><c-e> <end>
-inoremap <c-l><c-l> <end>
-inoremap <c-l>( <esc>:call<space>search("(", "w")<cr>a
-inoremap <c-l>) <esc>:call<space>search(")", "w")<cr>i
-inoremap <c-l><space> <esc>:call<space>search(" ", "w")<cr>i
-inoremap <c-l>, <esc>:call<space>search(",", "w")<cr>a
-inoremap <c-l>; <esc>:call<space>search(";", "w")<cr>a
-inoremap <C-r><C-r> <C-r>"
+" delete character under cursor
+cnoremap <c-d> <Del>
+inoremap <c-d> <Del>
+" end of line
+cnoremap <c-e> <End>
+inoremap <c-e> <end>
+" forward one character
+cnoremap <c-f> <Right>
+inoremap <c-f> <Right>
+" recall newer command-line
+cnoremap <c-n> <Down>
+" recall previous (older) command-line
+cnoremap <c-p> <Up>
+" delete character backward
+cnoremap <c-h> <BS>
+
 " normal node
-nnoremap <silent> <c-t> :TabExpand<cr>
-nnoremap <c-f> <ESC>
-nnoremap <up> 20kzz
-nnoremap <c-k> dd<up>
-nnoremap <down> 20jzz
-nnoremap <c-j> o<esc>
-nnoremap <left> 0
 nnoremap <c-h> 0
-nnoremap <silent> <m-h> :tabprev<cr>
-nnoremap <silent> <m-l> :tabnext<cr>
-nnoremap <right> $
+nnoremap <c-j> o<esc>
+nnoremap <c-k> dd
 nnoremap <c-l> $
-nnoremap <c-g> g;zz
-
 nnoremap <c-space> i<space><esc><right>
-nnoremap ; :
-nnoremap <silent> <c-s> :cal setline('.',substitute(getline('.'),@/,@",'g'))<cr>
-
+" nnoremap <silent> <c-s> :cal setline('.',substitute(getline('.'),@/,@",'g'))<cr>
+" moving
+nnoremap <c-g> g;zz
+nnoremap <silent> <C-u> zz<C-u>
+nnoremap <silent> <C-f> zz<C-f>
+" searching
 nnoremap n nzz
 nnoremap N Nzz
-nnoremap <silent> <C-u> <C-u>zz
-nnoremap <silent> <C-f> <C-f>zz
-
+nnoremap <silent> <ESC><ESC> :nohlsearch<CR>
+" spliting window
 nnoremap <silent> <C-x>0 :close<CR>
 nnoremap <silent> <C-x>1 :only<CR>
 nnoremap <silent> <C-x>2 :split<CR>
@@ -221,28 +98,30 @@ nnoremap <silent> <C-x>3 :vsplit<CR>
 nnoremap <silent> <C-x>n :bnext<CR>
 nnoremap <silent> <C-x>p :bprevious<CR>
 nnoremap <silent> <C-x>k :close<CR>
-nnoremap <silent> <ESC><ESC> :nohlsearch<CR>
+" etc
+nnoremap <silent> <C-t> :TabExpand<CR>
+
+" insert mode
+inoremap <c-l><c-l> <end>
+inoremap <c-l>( <esc>:call<space>search("(", "w")<cr>a
+inoremap <c-l>) <esc>:call<space>search(")", "w")<cr>i
+inoremap <c-l><space> <esc>:call<space>search(" ", "w")<cr>i
+inoremap <c-l>, <esc>:call<space>search(",", "w")<cr>a
+inoremap <c-l>; <esc>:call<space>search(";", "w")<cr>a
+inoremap <C-r><C-r> <C-r>"
+
 " visual mode
 vnoremap ; :
 vnoremap <silent> > >gv
 vnoremap <silent> < <gv
 vnoremap f <esc>
+
 " command mode
 cmap <C-x> <C-r>=expand('%:p:h')<CR>/
 cmap <C-z> <C-r>=expand('%:p:r')<CR>
-" emacs key bind in command mode
-cnoremap <C-a> <Home>
-cnoremap <C-e> <End>
-cnoremap <C-b> <Left>
-cnoremap <C-f> <Right>
-cnoremap <C-n> <Down>
-cnoremap <C-p> <Up>
-cnoremap <C-h> <BS>
-"
+
 " brackets and else
 inoremap () ()<Left>
-inoremap (); ();<Left><Left>
-inoremap (){ ()<space>{<cr>}<esc>kA<left><left><left>
 cnoremap () ()<Left>
 inoremap {} {}<Left>
 cnoremap {} {}<Left>
@@ -256,8 +135,12 @@ inoremap <> <><Left>
 cnoremap <> <><Left>
 " inoremap %% %%<Left>
 " cnoremap %% %%<Left>
+inoremap (); ();<Left><Left>
+
+" modifying a typo
+inoremap {] {}<Left>
 " /=key mapping }}}
-"
+
 " functions {{{
 function! GetShortenRegister(reg)
   return substitute(substitute(a:reg, '\n', '', 'g'), '^ *\(.\{,15\}\).*$', '\1', '')
@@ -280,54 +163,8 @@ function! s:getMaxLengthTabname()
   endfor
   return maxlfn
 endfunction
-" sticky
-" let g:sticky_mode = "eng"
-" let s:stickypos = 0
-" let s:sticky = {
-"         \"eng": [
-"             \"I'm gonna be here.",
-"             \"Should be ok.",
-"             \"Could be ok."
-"         \],
-"         \"": []
-"     \}
-" function! g:Sticky()
-"   let s:stickypos += 1
-"   let s:stickypos = s:stickypos % len(s:sticky[g:sticky_mode])
-"   return s:sticky[g:sticky_mode][s:stickypos]
-" endfunction
-"
-" tab to space
-" function! s:TabToSpace(...)
-"   let lines = getbufline(bufnr(bufname('%')), 1, "$")
-"   let result = []
-"   for line in lines
-"     call add(result, substitute(line, "\t",
-"           \repeat(' ', (a:0 > 0 ? a:1 : &shiftwidth)), "g"))
-"   endfor
-"   call setline(1, result)
-" endfunction
-" command! -nargs=? TabToSpace call s:TabToSpace(<f-args>)
+" /=functions }}}
 
-" remove spaces
-function! s:RemoveSpace()
-  let lines = getbufline(bufnr(bufname('%')), 1, "$")
-  let result = []
-  for line in lines
-    call add(result, substitute(line, " \\+$", "", ""))
-  endfor
-  call setline(1, result)
-endfunction
-command! -nargs=0 RemoveSpace call s:RemoveSpace()
-" remove spaces of brackets
-" function! s:RemoveBracketsSpace()
-"   let line = getline(".")
-"   let line = substitute(line, "( \\+\\(.\\+\\) \\+)", "(\\1)", "")
-"   call setline(".", line)
-" endfunction
-" command! -nargs=0 RemoveBracketsSpace call s:RemoveBracketsSpace()
-" }}}
-"
 " Tab line {{{
 function! MyTabLabel(n)
   let buflist = tabpagebuflist(a:n)
@@ -382,7 +219,7 @@ endfunction
 cal TabExpand()
 command! TabExpand cal TabExpand()
 " /=Tab line }}}
-"
+
 " status line {{{
 function! MyStatusLine()
   return "%t\ %m%r%h%w%y"
@@ -391,11 +228,12 @@ function! MyStatusLine()
         \."%=%<"
         \."%{'@\"['.GetShortenRegister(@\").']"
         \."\ @/[/'.GetShortenRegister(@/).']'}"
-        \."[%l/%L]"
+        \."[%l/%L,%c/%{col('$')}]"
 endfunction
 " }}}
-"
+
 " autocmds {{{
+" Filetype options
 augroup FTOptions
   autocmd!
   autocmd FileType c,cpp        setlocal sw=4 sts=4 ts=8
@@ -404,8 +242,13 @@ augroup FTOptions
   autocmd FileType javascript   setlocal sw=2 sts=2 ts=2
   autocmd FileType vim          setlocal sw=2 sts=2 ts=8
 augroup END
+
 " change directory if you open a file.
-autocmd BufEnter * execute ':lcd '.expand('%:p:h')
+augroup MyVimOptions
+  autocmd!
+  autocmd BufEnter * execute ':lcd '.expand('%:p:h')
+augroup END
+
 " automatically open a quickfix
 " autocmd QuickfixCmdPost make,grep,grepadd,vimgrep
 "       \if len(getqflist()) != 0 | copen | endif
@@ -414,7 +257,7 @@ autocmd BufEnter * execute ':lcd '.expand('%:p:h')
 " autocmd FileType ruby :map <C-n> <ESC>:!ruby -cW %<CR>
 " autocmd FileType ruby :map <C-e> <ESC>:!ruby %<CR>
 " /=autocmds }}}
-"
+
 " something 1 {{{
 let s:progmap_toggle = {
       \  'c': 0
@@ -478,7 +321,7 @@ endfunction
 command! -nargs=* VComment call s:to_comment_v(<f-args>)
 vnoremap <silnet> b :'<,'>VComment<cr>
 " }}}
-"
+
 " something 3 {{{
 let s:event_message = [
       \'What',
@@ -498,7 +341,7 @@ function! s:put_message()
 endfunction
 command! -nargs=* Putmsg call s:put_message()
 " }}}
-"
+
 " makesession {{{
 set sessionoptions=
       \"blank,buffers,folds,help,localoptions,resize,tabpages"
@@ -513,9 +356,47 @@ function! s:session()
 endfunction
 command! Session call s:session()
 " }}}
-"
+
+" Mathematics, Algorithm {{{
+" Factorial
+function! Factorial(n)
+  return a:n == 1 ? 1 : a:n * s:Factorial(a:n - 1)
+endfunction
+command! -nargs=1 Factorial :echo Factorial(<f-args>)
+" FizzBuzz
+function! FizzBuzz(n)
+  let fb = []
+  let i = 1
+  while i <= a:n
+    if i % 3 == 0
+      cal add(fb, 'Fizz')
+    elseif i % 5 == 0
+      cal add(fb, 'Buzz')
+    elseif i % 15 == 0
+      cal add(fb, 'FizzBuzz')
+    else
+      cal add(fb, ''.i)
+    endif
+    let i = i + 1
+  endwhile
+  return fb
+endfunction
+command! -nargs=1 FizzBuzz :echo FizzBuzz(<f-args>)
+" Greatest Common Divisor
+function! GreatestCommonDivisor(a, b)
+  let r = a:a % a:b
+  return r == 0 ? a:b : GreatestCommonDivisor(a:b, r)
+endfunction
+command! -nargs=+ GreatestCommonDivisor :echo GreatestCommonDivisor(<f-args>)
+" Fibonacci
+function! Fibonacci(n)
+  return a:n < 2 || a:n < 0 || a:n > 27 ? 1 : Fibonacci(a:n - 1) + Fibonacci(a:n - 2)
+endfunction
+command! -nargs=1 Fibonacci :echo Fibonacci(<f-args>)
+" /=Mathematics, Algorithm }}}
+
 " plugin {{{
-" ##### gmarik/vundle {{{
+" vundle {{{
 filetype off
 set rtp+=$VIMHOME/bundle/vundle
 call vundle#rc( '$VIMHOME/bundle' )
@@ -537,12 +418,12 @@ Bundle 'tyru/caw.vim'
 Bundle 'tyru/eskk.vim'
 Bundle 'basyura/TweetVim'
 Bundle 'basyura/twibill.vim'
-Bundle 'kien/ctrlp.vim'
 Bundle 'Lokaltog/vim-easymotion'
 Bundle 'tpope/vim-surround'
 Bundle 'tpope/vim-fugitive'
 Bundle 'tpope/vim-repeat'
 Bundle 'glidenote/memolist.vim'
+Bundle 'kien/ctrlp.vim'
 Bundle 'kaneshin/ctrlp-tabbed'
 Bundle 'kaneshin/ctrlp-sonictemplate'
 Bundle 'kaneshin/ctrlp-filetype'
@@ -552,9 +433,9 @@ Bundle 'TwitVim'
 " playspace
 " Bundle 'koron/nyancat-vim'
 filetype plugin indent on
-" /=gmarik/vundle }}}
+" /=vundle }}}
 
-" ##### mattn/sonictemplate-vim {{{
+" sonictemplate-vim {{{
 let g:sonictemplate_vim_template_dir = [
       \expand('$VIMHOME/template'),
       \expand('$DROPBOX/dev/dotfiles/dotfiles/.vim/template'),
@@ -586,7 +467,7 @@ endfunction
 command! -nargs=1 -complete=customlist,s:sonickeys_complete Sonicvalue call s:put_sonicvalue(<f-args>)
 " }}}
 
-" ##### TwitVim {{{
+" TwitVim {{{
 let g:twitvim_count = 50
 if s:is_win
   let g:twitvim_browser_cmd
@@ -616,8 +497,8 @@ function! s:my_twitvim()
   nnoremap <buffer> <C-p> :<C-u>BackTwitter<CR>
 endfunction
 " /=TwitVim }}}
-"
-" ##### mattn/gist-vim {{{
+
+" gist-vim {{{
 " --- gist setting ---
 " let g:github_user = 'kaneshin'
 " let g:github_token = ''
@@ -630,9 +511,9 @@ nnoremap ,gl :<C-u>Gist -l<CR>
 nnoremap ,gla :<C-u>Gist -la<CR>
 nnoremap ,gd :<C-u>Gist -d<CR>
 nnoremap ,gf :<C-u>Gist -f<CR>
-" /=mattn/gist-vim }}}
-"
-" ##### thinca/vim-quickrun {{{
+" /=gist-vim }}}
+
+" vim-quickrun {{{
 " let g:loaded_quicklaunch = 1
 " 1. b:quickrun_config
 " 2. 'filetype'
@@ -667,18 +548,18 @@ let g:quickrun_config = {
 \   'tempfile': '%{tempname()}.rb',
 \ },
 \}
-" /=thinca/vim-quickrun }}}
-"
-" ##### tyru/restart.vim {{{
+" /=vim-quickrun }}}
+
+" restart.vim {{{
 let g:restart_sessionoptions
     \ = 'blank,buffers,curdir,folds,help,localoptions,tabpages'
-" /=tyru/restart.vim }}}
-"
-" ##### Lokaltog/vim-easymotion {{{
+" /=restart.vim }}}
+
+" vim-easymotion {{{
 let g:EasyMotion_leader_key = '<Leader>'
 " }}}
-"
-" ##### glidenote/memolist.vim {{{
+
+" memolist.vim {{{
 let g:memolist_path = $DROPBOX.'/docs/memo'
 let g:memolist_memo_suffix = "mkd"
 let g:memolist_memo_date = "%Y-%m-%d %H:%M"
@@ -687,8 +568,8 @@ let g:memolist_prompt_categories = 1
 " let g:memolist_qfixgrep = 1
 " let g:memolist_vimfiler = 1
 " }}}
-"
-" ##### thinca/ref.vim {{{
+
+" ref.vim {{{
 let g:ref_source_webdict_sites = {
       \'wikipedia:en': 'http://en.wikipedia.org/wiki/%s',
       \'wikipedia:ja': 'http://ja.wikipedia.org/wiki/%s',
@@ -696,8 +577,8 @@ let g:ref_source_webdict_sites = {
       \'Oxford': 'http://oxforddictionaries.com/definition/%s',
       \}
 " }}}
-"
-" ##### kien/ctrlp.vim and Extensions {{{
+
+" ctrlp.vim and Extensions {{{
 " Set this to 0 to show the match window at the top of the screen
 let g:ctrlp_match_window_bottom = 1
 " Change the listing order of the files in the match window
@@ -724,14 +605,6 @@ let g:ctrlp_extensions = [
       \'tabbed',
       \'memolist',
       \]
-nnoremap <c-e>p :<c-u>CtrlPLauncher<cr>
-nnoremap <c-e>b :<c-u>CtrlPTabbed<cr>
-nnoremap <c-e>t :<c-u>CtrlPSonictemplate<cr>
-nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
-nnoremap <c-e>m :<c-u>CtrlPMemolist<cr>
-" }}}
-"
-" ##### kaneshin/ctrlp-filetype.vim {{{
 let g:ctrlp_filetype = {
       \'user': [
       \   'c',
@@ -739,6 +612,11 @@ let g:ctrlp_filetype = {
       \   'javascript',
       \],
       \}
+nnoremap <c-e>p :<c-u>CtrlPLauncher<cr>
+nnoremap <c-e>b :<c-u>CtrlPTabbed<cr>
+nnoremap <c-e>t :<c-u>CtrlPSonictemplate<cr>
+nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
+nnoremap <c-e>m :<c-u>CtrlPMemolist<cr>
 " }}}
 " /=plugin }}}
 
@@ -892,43 +770,52 @@ let g:ctrlp_filetype = {
 "   endif
 " endfunction
 "
-" /=storage }}}
+" sticky
+" let g:sticky_mode = "eng"
+" let s:stickypos = 0
+" let s:sticky = {
+"         \"eng": [
+"             \"I'm gonna be here.",
+"             \"Should be ok.",
+"             \"Could be ok."
+"         \],
+"         \"": []
+"     \}
+" function! g:Sticky()
+"   let s:stickypos += 1
+"   let s:stickypos = s:stickypos % len(s:sticky[g:sticky_mode])
+"   return s:sticky[g:sticky_mode][s:stickypos]
+" endfunction
+"
+" tab to space
+" function! s:TabToSpace(...)
+"   let lines = getbufline(bufnr(bufname('%')), 1, "$")
+"   let result = []
+"   for line in lines
+"     call add(result, substitute(line, "\t",
+"           \repeat(' ', (a:0 > 0 ? a:1 : &shiftwidth)), "g"))
+"   endfor
+"   call setline(1, result)
+" endfunction
+" command! -nargs=? TabToSpace call s:TabToSpace(<f-args>)
 
-" Mathematics, Algorithm {{{
-" Factorial
-function! Factorial(n)
-  return a:n == 1 ? 1 : a:n * s:Factorial(a:n - 1)
-endfunction
-command! -nargs=1 Factorial :echo Factorial(<f-args>)
-" FizzBuzz
-function! FizzBuzz(n)
-  let fb = []
-  let i = 1
-  while i <= a:n
-    if i % 3 == 0
-      cal add(fb, 'Fizz')
-    elseif i % 5 == 0
-      cal add(fb, 'Buzz')
-    elseif i % 15 == 0
-      cal add(fb, 'FizzBuzz')
-    else
-      cal add(fb, ''.i)
-    endif
-    let i = i + 1
-  endwhile
-  return fb
-endfunction
-command! -nargs=1 FizzBuzz :echo FizzBuzz(<f-args>)
-" Greatest Common Divisor
-function! GreatestCommonDivisor(a, b)
-  let r = a:a % a:b
-  return r == 0 ? a:b : GreatestCommonDivisor(a:b, r)
-endfunction
-command! -nargs=+ GreatestCommonDivisor :echo GreatestCommonDivisor(<f-args>)
-" Fibonacci
-function! Fibonacci(n)
-  return a:n < 2 || a:n < 0 || a:n > 27 ? 1 : Fibonacci(a:n - 1) + Fibonacci(a:n - 2)
-endfunction
-command! -nargs=1 Fibonacci :echo Fibonacci(<f-args>)
-" /=Mathematics, Algorithm }}}
+" remove spaces
+" function! s:RemoveSpace()
+"   let lines = getbufline(bufnr(bufname('%')), 1, "$")
+"   let result = []
+"   for line in lines
+"     call add(result, substitute(line, " \\+$", "", ""))
+"   endfor
+"   call setline(1, result)
+" endfunction
+" command! -nargs=0 RemoveSpace call s:RemoveSpace()
+" remove spaces of brackets
+" function! s:RemoveBracketsSpace()
+"   let line = getline(".")
+"   let line = substitute(line, "( \\+\\(.\\+\\) \\+)", "(\\1)", "")
+"   call setline(".", line)
+" endfunction
+" command! -nargs=0 RemoveBracketsSpace call s:RemoveBracketsSpace()
+"
+" /=storage }}}
 
