@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 06-Aug-2012.
+" Last Change: 27-Aug-2012.
 
 scriptencoding utf-8
 syntax on
@@ -30,7 +30,7 @@ let s:is_mac = has( 'mac' )
 let s:is_unix = has( 'unix' ) && !s:is_mac && !s:is_win
 
 " setting of displays
-if s:is_win
+if 0 && s:is_win
   set titlestring=[%l/%L:%c/%{col('$')-1}]\ %t%(\ %M%)\ (%F)%=%<(kaneshin)
 endif
 set tabline=%!MyTabLine()
@@ -61,7 +61,6 @@ cnoremap <c-b> <Left>
 inoremap <c-b> <Left>
 " delete character under cursor
 cnoremap <c-d> <Del>
-inoremap <c-d> <Del>
 " end of line
 cnoremap <c-e> <End>
 inoremap <c-e> <end>
@@ -76,7 +75,7 @@ cnoremap <c-p> <Up>
 cnoremap <c-h> <BS>
 
 " normal node
-nnoremap <c-h> 0
+nnoremap <c-h> 0w
 nnoremap <c-j> o<esc>
 nnoremap <c-k> dd
 nnoremap <c-l> $
@@ -99,7 +98,10 @@ nnoremap <silent> <C-x>n :bnext<CR>
 nnoremap <silent> <C-x>p :bprevious<CR>
 nnoremap <silent> <C-x>k :close<CR>
 " etc
-nnoremap <silent> <C-t> :TabExpand<CR>
+nmap <silent> <m-p> a<cr><esc>P<up>JJ
+
+nmap <nmap <silent> <m-p> p silent> <m-p> p
+nmap <nmap <silent> <m-p> p silent> <m-p> p
 
 " insert mode
 inoremap <c-l><c-l> <end>
@@ -170,54 +172,27 @@ function! MyTabLabel(n)
   let buflist = tabpagebuflist(a:n)
   let winnr = tabpagewinnr(a:n)
   let mod = filter(copy(buflist), 'getbufvar(v:val, "&modified")')
-  let fname = substitute(bufname(buflist[winnr-1]), ".*\\/", "", "")
+  let fname = substitute(pathshorten(bufname(buflist[winnr-1])), '.*\(\/\|\\\)', "", "")
   let tablb = (len(mod) ? '+ ' : '').(fname != '' ? fname : 'New File')
   let hi = (a:n == tabpagenr() ? '%#TabLineSel#' : '%#TabLine#' )
   return '%'.a:n.'T'.hi.' '.tablb.' '.'%T%#TabLineFill#'
 endfunction
 function! MyTabLine()
-  let s:tabnr = s:getTabnr()
   let tabrange = range(1, tabpagenr('$'))
   let sep = ' '
   " left side of tab line
   let tableft = ''
-  if len(tabrange) > s:tabnr
-    let tableft .= sep.'Tab:'.tabpagenr().'/'.tabpagenr('$').sep.MyTabLabel(tabpagenr())
-  else
-    for i in tabrange
-      let tableft .= sep.MyTabLabel(i)
-    endfor
-  endif
+  let tableft .= sep.'Tab:'.tabpagenr().'/'.tabpagenr('$')
+  for i in tabrange
+    let tableft .= sep.MyTabLabel(i)
+  endfor
   " right side of tab line
   let tabright = ''
-  if s:tabdir
-    let fn = fnamemodify(getcwd(), ":~")
-    let tabright .= (len(fn) > 20 ? pathshorten(fn) : fn).sep
-  endif
+  let fn = fnamemodify(getcwd(), ":~")
+  let tabright .= (len(fn) > 20 ? pathshorten(fn) : fn).sep
   let tabright .= "%{fugitive#statusline()}"
   return tableft."%=".tabright
 endfunction
-function! s:getTabnr()
-  if s:tabtoggle
-    let fn = fnamemodify(getcwd(), ":~")
-    return ((&columns - len((len(fn) > 20 ? pathshorten(fn) : fn))) / s:getMaxLengthTabname())
-  else
-    return 20
-  endif
-endfunction
-let s:tabtoggle = 0
-function! TabExpand()
-  if s:tabtoggle
-    let s:tabdir = 0
-    let s:tabtoggle = 0
-  else
-    let s:tabdir = 1
-    let s:tabtoggle = 1
-  endif
-  let &tabline="%!MyTabLine()"
-endfunction
-cal TabExpand()
-command! TabExpand cal TabExpand()
 " /=Tab line }}}
 
 " status line {{{
@@ -400,38 +375,45 @@ command! -nargs=1 Fibonacci :echo Fibonacci(<f-args>)
 filetype off
 set rtp+=$VIMHOME/bundle/vundle
 call vundle#rc( '$VIMHOME/bundle' )
-" github
+" vundle is managed by itself
 Bundle 'gmarik/vundle'
+
 Bundle 'mattn/sonictemplate-vim'
-" set rtp+=$DROPBOX/dev/prj/vim-plugin/sonictemplate-vim
 Bundle 'mattn/webapi-vim'
 Bundle 'mattn/gist-vim'
 Bundle 'mattn/zencoding-vim'
-Bundle 'mattn/ctrlp-launcher'
-Bundle 'mattn/ctrlp-register'
-Bundle 'mattn/ctrlp-mark'
 Bundle 'thinca/vim-quickrun'
 Bundle 'thinca/vim-ref'
 Bundle 'tyru/restart.vim'
 Bundle 'tyru/open-browser.vim'
 Bundle 'tyru/caw.vim'
 Bundle 'tyru/eskk.vim'
-Bundle 'basyura/TweetVim'
-Bundle 'basyura/twibill.vim'
 Bundle 'Lokaltog/vim-easymotion'
-Bundle 'tpope/vim-surround'
 Bundle 'tpope/vim-fugitive'
-Bundle 'tpope/vim-repeat'
 Bundle 'glidenote/memolist.vim'
+
+Bundle 'vim-scripts/taglist.vim'
+Bundle 'vim-scripts/SrcExpl'
+
+" vim-surround
+Bundle 'tpope/vim-surround'
+Bundle 'tpope/vim-repeat'
+
+" ctrlp
 Bundle 'kien/ctrlp.vim'
+Bundle 'mattn/ctrlp-launcher'
+Bundle 'mattn/ctrlp-register'
+Bundle 'mattn/ctrlp-mark'
 Bundle 'kaneshin/ctrlp-tabbed'
 Bundle 'kaneshin/ctrlp-sonictemplate'
 Bundle 'kaneshin/ctrlp-filetype'
 Bundle 'kaneshin/ctrlp-memolist'
-" www.vim.org
+
+" Twitter
 Bundle 'TwitVim'
-" playspace
-" Bundle 'koron/nyancat-vim'
+Bundle 'basyura/TweetVim'
+Bundle 'basyura/twibill.vim'
+
 filetype plugin indent on
 " /=vundle }}}
 
@@ -608,6 +590,7 @@ let g:ctrlp_extensions = [
 let g:ctrlp_filetype = {
       \'user': [
       \   'c',
+      \   'cpp',
       \   'ruby',
       \   'javascript',
       \],

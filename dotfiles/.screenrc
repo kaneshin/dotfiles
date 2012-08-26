@@ -2,7 +2,7 @@
 #
 # File:        .screenrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 28-May-2012.
+# Last Change: 27-Aug-2012.
 
 # encoding
 encoding utf-8
@@ -38,7 +38,8 @@ bind 0 remove
 bind 1 only
 bind 2 split
 bind 3 split -v
+bind  focus
 
 # key bind without escape
-bindkey  focus
+# bindkey  focus
 

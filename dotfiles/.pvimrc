@@ -3,7 +3,7 @@
 "
 " File:        .pvimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 06-Aug-2012.
+" Last Change: 16-Aug-2012.
 " Descriptsion:
 "   This file contains Shintaro's setting of primary vimrc.
 
@@ -84,11 +84,7 @@ augroup END
 set fileencodings=utf-8,euc-jp,cp932,shiftjis,iso-2022-jp,latin1
 set encoding=utf-8
 set fileformats=unix,dos,mac
-if s:is_win
-  set fileformat=dos
-else
-  set fileformat=unix
-endif
+set fileformat=unix
 "
 " display: title
 set title
@@ -115,7 +111,7 @@ set wildmenu
 set wildmode=list:longest
 
 " cursor
-set cursorline
+set nocursorline
 set nocursorcolumn
 
 " search
