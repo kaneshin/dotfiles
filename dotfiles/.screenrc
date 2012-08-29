@@ -38,8 +38,8 @@ bind 0 remove
 bind 1 only
 bind 2 split
 bind 3 split -v
-bind  focus
+# bind  focus
 
 # key bind without escape
-# bindkey  focus
+bindkey  focus
 

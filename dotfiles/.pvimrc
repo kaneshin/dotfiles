@@ -3,9 +3,9 @@
 "
 " File:        .pvimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 16-Aug-2012.
+" Last Change: 27-Aug-2012.
 " Descriptsion:
-"   This file contains Shintaro's setting of primary vimrc.
+"   This file contains Shintaro's primary vimrc setting
 
 scriptencoding utf-8
 
@@ -140,6 +140,7 @@ set smarttab
 set shiftround
 
 " edit: etc
+set tags=$VIMHOME/tags,./tags,tags
 set noshellslash
 set nrformats+=alpha
 set nrformats+=octal
