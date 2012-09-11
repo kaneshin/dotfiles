@@ -1,41 +1,84 @@
 #!/bin/bash
 
-cd $(dirname ${0})
-SANDBOX=$HOME/Dropbox/dev/sandbox
+# File:         symlink.sh
+# Version:      1.0.0
+# Maintainer:   Shintaro Kaneko <kaneshin0120@gmail.com>
+# Last Change:  11-Sep-2012.
+
 TARGET=$HOME
+DOTFILESDIR=dotfiles/
+SANDBOX=$HOME/Dropbox/dev/sandbox
+
+function create_dotfiles()
+{
+    # create dotfiles and dotdirectories into $1 (require)
+    if [[ $1 == '' ]]; then
+        return
+    fi
+    cd $DOTFILESDIR
+    for dotfile in .?*; do
+        if [[ $dotfile == '..' ]]; then
+            # echo ".. is parent directory"
+            continue
+        elif [[ -f $dotfile ]]; then
+            ln -sf $PWD/$dotfile $1
+            suffix="@"
+        elif [[ -d $dotfile ]]; then
+            cp -fpR $PWD/$dotfile $1/
+            suffix="/"
+        fi
+        echo "created $1/$dotfile$suffix"
+    done
+}
+
+function remove_dotfiles()
+{
+    # remove dotfiles and dotdirectories from $1 (require)
+    if [[ $1 == '' ]]; then
+        return
+    fi
+    cd $DOTFILESDIR
+    for dotfile in .?*; do
+        if [[ $dotfile == '..' ]]; then
+            continue
+        elif [[ -f $dotfile ]]; then
+            if [ -L $1/$dotfile ]; then
+                rm -f $1/$dotfile
+                suffix="@"
+            fi
+        elif [[ -d $dotfile ]]; then
+            rm -rf $1/$dotfile/
+            suffix="/"
+        fi
+        echo "removed $1/$dotfile$suffix"
+    done
+}
+
+cd $(dirname ${0})
 case $1 in
     make )
-        cd dotfiles/
-        for dotfile in .?*; do
-            if [ -f $dotfile ]; then
-                ln -sf $PWD/$dotfile $TARGET
-                echo "created $TARGET/$dotfile@ as a symbolic link."
-            elif [ $dotfile = '..' ]; then
-                echo "parent directory"
-            elif [ -d $dotfile ]; then
-                cp -fpr $PWD/$dotfile $TARGET/
-                echo "copy $TARGET/$dotfile"
-            fi
-        done
+        create_dotfiles $TARGET
     ;;
-    rm )
-        cd $TARGET
-        for dotfile in .?*; do
-            if [ -L $dotfile ]; then
-                rm -f $PWD/$dotfile
-                echo "removed $TARGET/$dotfile@."
-            fi
-        done
+    clean )
+        remove_dotfiles $TARGET
     ;;
-    test )
-        echo "test"
+    # sandbox at $SANDBOX
+    sandboxm )
+        echo "run symlink.sh at sandbox"
+        create_dotfiles $SANDBOX
+    ;;
+    sandboxc )
+        remove_dotfiles $SANDBOX
     ;;
     * )
         echo "Require argument"
         echo "  make"
-        echo "      create symbolic link and copy directory from dotfiles/."
-        echo "  rm"
-        echo "      remove symbolic link in $TARGET."
+        echo "      create dotfile's symbolic link and directory into $TARGET"
+        echo "  clean"
+        echo "      remove dotfile's symbolic link and directory from $TARGET."
+        echo ""
+        echo "  sandbox at $SANDBOX"
+        echo "      sandboxm - make"
+        echo "      sandboxc - clean"
     ;;
 esac
-
