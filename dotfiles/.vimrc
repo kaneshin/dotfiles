@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 27-Aug-2012.
+" Last Change: 11-Sep-2012.
 
 scriptencoding utf-8
 syntax on
@@ -545,8 +545,8 @@ let g:EasyMotion_leader_key = '<Leader>'
 let g:memolist_path = $DROPBOX.'/docs/memo'
 let g:memolist_memo_suffix = "mkd"
 let g:memolist_memo_date = "%Y-%m-%d %H:%M"
-let g:memolist_prompt_tags = 1
-let g:memolist_prompt_categories = 1
+let g:memolist_prompt_tags = 0
+let g:memolist_prompt_categories = 0
 " let g:memolist_qfixgrep = 1
 " let g:memolist_vimfiler = 1
 " }}}
@@ -590,9 +590,16 @@ let g:ctrlp_extensions = [
 let g:ctrlp_filetype = {
       \'user': [
       \   'c',
-      \   'cpp',
-      \   'ruby',
+      \   'objc',
       \   'javascript',
+      \   'ruby',
+      \   'perl',
+      \   'html',
+      \   'css',
+      \   'sh',
+      \   'vim',
+      \   'cpp',
+      \   'java',
       \],
       \}
 nnoremap <c-e>p :<c-u>CtrlPLauncher<cr>
