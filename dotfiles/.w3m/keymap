@@ -1,0 +1,12 @@
+keymap C-h BACK
+keymap C-l NEXT
+keymap C-n NEXT_PAGE
+keymap C-p PREV_PAGE
+Keymap w NEXT_WORD
+keymap b PREV_WORD
+keymap C-r RELOAD
+keymap H HISTORY
+keymap t TAB_GOTO
+keymap C-w CLOSE_TAB
+keymap C-b PREV_TAB
+keymap C-f NEXT_TAB
