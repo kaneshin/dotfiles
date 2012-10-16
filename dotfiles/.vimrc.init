@@ -1,11 +1,12 @@
 " vim:set ts=8 sts=2 sw=2 tw=0:
 " vim:set fdm=marker:
 "
-" File:        init.vim
+" File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 " Last Change: 17-Oct-2012.
 
 scriptencoding utf-8
+
 syntax on
 filetype plugin on
 filetype indent on
@@ -15,21 +16,22 @@ let s:is_win = has('win32') || has('win64')
 " mac
 let s:is_mac = has('mac')
 " unix
-let s:is_unix = has('unix')
+let s:is_unix = has('unix') && !s:is_win && !s:is_mac
 
 " key mapping {{{
 " use emacs key bind during command mode and a movement of insert mode
 " start of line
 cnoremap <c-a> <Home>
-inoremap <c-a> <home>
+inoremap <c-a> <Home>
 " back one character
 cnoremap <c-b> <Left>
 inoremap <c-b> <Left>
 " delete character under cursor
 cnoremap <c-d> <Del>
+inoremap <c-d> <Del>
 " end of line
 cnoremap <c-e> <End>
-inoremap <c-e> <end>
+inoremap <c-e> <End>
 " forward one character
 cnoremap <c-f> <Right>
 inoremap <c-f> <Right>
@@ -55,14 +57,9 @@ nnoremap <silent> <C-x>p :bprevious<CR>
 nnoremap <silent> <C-x>k :close<CR>
 
 " visual mode
-vnoremap ; :
 vnoremap <silent> > >gv
 vnoremap <silent> < <gv
 vnoremap f <esc>
-
-" command mode
-cmap <C-x> <C-r>=expand('%:p:h')<CR>/
-cmap <C-z> <C-r>=expand('%:p:r')<CR>
 " /=key mapping }}}
 
 " autocmds {{{
@@ -87,6 +84,7 @@ Bundle 'mattn/zencoding-vim'
 
 " ctrlp
 Bundle 'kien/ctrlp.vim'
+Bundle 'mattn/ctrlp-gist.vim'
 
 " Twitter
 Bundle 'TwitVim'
@@ -116,17 +114,23 @@ let g:ctrlp_extensions = [
       \]
 " }}}
 
+" gist-vim {{{
+let g:gist_show_privates = 1
+if s:is_mac
+  let g:gist_clip_command = 'pbcopy'
+elseif s:is_unix
+  let g:gist_clip_command = 'xclip -selection clipboard'
+endif
+" /=gist-vim }}}
+
 " TwitVim {{{
 let g:twitvim_count = 50
 if s:is_win
-  let g:twitvim_browser_cmd
-        \ = $HOME.'\AppData\Local\Google\Chrome\Application\chrome.exe'
+  let g:twitvim_browser_cmd = $HOME.'\AppData\Local\Google\Chrome\Application\chrome.exe'
 elseif s:is_mac
-  let g:twitvim_browser_cmd
-        \ = '/Applications/Safari.app'
+  let g:twitvim_browser_cmd = '/Applications/Safari.app'
 elseif s:is_unix
-  let g:twitvim_browser_cmd
-        \ = ''
+  let g:twitvim_browser_cmd = ''
 endif
 nnoremap <silent> ,tp :<C-u>PosttoTwitter<CR>
 nnoremap <silent> ,tt :tabnew<CR>:<C-u>FriendsTwitter<CR>:close<CR>
@@ -147,32 +151,4 @@ augroup TwitVimOptions
   autocmd FileType twitvim :call s:twitvim_options()
 augroup END
 " /=TwitVim }}}
-
-" gist-vim {{{
-let g:gist_show_privates = 1
-if s:is_mac
-  let g:gist_clip_command = 'pbcopy'
-elseif s:is_unix
-  let g:gist_clip_command = 'xclip -selection clipboard'
-endif
-" /=gist-vim }}}
 " /=plugin }}}
-
-if has('gui_running')
-  set guioptions=agirLt
-  " display
-  set linespace=1
-  set columns=80
-  set lines=40
-  set cmdheight=2
-  colorscheme desert
-  if s:is_win
-    colorscheme cosine
-  elseif s:is_unix
-    colorscheme molokai
-  elseif s:is_mac
-    colorscheme cosine
-    set transparency=5
-    set linespace=2
-  endif
-endif

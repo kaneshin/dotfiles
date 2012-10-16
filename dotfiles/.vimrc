@@ -1,37 +1,24 @@
 " vim:set ts=8 sts=2 sw=2 tw=0:
 " vim:set fdm=marker:
 "
-" File:        .pvimrc
+" File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 27-Aug-2012.
-" Descriptsion:
-"   This file contains Shintaro's primary vimrc setting
+" Last Change: 17-Oct-2012.
 
 scriptencoding utf-8
-
-if exists('g:loaded_pvimrc') && g:loaded_pvimrc
-  finish
-endif
-let g:loaded_pvimrc = 1
 
 syntax on
 filetype plugin on
 filetype indent on
 
-" be improved
-set nocompatible
 " lazy mapping
 nnoremap ; :
+vnoremap ; :
 
-" variables {{{
 " Windows
-let s:is_win = has( 'win32' ) || has( 'win64' )
-" Mac
-let s:is_mac = has( 'mac' )
-" UNIX
-let s:is_unix = has( 'unix' ) && !s:is_mac && !s:is_win
+let s:is_win = has('win32') || has('win64')
 " $VIMHOME
-if !exists( '$VIMHOME' )
+if !exists('$VIMHOME')
   if s:is_win
     if finddir('vimfiles', $HOME) == ''
       cal mkdir(expand('$HOME/vimfiles'), "p")
@@ -44,20 +31,15 @@ if !exists( '$VIMHOME' )
     let $VIMHOME = expand('$HOME/.vim')
   endif
 endif
-
-" $DROPBOX
-if !exists( '$DROPBOX' ) && finddir('Dropbox', $HOME) != ''
-  let $DROPBOX = $HOME.'/Dropbox'
+" $DEVHOME
+if !exists('$DEVHOME') && finddir('Develop', $HOME) != ''
+  let $DEVHOME = $HOME.'/Develop'
 endif
-
 " $DOTFILES
-" NOTE: Dotfiles directory is in dropbox directory.
-if !exists( '$DOTFILES' ) && finddir('dev/dotfiles/dotfiles', $DROPBOX) != ''
-  let $DOTFILES = $DROPBOX.'/dev/dotfiles/dotfiles'
+if !exists('$DOTFILES') && finddir('dotfiles/dotfiles', $DEVHOME) != ''
+  let $DOTFILES = $DEVHOME.'/dotfiles/dotfiles'
 endif
-" /=variables }}}
-"
-" options {{{
+
 " backup, swap
 if finddir('backup', $VIMHOME) == ''
   cal mkdir(expand('$VIMHOME/backup'), "p")
@@ -77,7 +59,7 @@ set viewdir=$VIMHOME/view
 augroup FoldOptions
   autocmd!
   autocmd BufWritePost * mkview
-  " autocmd BufReadPost * loadview
+  autocmd BufReadPost * loadview
 augroup END
 
 " encoding and format
@@ -100,7 +82,7 @@ set nonumber
 set scrolloff=3
 set wrap
 set list
-set listchars=eol:\ ,tab:>\ ,trail:S,extends:<
+set listchars=eol:-,tab:>~,trail:~,extends:>,precedes:<
 
 " display: statusline
 set laststatus=2
@@ -149,5 +131,6 @@ set history=300
 set undolevels=2000
 set iminsert=0
 set imsearch=0
-" /=options }}}
 
+let $MYVIMRC = expand('$HOME/.vimrc.init')
+source $MYVIMRC
