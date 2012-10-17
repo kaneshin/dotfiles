@@ -1,17 +1,17 @@
-" Ruby filetype plugin
-" Language:     Ruby
+" JavaScript filetype plugin
+" Language:     JavaScript
 " Maintainer:   Shintaro Kaneko
 " Last Change:  18-Oct-2012.
 
 scriptencoding utf-8
 
 " Only do this when not done yet for this buffer
-if exists("b:did_ftplugin_ruby")
+if exists("b:did_ftplugin_javascript")
   finish
 endif
 
 " Don't load another plugin for this buffer
-let b:did_ftplugin_ruby = 1
+let b:did_ftplugin_javascript = 1
 
 let s:save_cpo = &cpo
 set cpo&vim

@@ -1,7 +1,7 @@
 " Vim filetype plugin
 " Language:     Vim
-" Maintainer:   Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change:  27-May-2012.
+" Maintainer:   Shintaro Kaneko
+" Last Change:  18-Oct-2012.
 
 scriptencoding utf-8
 
@@ -16,10 +16,12 @@ let b:did_ftplugin_vim = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
+setlocal autoindent
+setlocal cindent
 setlocal expandtab
-setlocal tabstop=2
-setlocal softtabstop=2
 setlocal shiftwidth=2
+setlocal softtabstop=2
+setlocal tabstop=2
+setlocal smarttab
 
 let &cpo = s:save_cpo
-

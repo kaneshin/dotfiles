@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 17-Oct-2012.
+" Last Change: 18-Oct-2012.
 
 scriptencoding utf-8
 
@@ -60,6 +60,24 @@ nnoremap <silent> <C-x>k :close<CR>
 vnoremap <silent> > >gv
 vnoremap <silent> < <gv
 vnoremap f <esc>
+
+" brackets and else
+inoremap () ()<Left>
+cnoremap () ()<Left>
+inoremap {} {}<Left>
+cnoremap {} {}<Left>
+inoremap [] []<Left>
+cnoremap [] []<Left>
+inoremap "" ""<Left>
+cnoremap "" ""<Left>
+inoremap '' ''<Left>
+cnoremap '' ''<Left>
+inoremap <> <><Left>
+cnoremap <> <><Left>
+
+" modifying a typo
+inoremap {] {}<Left>
+cnoremap {] {}<Left>
 " /=key mapping }}}
 
 " autocmds {{{
@@ -82,12 +100,14 @@ Bundle 'gmarik/vundle'
 Bundle 'kien/ctrlp.vim'
 Bundle 'mattn/ctrlp-gist'
 Bundle 'kaneshin/ctrlp-memolist'
+Bundle 'kaneshin/ctrlp-sonictemplate'
 
 Bundle 'mattn/webapi-vim'
 Bundle 'mattn/gist-vim'
 Bundle 'mattn/zencoding-vim'
 Bundle 'Lokaltog/vim-powerline'
 Bundle 'glidenote/memolist.vim'
+Bundle 'mattn/sonictemplate-vim'
 
 " Twitter
 Bundle 'TwitVim'
@@ -116,6 +136,7 @@ let g:ctrlp_cache_dir = $VIMHOME.'/.cache/ctrlp'
 let g:ctrlp_extensions = [
       \'gist',
       \'memolist',
+      \'sonictemplate',
       \]
 " /=ctrlp }}}
 
@@ -127,6 +148,12 @@ elseif s:is_unix
   let g:gist_clip_command = 'xclip -selection clipboard'
 endif
 " /=gist-vim }}}
+
+" sonictemplate {{{
+let g:sonictemplate_vim_template_dir = [
+      \expand('$VIMHOME/template'),
+      \]
+" /=sonictemplate }}}
 
 " TwitVim {{{
 let g:twitvim_count = 50
