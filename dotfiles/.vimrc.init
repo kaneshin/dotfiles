@@ -78,13 +78,16 @@ call vundle#rc('$VIMHOME/bundle')
 " vundle is managed by itself
 Bundle 'gmarik/vundle'
 
+" ctrlp
+Bundle 'kien/ctrlp.vim'
+Bundle 'mattn/ctrlp-gist'
+Bundle 'kaneshin/ctrlp-memolist'
+
 Bundle 'mattn/webapi-vim'
 Bundle 'mattn/gist-vim'
 Bundle 'mattn/zencoding-vim'
-
-" ctrlp
-Bundle 'kien/ctrlp.vim'
-Bundle 'mattn/ctrlp-gist.vim'
+Bundle 'Lokaltog/vim-powerline'
+Bundle 'glidenote/memolist.vim'
 
 " Twitter
 Bundle 'TwitVim'
@@ -92,7 +95,7 @@ Bundle 'TwitVim'
 filetype plugin indent on
 " /=vundle }}}
 
-" ctrlp.vim {{{
+" ctrlp {{{
 " Set this to 0 to show the match window at the top of the screen
 let g:ctrlp_match_window_bottom = 1
 " Change the listing order of the files in the match window
@@ -111,8 +114,10 @@ if finddir('.cache/ctrlp', $VIMHOME) == ''
 endif
 let g:ctrlp_cache_dir = $VIMHOME.'/.cache/ctrlp'
 let g:ctrlp_extensions = [
+      \'gist',
+      \'memolist',
       \]
-" }}}
+" /=ctrlp }}}
 
 " gist-vim {{{
 let g:gist_show_privates = 1
@@ -151,4 +156,21 @@ augroup TwitVimOptions
   autocmd FileType twitvim :call s:twitvim_options()
 augroup END
 " /=TwitVim }}}
+
+" powerline {{{
+let g:Powerline_symbols = 'compatible'
+" /=powerline }}}
+
+" memolist {{{
+if s:is_mac
+  let g:memolist_path = $HOME.'/Dropbox/docs/memo'
+endif
+let g:memolist_memo_suffix = "mkd"
+let g:memolist_memo_date = "%Y-%m-%d %H:%M"
+let g:memolist_prompt_tags = 0
+let g:memolist_prompt_categories = 0
+" let g:memolist_qfixgrep = 1
+" let g:memolist_vimfiler = 1
+" /=memolist }}}
+
 " /=plugin }}}
