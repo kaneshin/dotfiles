@@ -3,11 +3,11 @@
 # File:         symlink.sh
 # Version:      1.0.0
 # Maintainer:   Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change:  11-Sep-2012.
+# Last Change:  17-Oct-2012.
 
 TARGET=$HOME
 DOTFILESDIR=dotfiles/
-SANDBOX=$HOME/Dropbox/dev/sandbox
+SANDBOX=$HOME/tmp/sandbox
 
 function create_dotfiles()
 {
