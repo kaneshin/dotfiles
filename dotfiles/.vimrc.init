@@ -3,7 +3,12 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 18-Oct-2012.
+" Last Change: 22-Oct-2012.
+
+" What the fuck JIS layout keyboard
+inoremap ¥ \
+nnoremap ¥ \
+cnoremap ¥ \
 
 scriptencoding utf-8
 

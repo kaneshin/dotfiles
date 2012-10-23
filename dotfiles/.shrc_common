@@ -2,7 +2,7 @@
 #
 # File:        .shrc.common
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 25-Sep-2012.
+# Last Change: 22-Oct-2012.
 
 # alias
 alias ce='cd ../'
@@ -29,3 +29,4 @@ alias pvim='vim -u $HOME/.pvimrc'
 export PATH=/usr/local/bin:$PATH
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
 
+source ~/.nvm/nvm.sh

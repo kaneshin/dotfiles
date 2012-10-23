@@ -1,0 +1,13 @@
+[user]
+	name = Shintaro Kaneko
+	email = kaneshin0120@gmail.com
+[github]
+	user = kaneshin
+[alias]
+	co = checkout
+	com = commit
+	br = branch
+	st = status
+	stg = stage
+[core]
+	editor = vim
