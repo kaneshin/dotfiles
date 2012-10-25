@@ -9,5 +9,6 @@
 	br = branch
 	st = status
 	stg = stage
+	tr = log --graph --pretty='format:%C(yellow)%h%Creset %s %Cgreen(%an)%Creset %Cred%d%Creset'
 [core]
 	editor = vim

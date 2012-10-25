@@ -2,7 +2,7 @@
 #
 # File:        .shrc.common
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 22-Oct-2012.
+# Last Change: 24-Oct-2012.
 
 # alias
 alias ce='cd ../'
@@ -13,9 +13,12 @@ alias ls='ls -F'
 alias la='ls -a'
 alias ll='ls -la'
 
-alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
+alias grep='grep --color=always'
+alias ngrep='grep -n --color=always'
+alias fgrep='fgrep --color=always'
+alias egrep='egrep --color=always'
+
+alias less='less -R'
 
 sw_vers=`which sw_vers 2>&1`
 if [[ $? == 0 ]]; then

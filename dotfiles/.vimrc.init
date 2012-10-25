@@ -3,12 +3,15 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 22-Oct-2012.
+" Last Change: 24-Oct-2012.
 
-" What the fuck JIS layout keyboard
-inoremap ¥ \
-nnoremap ¥ \
-cnoremap ¥ \
+
+" temp
+nnoremap ,n :cn<cr>
+nnoremap ,p :cp<cr>
+nnoremap ,c :ccl<cr>
+
+source $VIMRUNTIME/macros/matchit.vim
 
 scriptencoding utf-8
 
@@ -97,6 +100,7 @@ augroup MyVimOptions
   autocmd!
   " change directory if you open a file.
   autocmd BufEnter * execute ':lcd '.expand('%:p:h')
+  autocmd QuickfixCmdPost vimgrep cw
 augroup END
 " /=autocmds }}}
 
@@ -123,8 +127,21 @@ Bundle 'glidenote/memolist.vim'
 Bundle 'mattn/sonictemplate-vim'
 Bundle 'thinca/vim-quickrun'
 
-" Twitter
+" twitter
 Bundle 'TwitVim'
+
+" ===== recently installed =====
+Bundle 'Lokaltog/vim-easymotion'
+Bundle 'tpope/vim-fugitive'
+Bundle 'tyru/open-browser.vim'
+
+" vim-surround
+Bundle 'tpope/vim-surround'
+Bundle 'tpope/vim-repeat'
+
+" twitter
+Bundle 'basyura/TweetVim'
+Bundle 'basyura/twibill.vim'
 
 filetype plugin indent on
 " /=vundle }}}
@@ -216,6 +233,11 @@ augroup TwitVimOptions
   autocmd FileType twitvim :call s:twitvim_options()
 augroup END
 " /=TwitVim }}}
+
+" TweetVim {{{
+nnoremap <silent> ,ts :<C-u>TweetVimSay<CR>
+nnoremap <silent> ,th :<C-u>TweetVimHomeTimeline<CR>
+" /=TweetVim }}}
 
 " powerline {{{
 let g:Powerline_symbols = 'compatible'
