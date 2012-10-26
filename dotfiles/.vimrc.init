@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 24-Oct-2012.
+" Last Change: 25-Oct-2012.
 
 
 " temp
@@ -235,12 +235,15 @@ augroup END
 " /=TwitVim }}}
 
 " TweetVim {{{
+nnoremap <silent> ,t1 :<c-u>TweetVimSwitchAccount _kaneshin<cr>
+nnoremap <silent> ,t2 :<c-u>TweetVimSwitchAccount kaneshinth<cr>
 nnoremap <silent> ,ts :<C-u>TweetVimSay<CR>
 nnoremap <silent> ,th :<C-u>TweetVimHomeTimeline<CR>
 " /=TweetVim }}}
 
 " powerline {{{
-let g:Powerline_symbols = 'compatible'
+let g:Powerline_symbols = 'fancy'
+let g:Powerline_colorscheme='skwp'
 " /=powerline }}}
 
 " memolist {{{
