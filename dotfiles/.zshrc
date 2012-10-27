@@ -2,13 +2,11 @@
 #
 # File:        .zshrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 12-Jun-2012.
+# Last Change: 28-Oct-2012.
 
 # source common shell run command
 source ~/.shrc_common
 
-# export LANG=ja_JP.UTF-8
-export LANG="en_US.UTF-8"
 # bindkey -v # vi key map
 bindkey -e # emacs key map
 

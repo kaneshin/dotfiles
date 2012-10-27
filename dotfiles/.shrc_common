@@ -2,11 +2,12 @@
 #
 # File:        .shrc.common
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 24-Oct-2012.
+# Last Change: 28-Oct-2012.
+
+export LANG="en_US.UTF-8"
 
 # alias
 alias ce='cd ../'
-
 alias ls="ls -G --color=auto"
 alias sl="ls"
 alias ls='ls -F'
@@ -32,4 +33,4 @@ alias pvim='vim -u $HOME/.pvimrc'
 export PATH=/usr/local/bin:$PATH
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
 
-source ~/.nvm/nvm.sh
+# source ~/.nvm/nvm.sh
