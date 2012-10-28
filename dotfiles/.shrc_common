@@ -4,7 +4,8 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 # Last Change: 28-Oct-2012.
 
-export LANG="en_US.UTF-8"
+export LANG=en_US.UTF-8
+export LESSCHARSET=UTF-8
 
 # alias
 alias ce='cd ../'

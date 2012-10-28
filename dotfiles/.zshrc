@@ -12,8 +12,8 @@ bindkey -e # emacs key map
 
 # history
 export HISTFILE=~/.zsh_history
-export HISTSIZE=5000
-export SAVEHIST=5000
+export HISTSIZE=10000
+export SAVEHIST=10000
 setopt append_history
 setopt extended_history
 setopt hist_ignore_all_dups
@@ -34,10 +34,13 @@ PS1='%{]0;%/
 ( ^o^).. '
 export LSCOLORS=gxfxcxdxbxegedabagacad
 
-# options
+# 
 setopt auto_pushd
 setopt auto_cd
+
+# check command
 setopt correct
+
 setopt cdable_vars
 setopt complete_aliases
 setopt list_packed

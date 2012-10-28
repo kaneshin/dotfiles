@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 25-Oct-2012.
+" Last Change: 28-Oct-2012.
 
 
 " temp
@@ -119,6 +119,15 @@ Bundle 'kaneshin/ctrlp-memolist'
 Bundle 'kaneshin/ctrlp-sonictemplate'
 Bundle 'kaneshin/ctrlp-filetype'
 
+" twitter
+Bundle 'TwitVim'
+Bundle 'basyura/TweetVim'
+Bundle 'basyura/twibill.vim'
+
+" vim-surround
+Bundle 'tpope/vim-surround'
+Bundle 'tpope/vim-repeat'
+
 Bundle 'mattn/webapi-vim'
 Bundle 'mattn/gist-vim'
 Bundle 'mattn/zencoding-vim'
@@ -127,21 +136,26 @@ Bundle 'glidenote/memolist.vim'
 Bundle 'mattn/sonictemplate-vim'
 Bundle 'thinca/vim-quickrun'
 
-" twitter
-Bundle 'TwitVim'
-
 " ===== recently installed =====
 Bundle 'Lokaltog/vim-easymotion'
 Bundle 'tpope/vim-fugitive'
-Bundle 'tyru/open-browser.vim'
+Bundle 'scrooloose/nerdcommenter'
+Bundle 'smartchr'
+Bundle 'Smooth-Scroll'
+Bundle 'smartword'
+Bundle 'thinca/vim-ref'
+Bundle 'vim-ruby/vim-ruby'
+Bundle 'taglist.vim'
+" Bundle 'errormarker.vim'
 
-" vim-surround
-Bundle 'tpope/vim-surround'
-Bundle 'tpope/vim-repeat'
+Bundle 'haml.zip'
+Bundle 'JavaScript-syntax'
+Bundle 'jQuery'
+Bundle 'tpope/vim-markdown'
+Bundle 'kchmck/vim-coffee-script'
+Bundle 'yuroyoro/vim-python'
 
-" twitter
-Bundle 'basyura/TweetVim'
-Bundle 'basyura/twibill.vim'
+Bundle 'tyru/vim-altercmd'
 
 filetype plugin indent on
 " /=vundle }}}

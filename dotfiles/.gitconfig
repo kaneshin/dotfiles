@@ -1,5 +1,5 @@
 [user]
-	name = Shintaro Kaneko
+	name = kaneshin
 	email = kaneshin0120@gmail.com
 [github]
 	user = kaneshin
@@ -9,6 +9,9 @@
 	br = branch
 	st = status
 	stg = stage
+	logn = log --oneline
 	tr = log --graph --pretty='format:%C(yellow)%h%Creset %s %Cgreen(%an)%Creset %Cred%d%Creset'
 [core]
 	editor = vim
+[color]
+	ui = auto
