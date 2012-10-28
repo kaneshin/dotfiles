@@ -4,14 +4,33 @@
 [github]
 	user = kaneshin
 [alias]
+	ad = add
 	co = checkout
 	com = commit
-	br = branch
+	cam = commit -a --amend         # modify the last commit
 	st = status
 	stg = stage
-	logn = log --oneline
+	sh = show
+# branch
+	br = branch
+	ba = branch -a                  # show all branches
+	bm = branch --merged            # already merged branches
+	bn = branch --no-merged         # not merged branches
+# log
+	logn = log --pretty=oneline
+# tree
 	tr = log --graph --pretty='format:%C(yellow)%h%Creset %s %Cgreen(%an)%Creset %Cred%d%Creset'
+# diff
+	dm = diff master
+	d1 = diff HEAD~
+	d2 = diff HEAD~2
+	d3 = diff HEAD~3
 [core]
 	editor = vim
 [color]
 	ui = auto
+	status = auto
+	branch = auto
+	dif = auto
+	interactive = auto
+	grep = auto

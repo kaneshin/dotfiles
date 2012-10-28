@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 28-Oct-2012.
+" Last Change: 29-Oct-2012.
 
 
 " temp
@@ -128,20 +128,21 @@ Bundle 'basyura/twibill.vim'
 Bundle 'tpope/vim-surround'
 Bundle 'tpope/vim-repeat'
 
+" statusline
+Bundle 'Lokaltog/vim-powerline'
+Bundle 'tpope/vim-fugitive'
+
 Bundle 'mattn/webapi-vim'
 Bundle 'mattn/gist-vim'
 Bundle 'mattn/zencoding-vim'
-Bundle 'Lokaltog/vim-powerline'
 Bundle 'glidenote/memolist.vim'
 Bundle 'mattn/sonictemplate-vim'
 Bundle 'thinca/vim-quickrun'
+Bundle 'scrooloose/nerdcommenter'
 
 " ===== recently installed =====
 Bundle 'Lokaltog/vim-easymotion'
-Bundle 'tpope/vim-fugitive'
-Bundle 'scrooloose/nerdcommenter'
 Bundle 'smartchr'
-Bundle 'Smooth-Scroll'
 Bundle 'smartword'
 Bundle 'thinca/vim-ref'
 Bundle 'vim-ruby/vim-ruby'
@@ -153,7 +154,6 @@ Bundle 'JavaScript-syntax'
 Bundle 'jQuery'
 Bundle 'tpope/vim-markdown'
 Bundle 'kchmck/vim-coffee-script'
-Bundle 'yuroyoro/vim-python'
 
 Bundle 'tyru/vim-altercmd'
 
@@ -257,7 +257,6 @@ nnoremap <silent> ,th :<C-u>TweetVimHomeTimeline<CR>
 
 " powerline {{{
 let g:Powerline_symbols = 'fancy'
-let g:Powerline_colorscheme='skwp'
 " /=powerline }}}
 
 " memolist {{{
@@ -271,5 +270,10 @@ let g:memolist_prompt_categories = 0
 " let g:memolist_qfixgrep = 1
 " let g:memolist_vimfiler = 1
 " /=memolist }}}
+
+" nerdcommenter {{{
+let g:NERDCreateDefaultMappings = 1
+let NERDSpaceDelims = 1
+" /=nerdcommenter }}}
 
 " /=plugin }}}
