@@ -26,7 +26,7 @@ sw_vers=`which sw_vers 2>&1`
 if [[ $? == 0 ]]; then
     alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'
 fi
-alias vim='vim -u $HOME/.vimrc'
+alias pvim='vim -u $HOME/.vimrc'
 
 # Add RVM to PATH for scripting
 # PATH=$PATH:$HOME/.rvm/bin
