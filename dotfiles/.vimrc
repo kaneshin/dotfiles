@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 17-Oct-2012.
+" Last Change: 31-Oct-2012.
 
 scriptencoding utf-8
 
@@ -15,7 +15,7 @@ filetype indent on
 nnoremap ; :
 vnoremap ; :
 
-" Windows
+" windows
 let s:is_win = has('win32') || has('win64')
 " $VIMHOME
 if !exists('$VIMHOME')
