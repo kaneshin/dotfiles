@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 31-Oct-2012.
+" Last Change: 01-Nov-2012.
 
 
 " temp
@@ -140,13 +140,21 @@ Bundle 'mattn/sonictemplate-vim'
 Bundle 'thinca/vim-quickrun'
 Bundle 'scrooloose/nerdcommenter'
 
+" misc
+
+" source
+Bundle 'wesleyche/SrcExpl'
+Bundle 'vim-scripts/taglist.vim'
+Bundle 'scrooloose/nerdtree'
+" Bundle 'wesleyche/Trinity'
+
 " ===== recently installed =====
 Bundle 'Lokaltog/vim-easymotion'
 Bundle 'smartchr'
 Bundle 'smartword'
 Bundle 'thinca/vim-ref'
 Bundle 'vim-ruby/vim-ruby'
-Bundle 'taglist.vim'
+
 " Bundle 'errormarker.vim'
 
 Bundle 'haml.zip'
@@ -221,13 +229,13 @@ let g:sonictemplate_vim_template_dir = [
 
 " TwitVim {{{
 let g:twitvim_count = 50
-if s:is_win
-  let g:twitvim_browser_cmd = $HOME.'\AppData\Local\Google\Chrome\Application\chrome.exe'
-elseif s:is_mac
-  let g:twitvim_browser_cmd = '/Applications/Safari.app'
-elseif s:is_unix
-  let g:twitvim_browser_cmd = ''
-endif
+" if s:is_win
+  " let g:twitvim_browser_cmd = $HOME.'\AppData\Local\Google\Chrome\Application\chrome.exe'
+" elseif s:is_mac
+  " let g:twitvim_browser_cmd = '/Applications/Safari.app'
+" elseif s:is_unix
+  " let g:twitvim_browser_cmd = ''
+" endif
 nnoremap <silent> ,tp :<C-u>PosttoTwitter<CR>
 nnoremap <silent> ,tt :tabnew<CR>:<C-u>FriendsTwitter<CR>:close<CR>
 nnoremap <silent> ,tf :tabnew<CR>:<C-u>FavTwitter<CR>:close<CR>
