@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 01-Nov-2012.
+" Last Change: 05-Nov-2012.
 
 
 " temp
@@ -141,6 +141,7 @@ Bundle 'thinca/vim-quickrun'
 Bundle 'scrooloose/nerdcommenter'
 
 " misc
+Bundle 'tyru/open-browser.vim'
 
 " source
 Bundle 'wesleyche/SrcExpl'
@@ -261,6 +262,19 @@ nnoremap <silent> ,t1 :<c-u>TweetVimSwitchAccount _kaneshin<cr>
 nnoremap <silent> ,t2 :<c-u>TweetVimSwitchAccount kaneshinth<cr>
 nnoremap <silent> ,ts :<C-u>TweetVimSay<CR>
 nnoremap <silent> ,th :<C-u>TweetVimHomeTimeline<CR>
+let g:tweetvim_tweet_per_page = 50
+let g:tweetvim_display_separator = 0
+let g:tweetvim_footer = ''
+function! s:tweetvim_options()
+  setlocal nowrap
+  nnoremap <buffer> <silent> 1 :<c-u>TweetVimSwitchAccount _kaneshin<cr>
+  nnoremap <buffer> <silent> 2 :<c-u>TweetVimSwitchAccount kaneshinth<cr>
+  nnoremap <buffer> <silent> s :<C-u>TweetVimSay<CR>
+endfunction
+augroup TweetVimOptions
+  autocmd!
+  autocmd FileType tweetvim :call s:tweetvim_options()
+augroup END
 " /=TweetVim }}}
 
 " powerline {{{
