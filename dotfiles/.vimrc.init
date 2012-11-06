@@ -272,8 +272,9 @@ endif
 " /=powerline }}}
 
 " memolist {{{
+" TODO: Use Dropbox if I want to share any devices.
 if s:is_mac
-  let g:memolist_path = $HOME.'/Dropbox/docs/memo'
+  let g:memolist_path = $HOME.'/Documents/Notes'
 endif
 let g:memolist_memo_suffix = "mkd"
 let g:memolist_memo_date = "%Y-%m-%d %H:%M"
