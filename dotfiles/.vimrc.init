@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 06-Nov-2012.
+" Last Change: 09-Nov-2012.
 
 
 " temp
@@ -104,6 +104,22 @@ augroup MyVimOptions
 augroup END
 " /=autocmds }}}
 
+" colorscheme toggle
+if !has('gui_running')
+  let g:color_nr = 1
+  function! ColorschemeToggle()
+    if g:color_nr == 0
+      colorscheme default
+      let g:color_nr = 1
+    elseif g:color_nr == 1
+      colorscheme concise
+      let g:color_nr = 0
+    endif
+  endfunction
+  cal ColorschemeToggle()
+  command! ColorschemeToggle call ColorschemeToggle()
+endif
+
 " plugin {{{
 " vundle {{{
 filetype off
@@ -111,6 +127,9 @@ set rtp+=$VIMHOME/bundle/vundle
 call vundle#rc('$VIMHOME/bundle')
 " vundle is managed by itself
 Bundle 'gmarik/vundle'
+
+" useful
+Bundle "autodate.vim"
 
 " ctrlp
 Bundle 'kien/ctrlp.vim'

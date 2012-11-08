@@ -2,10 +2,10 @@
 #
 # File:        .bashrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 28-May-2012.
+# Last Change: 08-Nov-2012.
 
 # source common shell run command
-source ~/.shrc_common
+source ~/.shrc.common
 
 # size of history
 function share_history {
