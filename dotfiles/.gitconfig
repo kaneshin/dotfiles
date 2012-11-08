@@ -34,5 +34,3 @@
 	dif = auto
 	interactive = auto
 	grep = auto
-[push]
-	default = simple
