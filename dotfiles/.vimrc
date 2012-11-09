@@ -62,6 +62,16 @@ augroup FoldOptions
   autocmd BufReadPost * loadview
 augroup END
 
+" undo
+if finddir('undo', $VIMHOME) == ''
+  cal mkdir(expand('$VIMHOME/undo'), "p")
+endif
+set undofile
+set undodir=$VIMHOME/undo
+augroup UndoOptions
+  autocmd!
+augroup END
+
 " encoding and format
 set fileencodings=utf-8,euc-jp,cp932,shiftjis,iso-2022-jp,latin1
 set encoding=utf-8
