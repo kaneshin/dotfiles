@@ -3,15 +3,8 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 09-Nov-2012.
+" Last Change: 12-Nov-2012.
 
-
-" temp
-nnoremap ,n :cn<cr>
-nnoremap ,p :cp<cr>
-nnoremap ,c :ccl<cr>
-
-source $VIMRUNTIME/macros/matchit.vim
 
 scriptencoding utf-8
 
@@ -25,6 +18,8 @@ let s:is_win = has('win32') || has('win64')
 let s:is_mac = has('mac')
 " unix
 let s:is_unix = has('unix') && !s:is_win && !s:is_mac
+
+source $VIMRUNTIME/macros/matchit.vim
 
 " key mapping {{{
 " edit and read .vimrc.init
@@ -93,6 +88,11 @@ cnoremap <> <><Left>
 " modifying a typo
 inoremap {] {}<Left>
 cnoremap {] {}<Left>
+
+" quickfix
+nnoremap <silent> <leader>n :cn<cr>
+nnoremap <silent> <leader>p :cp<cr>
+nnoremap <silent> <leader>q :ccl<cr>
 " /=key mapping }}}
 
 " autocmds {{{
@@ -157,33 +157,26 @@ Bundle 'mattn/zencoding-vim'
 Bundle 'glidenote/memolist.vim'
 Bundle 'mattn/sonictemplate-vim'
 Bundle 'thinca/vim-quickrun'
-Bundle 'scrooloose/nerdcommenter'
+Bundle 'Lokaltog/vim-easymotion'
 
 " misc
 Bundle 'tyru/open-browser.vim'
+Bundle 'scrooloose/nerdcommenter'
 
 " source
 Bundle 'wesleyche/SrcExpl'
 Bundle 'vim-scripts/taglist.vim'
 Bundle 'scrooloose/nerdtree'
-" Bundle 'wesleyche/Trinity'
 
-" ===== recently installed =====
-Bundle 'Lokaltog/vim-easymotion'
-Bundle 'smartchr'
-Bundle 'smartword'
-Bundle 'thinca/vim-ref'
+" syntax
 Bundle 'vim-ruby/vim-ruby'
-
-" Bundle 'errormarker.vim'
-
-Bundle 'haml.zip'
 Bundle 'JavaScript-syntax'
 Bundle 'jQuery'
 Bundle 'tpope/vim-markdown'
-Bundle 'kchmck/vim-coffee-script'
 
-Bundle 'tyru/vim-altercmd'
+" ===== recently installed =====
+Bundle 'smartword'
+Bundle 'thinca/vim-ref'
 
 filetype plugin indent on
 " /=vundle }}}
@@ -207,9 +200,9 @@ if finddir('.cache/ctrlp', $VIMHOME) == ''
 endif
 let g:ctrlp_cache_dir = $VIMHOME.'/.cache/ctrlp'
 let g:ctrlp_extensions = [
+      \'sonictemplate',
       \'gist',
       \'memolist',
-      \'sonictemplate',
       \]
 let g:ctrlp_filetype = {
       \'user': [
@@ -249,26 +242,15 @@ let g:sonictemplate_vim_template_dir = [
 
 " TwitVim {{{
 let g:twitvim_count = 50
-" if s:is_win
-  " let g:twitvim_browser_cmd = $HOME.'\AppData\Local\Google\Chrome\Application\chrome.exe'
-" elseif s:is_mac
-  " let g:twitvim_browser_cmd = '/Applications/Safari.app'
-" elseif s:is_unix
-  " let g:twitvim_browser_cmd = ''
-" endif
-nnoremap <silent> ,tp :<C-u>PosttoTwitter<CR>
-nnoremap <silent> ,tt :tabnew<CR>:<C-u>FriendsTwitter<CR>:close<CR>
-nnoremap <silent> ,tf :tabnew<CR>:<C-u>FavTwitter<CR>:close<CR>
-nnoremap <silent> ,tu :tabnew<CR>:<C-u>UserTwitter<CR>:close<CR>
-nnoremap <silent> ,tr :tabnew<CR>:<C-u>RepliesTwitter<CR>:close<CR>
+nnoremap <silent> ,tt :tabnew<cr>:<c-u>FriendsTwitter<cr>:close<cr>
+nnoremap <silent> ,tp :<c-u>PosttoTwitter<cr>
 function! s:twitvim_options()
   setlocal nowrap
-  nnoremap <buffer> <silent> ,tt :<C-u>FriendsTwitter<CR>
-  nnoremap <buffer> <silent> ,tf :<C-u>FavTwitter<CR>
+  nnoremap <buffer> <silent> s :<c-u>PosttoTwitter<cr>
+  nnoremap <buffer> <silent> <c-n> :<c-u>NextTwitter<cr>
+  nnoremap <buffer> <silent> <c-p> :<c-u>BackTwitter<cr>
   nnoremap <buffer> <silent> ,tu :<C-u>UserTwitter<CR>
   nnoremap <buffer> <silent> ,tr :<C-u>RepliesTwitter<CR>
-  nnoremap <buffer> <silent> <C-n> :<C-u>NextTwitter<CR>
-  nnoremap <buffer> <silent> <C-p> :<C-u>BackTwitter<CR>
 endfunction
 augroup TwitVimOptions
   autocmd!
@@ -280,7 +262,7 @@ augroup END
 nnoremap <silent> ,t1 :<c-u>TweetVimSwitchAccount _kaneshin<cr>
 nnoremap <silent> ,t2 :<c-u>TweetVimSwitchAccount kaneshinth<cr>
 nnoremap <silent> ,ts :<C-u>TweetVimSay<CR>
-nnoremap <silent> ,th :<C-u>TweetVimHomeTimeline<CR>
+nnoremap <silent> ,th :tabnew<cr>:<c-u>TweetVimHomeTimeline<cr>
 let g:tweetvim_tweet_per_page = 50
 let g:tweetvim_display_separator = 0
 let g:tweetvim_footer = ''
@@ -330,19 +312,14 @@ let Tlist_Exit_OnlyWindow = 1
 " SrcExpl {{{
 " // The switch of the Source Explorer
 nmap <F8> :SrcExplToggle<CR>
-
 " " // Set the height of Source Explorer window
 let g:SrcExpl_winHeight = 8
-"
 " // Set 100 ms for refreshing the Source Explorer
 let g:SrcExpl_refreshTime = 100
-"
 " // Set "Enter" key to jump into the exact definition context
 let g:SrcExpl_jumpKey = "<ENTER>"
-"
 " // Set "Space" key for back from the definition context
 let g:SrcExpl_gobackKey = "<SPACE>"
-"
 " // In order to Avoid conflicts, the Source Explorer should know what plugins
 " // are using buffers. And you need add their bufname into the list below
 " // according to the command ":buffers!"
@@ -351,19 +328,15 @@ let g:SrcExpl_pluginList = [
   \"_NERD_tree_",
   \"Source_Explorer"
 \]
-
 " // Enable/Disable the local definition searching, and note that this is not
 " // guaranteed to work, the Source Explorer doesn't check the syntax for now.
 " // It only searches for a match with the keyword according to command 'gd'
 let g:SrcExpl_searchLocalDef = 1
-
 " // Do not let the Source Explorer update the tags file when opening
 let g:SrcExpl_isUpdateTags = 0
-
 " // Use 'Exuberant Ctags' with '--sort=foldcase -R .' or '-L cscope.files' to
 " //  create/update a tags file
 let g:SrcExpl_updateTagsCmd = "ctags --sort=foldcase -R ."
-
 " // Set "<F12>" key for updating the tags file artificially
 let g:SrcExpl_updateTagsKey = "<F12>"
 " /=SrcExpl }}}
