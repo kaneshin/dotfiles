@@ -3,6 +3,19 @@
 # File:        .screenrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
 # Last Change: 27-Aug-2012.
+#
+# help (?) - Screen help
+#
+# Useful keys
+#   screen (c) - generate new window and shell
+#   next (n) - next window
+#   prev (p) - previous window
+#   select (') - switch window
+#   windowlist (") - switch window
+#   windows (w) - window list
+#   title (A) - change window title
+#   kill (K) - kill window and shell
+#   redisplay (l) - redraw current window
 
 # encoding
 encoding utf-8

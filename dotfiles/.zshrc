@@ -2,10 +2,10 @@
 #
 # File:        .zshrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 28-Oct-2012.
+# Last Change: 09-Nov-2012.
 
 # source common shell run command
-source ~/.shrc_common
+source ~/.shrc.common
 
 # bindkey -v # vi key map
 bindkey -e # emacs key map
@@ -31,8 +31,21 @@ bindkey "^N" history-beginning-search-forward-end
 # Display
 PS1='%{]0;%/
 [32m%}(%n@%m)[%h] %{[33m%}%~%{[0m%}
-( ^o^).. '
+(/^o^)/< '
 export LSCOLORS=gxfxcxdxbxegedabagacad
+
+case "${TERM}" in
+kterm*|xterm)
+    precmd()
+    {
+        echo -ne "\033]0;${USER}@${HOST}\007"
+    }
+    ;;
+esac
+
+export LSCOLORS=gxfxxxxxcxxxxxxxxxgxgx
+export LS_COLORS='di=01;36:ln=01;35:ex=01;32'
+zstyle ':completion:*' list-colors 'di=36' 'ln=35' 'ex=32'
 
 # 
 setopt auto_pushd

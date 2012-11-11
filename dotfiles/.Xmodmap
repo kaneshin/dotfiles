@@ -1,8 +1,6 @@
-! vim:set fdm=marker:
-!
 ! File:        .Xmodmap
 ! Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-! Last Change: 28-May-2012.
+! Last Change: 09-Nov-2012.
 
 ! Swap Ctrl and Caps lock
 remove Lock = Caps_Lock

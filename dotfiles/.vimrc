@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 31-Oct-2012.
+" Last Change: 09-Nov-2012.
 
 scriptencoding utf-8
 
@@ -60,6 +60,16 @@ augroup FoldOptions
   autocmd!
   autocmd BufWritePost * mkview
   autocmd BufReadPost * loadview
+augroup END
+
+" undo
+if finddir('undo', $VIMHOME) == ''
+  cal mkdir(expand('$VIMHOME/undo'), "p")
+endif
+set undofile
+set undodir=$VIMHOME/undo
+augroup UndoOptions
+  autocmd!
 augroup END
 
 " encoding and format
@@ -132,5 +142,8 @@ set undolevels=2000
 set iminsert=0
 set imsearch=0
 
-let $MYVIMRC = expand('$HOME/.vimrc.init')
-source $MYVIMRC
+" load .vimrc.init
+if (exists('g:unload_vimrc_init') && g:unload_vimrc_init)
+  finish
+endif
+source $HOME/.vimrc.init

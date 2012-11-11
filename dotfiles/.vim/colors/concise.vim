@@ -5,7 +5,7 @@
 "
 " File:         cosine.vim
 " Maintainer:   Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change:  31-Jul-2012.
+" Last Change:  09-Nov-2012.
 " Note:
 " This theme is based on the molokai theme by Tomas Restrepo
 
@@ -181,7 +181,7 @@ if &t_Co > 255
 
    hi VertSplit       ctermfg=244 ctermbg=232   cterm=none
    hi VisualNOS                   ctermbg=238
-   hi Visual                      ctermbg=235
+   hi Visual                      ctermbg=245
    hi WarningMsg      ctermfg=231 ctermbg=238   cterm=none
    hi WildMenu        ctermfg=81  ctermbg=16
 

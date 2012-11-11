@@ -2,10 +2,18 @@
 #
 # File:        .shrc.common
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 31-Oct-2012.
+# Last Change: 09-Nov-2012.
 
+# Export environment variables
 export LANG=en_US.UTF-8
 export LESSCHARSET=UTF-8
+export PATH=/usr/local/bin:$PATH
+
+# Add RVM to PATH for scripting
+# PATH=$PATH:$HOME/.rvm/bin
+# source $HOME/.rvm/scripts/rvm
+# Load RVM into a shell session *as a function*
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 
 # alias
 alias ce='cd ../'
@@ -22,16 +30,11 @@ alias egrep='egrep --color=always'
 
 alias less='less -R'
 
+# alias for vim
+alias vi='vim -u $HOME/.virc'
 sw_vers=`which sw_vers 2>&1`
 if [[ $? == 0 ]]; then
     alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'
 fi
-alias pvim='vim -u $HOME/.vimrc'
+rmswp='rm -vf $HOME/.vim/backup/*.swp'
 
-# Add RVM to PATH for scripting
-# PATH=$PATH:$HOME/.rvm/bin
-# source $HOME/.rvm/scripts/rvm
-export PATH=/usr/local/bin:$PATH
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
-
-# source ~/.nvm/nvm.sh
