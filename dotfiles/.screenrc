@@ -2,7 +2,7 @@
 #
 # File:        .screenrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 27-Aug-2012.
+# Last Change: 14-Nov-2012.
 #
 # help (?) - Screen help
 #
@@ -18,7 +18,7 @@
 #   redisplay (l) - redraw current window
 
 # encoding
-encoding utf-8
+encoding utf8
 defencoding utf8
 defkanji utf8
 
@@ -35,7 +35,9 @@ vbell off
 defscrollback 5000
 
 # terminal
-term xterm-256color
+term screen-256color
+# term xterm-256color
+# term rxvt-256color
 
 # shell title
 shelltitle "$|zsh"

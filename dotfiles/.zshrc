@@ -2,7 +2,7 @@
 #
 # File:        .zshrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 09-Nov-2012.
+# Last Change: 14-Nov-2012.
 
 # source common shell run command
 source ~/.shrc.common
