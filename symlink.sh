@@ -8,6 +8,7 @@
 TARGET=$HOME
 DOTFILESDIR=dotfiles/
 SANDBOX=$HOME/tmp/sandbox
+IGNOREFILES=('..' '.gitconfig' '.hgrc')
 
 function create_dotfiles()
 {
@@ -16,22 +17,31 @@ function create_dotfiles()
         return
     fi
     cd $DOTFILESDIR
+    if [[ $all_flag == 1 ]]; then
+        ignore_len=1
+    else
+        ignore_len=${#IGNOREFILES[@]}
+    fi
     for dotfile in .?*; do
-        if [[ $dotfile == '..' ]]; then
-            # echo ".. is parent directory"
-            continue
-        elif [[ $dotfile == '.gitconfig' ]]; then
-            continue
-        elif [[ $dotfile == '.hgrc' ]]; then
-            continue
-        elif [[ -f $dotfile ]]; then
-            ln -sf $PWD/$dotfile $1
-            suffix="@"
-        elif [[ -d $dotfile ]]; then
-            cp -fpR $PWD/$dotfile $1/
-            suffix="/"
+        # check ignored files
+        for (( i = 0; i < $ignore_len; i++ ))
+        do
+            ignore_flag=1
+            if [[ $dotfile == ${IGNOREFILES[$i]} ]]; then
+                ignore_flag=0
+                break
+            fi
+        done
+        if [[ $ignore_flag == 1 ]]; then
+            if [[ -f $dotfile ]]; then
+                ln -sf $PWD/$dotfile $1
+                suffix="@"
+            elif [[ -d $dotfile ]]; then
+                cp -fpR $PWD/$dotfile $1/
+                suffix="/"
+            fi
+            echo "created $1/$dotfile$suffix"
         fi
-        echo "created $1/$dotfile$suffix"
     done
 }
 
@@ -42,23 +52,40 @@ function remove_dotfiles()
         return
     fi
     cd $DOTFILESDIR
+    if [[ $all_flag == 1 ]]; then
+        ignore_len=1
+    else
+        ignore_len=${#IGNOREFILES[@]}
+    fi
     for dotfile in .?*; do
-        if [[ $dotfile == '..' ]]; then
-            continue
-        elif [[ -f $dotfile ]]; then
-            if [ -L $1/$dotfile ]; then
-                rm -f $1/$dotfile
-                suffix="@"
+        # check ignored files
+        for (( i = 0; i < $ignore_len; i++ ))
+        do
+            ignore_flag=1
+            if [[ $dotfile == ${IGNOREFILES[$i]} ]]; then
+                ignore_flag=0
+                break
             fi
-        elif [[ -d $dotfile ]]; then
-            rm -rf $1/$dotfile/
-            suffix="/"
+        done
+        if [[ $ignore_flag == 1 ]]; then
+            if [[ -f $dotfile ]]; then
+                if [ -L $1/$dotfile ]; then
+                    rm -f $1/$dotfile
+                    suffix="@"
+                fi
+            elif [[ -d $dotfile ]]; then
+                rm -rf $1/$dotfile/
+                suffix="/"
+            fi
+            echo "removed $1/$dotfile$suffix"
         fi
-        echo "removed $1/$dotfile$suffix"
     done
 }
 
 cd $(dirname ${0})
+if [[ $2 == '--all' ]]; then
+    all_flag=1
+fi
 case $1 in
     make )
         create_dotfiles $TARGET
