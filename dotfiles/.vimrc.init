@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 12-Nov-2012.
+" Last Change: 17-Nov-2012.
 
 
 scriptencoding utf-8
@@ -287,9 +287,7 @@ endif
 " /=powerline }}}
 
 " memolist {{{
-if s:is_mac
-  let g:memolist_path = $HOME.'/Documents/Notes'
-endif
+let g:memolist_path = $HOME.'/Documents/Notes'
 let g:memolist_memo_suffix = "mkd"
 let g:memolist_memo_date = "%Y-%m-%d %H:%M"
 let g:memolist_prompt_tags = 0
