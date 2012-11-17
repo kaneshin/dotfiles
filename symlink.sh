@@ -3,7 +3,7 @@
 # File:         symlink.sh
 # Version:      1.0.0
 # Maintainer:   Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change:  09-Nov-2012.
+# Last Change:  18-Nov-2012.
 
 TARGET=$HOME
 DOTFILESDIR=dotfiles/
@@ -21,6 +21,8 @@ function create_dotfiles()
             # echo ".. is parent directory"
             continue
         elif [[ $dotfile == '.gitconfig' ]]; then
+            continue
+        elif [[ $dotfile == '.hgrc' ]]; then
             continue
         elif [[ -f $dotfile ]]; then
             ln -sf $PWD/$dotfile $1
