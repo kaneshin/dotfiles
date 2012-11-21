@@ -18,6 +18,7 @@
 	bn = branch --no-merged         # not merged branches
 # log
 	logn = log --pretty=oneline
+	daily = log --author="kaneshin" --oneline --no-merges --since="00:00:01"
 # tree
 	tr = log --graph --pretty='format:%C(yellow)%h%Creset %s %Cgreen(%an)%Creset %Cred%d%Creset'
 # diff
