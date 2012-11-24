@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 17-Nov-2012.
+" Last Change: 21-Nov-2012.
 
 
 scriptencoding utf-8
@@ -239,6 +239,42 @@ let g:sonictemplate_vim_template_dir = [
       \expand('$VIMHOME/template'),
       \]
 " /=sonictemplate }}}
+
+" quickrun {{{
+" let g:loaded_quicklaunch = 1
+" 1. b:quickrun_config
+" 2. 'filetype'
+" 3. g:quickrun_config._type_
+" 4. g:quickrun#default_conig._type_
+" 5. g:quickrunconfig.
+" 6. g:quickrun#defaultonig.
+let b:quickrun_config = {}
+let g:quickrun_config = {
+\ '_': {
+\   'outputter' : 'buffer',
+\   'outputter/buffer/split': 'rightbelow 10sp',
+\   'runner': 'system',
+\ },
+\ 'c': {
+\   'command': 'gcc',
+\   'exec': ['%c %o %s -o %s:p:r', '%s:p:r %a', 'rm -f %s:p:r'],
+\   'cmdopt': '-Wall',
+\   'tempfile': '%{tempname()}.c',
+\ },
+\ 'cpp': {
+\   'command': 'clang++',
+\   'exec': ['%c %o %s -o %s:p:r', '%s:p:r %a', 'rm -f %s:p:r'],
+\   'cmdopt': '-Wall',
+\   'tempfile': '%{tempname()}.cpp',
+\ },
+\ 'ruby': {
+\   'command': 'ruby',
+\   'exec': ['%c %o %s %a'],
+\   'cmdopt': '',
+\   'tempfile': '%{tempname()}.rb',
+\ },
+\}
+" /=quickrun }}}
 
 " TwitVim {{{
 let g:twitvim_count = 50
