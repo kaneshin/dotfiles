@@ -1,33 +1,40 @@
 [user]
 	name = Shintaro Kaneko
 	email = kaneshin0120@gmail.com
-[github]
-	user = kaneshin
+[include]
+	path = .gitconfig.local
+[core]
+	editor = vim
+	pager = less
 [alias]
-	ad = add
+	a = add .
+	au = add -u
 	co = checkout
 	com = commit
 	cam = commit -a --amend         # modify the last commit
+	s = status
 	st = status
 	stg = stage
 	sh = show
 # branch
-	br = branch
+	b = branch
 	ba = branch -a                  # show all branches
 	bm = branch --merged            # already merged branches
 	bn = branch --no-merged         # not merged branches
 # log
-	logn = log --pretty=oneline
-	daily = log --author="kaneshin" --oneline --no-merges --since="00:00:01"
+	l  = log --graph --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
+	ln = log --graph --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset' --name-status
+	ls = log --oneline -p
+	lp = log --stat --abbrev-commit -n 1 # display previous log
+	ld = log --author="kaneshin" --oneline --no-merges --since="00:00:01" --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
 # tree
 	tr = log --graph --pretty='format:%C(yellow)%h%Creset %s %Cgreen(%an)%Creset %Cred%d%Creset'
 # diff
+	d = diff
 	dm = diff master
 	d1 = diff HEAD~
 	d2 = diff HEAD~2
 	d3 = diff HEAD~3
-[core]
-	editor = vim
 [color]
 	ui = auto
 	status = auto
