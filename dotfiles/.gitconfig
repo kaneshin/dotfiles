@@ -1,34 +1,42 @@
 [user]
 	name = Shintaro Kaneko
 	email = kaneshin0120@gmail.com
+[github]
+	user = kaneshin
 [include]
 	path = .gitconfig.local
 [core]
 	editor = vim
-	pager = less
+	pager = less -R
+	excludesfile = ~/.gitignore
 [alias]
-	a = add .
-	au = add -u
-	co = checkout
-	com = commit
-	cam = commit -a --amend         # modify the last commit
-	s = status
+	s  = status
 	st = status
-	stg = stage
 	sh = show
+	co = checkout
+# show status after add
+	a  = !git add .  && git status
+	ad = !git add .  && git status
+	au = !git add -u && git status
+	aa = !git add .  && git add -u && git status
+# commit
+	c   = commit
+	ca  = commit -a
+	cm  = commit -m
+	cam = commit -a --amend         # modify the last commit
 # branch
-	b = branch
+	b  = branch
+	br = branch
 	ba = branch -a                  # show all branches
 	bm = branch --merged            # already merged branches
 	bn = branch --no-merged         # not merged branches
 # log
-	l  = log --graph --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
+	lp = log --oneline -p
+	ls = log --stat --abbrev-commit -n 1 # display previous log
 	ln = log --graph --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset' --name-status
-	ls = log --oneline -p
-	lp = log --stat --abbrev-commit -n 1 # display previous log
-	ld = log --author="kaneshin" --oneline --no-merges --since="00:00:01" --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
+	lt = log --oneline --since="00:00:01" --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
 # tree
-	tr = log --graph --pretty='format:%C(yellow)%h%Creset %s %Cgreen(%an)%Creset %Cred%d%Creset'
+	tr = log --graph --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
 # diff
 	d = diff
 	dm = diff master
@@ -39,6 +47,6 @@
 	ui = auto
 	status = auto
 	branch = auto
-	dif = auto
+	diff = auto
 	interactive = auto
 	grep = auto
