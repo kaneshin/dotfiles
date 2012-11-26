@@ -2,7 +2,7 @@
 #
 # File:        .shrc.common
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 15-Nov-2012.
+# Last Change: 26-Nov-2012.
 
 # Export environment variables
 export LANG=en_US.UTF-8
@@ -36,6 +36,3 @@ sw_vers=`which sw_vers 2>&1`
 if [[ $? == 0 ]]; then
     alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'
 fi
-alias v='vim'
-rmswp='rm -vf $HOME/.vim/backup/*.swp'
-
