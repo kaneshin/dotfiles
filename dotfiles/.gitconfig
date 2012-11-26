@@ -14,6 +14,7 @@
 	st = status
 	sh = show
 	co = checkout
+	cb = checkout -b
 # show status after add
 	a  = !git add .  && git status
 	ad = !git add .  && git status
