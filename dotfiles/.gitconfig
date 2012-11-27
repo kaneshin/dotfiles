@@ -10,10 +10,12 @@
 	pager = less -R
 	excludesfile = ~/.gitignore
 [alias]
+	alias = !git config --list | grep 'alias\\.' | sed 's/alias\\.\\([^=]*\\)=\\(.*\\)/\\1\\\t => \\2/' | sort
 	s  = status
 	st = status
 	sh = show
 	co = checkout
+	cb = checkout -b
 # show status after add
 	a  = !git add .  && git status
 	ad = !git add .  && git status
