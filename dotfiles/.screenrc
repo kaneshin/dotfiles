@@ -36,8 +36,6 @@ defscrollback 5000
 
 # terminal
 term screen-256color
-# term xterm-256color
-# term rxvt-256color
 
 # shell title
 shelltitle "$|zsh"
@@ -46,7 +44,7 @@ shelltitle "$|zsh"
 hardstatus alwayslastline "%{= wk}[screen@$USER]%` %`%-w%{= ck}%n %t%{-}%+w %=[$LANG][%m/%d %02c:%s]"
 
 # escape
-escape 
+escape 
 
 # key bind with escape
 bind 0 remove
@@ -54,7 +52,4 @@ bind 1 only
 bind 2 split
 bind 3 split -v
 # bind  focus
-
-# key bind without escape
-bindkey  focus
 
