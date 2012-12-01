@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 09-Nov-2012.
+" Last Change: 01-Dec-2012.
 
 scriptencoding utf-8
 
@@ -117,7 +117,7 @@ set autoindent
 set smartindent
 set showmatch
 set backspace=indent,eol,start
-set clipboard=unnamed
+" set clipboard=unnamed
 set pastetoggle=<F12>
 set formatoptions+=mM
 " time to wait after ESC
