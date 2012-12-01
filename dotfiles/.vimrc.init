@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 21-Nov-2012.
+" Last Change: 30-Nov-2012.
 
 
 scriptencoding utf-8
@@ -99,7 +99,7 @@ nnoremap <silent> <leader>q :ccl<cr>
 augroup MyVimOptions
   autocmd!
   " change directory if you open a file.
-  autocmd BufEnter * execute ':lcd '.expand('%:p:h')
+  " autocmd BufEnter * execute ':lcd '.expand('%:p:h')
   autocmd QuickfixCmdPost vimgrep cw
 augroup END
 " /=autocmds }}}
