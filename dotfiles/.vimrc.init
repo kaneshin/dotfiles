@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 30-Nov-2012.
+" Last Change: 04-Dec-2012.
 
 
 scriptencoding utf-8
@@ -127,6 +127,7 @@ set rtp+=$VIMHOME/bundle/vundle
 call vundle#rc('$VIMHOME/bundle')
 " vundle is managed by itself
 Bundle 'gmarik/vundle'
+Bundle 'kaneshin/ctrlp-adventcalendar'
 
 " useful
 Bundle "autodate.vim"
