@@ -53,6 +53,7 @@
 	ft   = fetch
 # push
 	po = push origin
+	pg = push github
 # rebase (rb)
 	rbm = rebase master
 	rbd = rebase devel
