@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 04-Dec-2012.
+" Last Change: 23-Dec-2012.
 
 
 scriptencoding utf-8
@@ -52,7 +52,10 @@ cnoremap <c-p> <Up>
 " delete character backward
 cnoremap <c-h> <BS>
 
-" normal node
+" insert mode
+inoremap <c-k> <esc><right>Da
+
+" normal mode
 " searching
 nnoremap n nzz
 nnoremap N Nzz
@@ -127,7 +130,6 @@ set rtp+=$VIMHOME/bundle/vundle
 call vundle#rc('$VIMHOME/bundle')
 " vundle is managed by itself
 Bundle 'gmarik/vundle'
-Bundle 'kaneshin/ctrlp-adventcalendar'
 
 " useful
 Bundle "autodate.vim"
@@ -174,6 +176,7 @@ Bundle 'vim-ruby/vim-ruby'
 Bundle 'JavaScript-syntax'
 Bundle 'jQuery'
 Bundle 'tpope/vim-markdown'
+Bundle 'msanders/cocoa.vim'
 
 " ===== recently installed =====
 Bundle 'smartword'

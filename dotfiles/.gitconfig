@@ -3,48 +3,11 @@
 	email = kaneshin0120@gmail.com
 [github]
 	user = kaneshin
-[include]
-	path = .gitconfig.local
 [core]
+	excludesfile = ~/.gitconfig
 	editor = vim
 	pager = less -R
 	excludesfile = ~/.gitignore
-[alias]
-	alias = !git config --list | grep 'alias\\.' | sed 's/alias\\.\\([^=]*\\)=\\(.*\\)/\\1\\\t => \\2/' | sort
-	s  = status
-	st = status
-	sh = show
-	co = checkout
-	cb = checkout -b
-# show status after add
-	a  = !git add .  && git status
-	ad = !git add .  && git status
-	au = !git add -u && git status
-	aa = !git add .  && git add -u && git status
-# commit
-	c   = commit
-	ca  = commit -a
-	cm  = commit -m
-	cam = commit -a --amend         # modify the last commit
-# branch
-	b  = branch
-	br = branch
-	ba = branch -a                  # show all branches
-	bm = branch --merged            # already merged branches
-	bn = branch --no-merged         # not merged branches
-# log
-	lp = log --oneline -p
-	ls = log --stat --abbrev-commit -n 1 # display previous log
-	ln = log --graph --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset' --name-status
-	lt = log --oneline --since="00:00:01" --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
-# tree
-	tr = log --graph --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
-# diff
-	d = diff
-	dm = diff master
-	d1 = diff HEAD~
-	d2 = diff HEAD~2
-	d3 = diff HEAD~3
 [color]
 	ui = auto
 	status = auto
@@ -52,3 +15,81 @@
 	diff = auto
 	interactive = auto
 	grep = auto
+[merge]
+	tool = vimdiff
+[alias]
+	alias = !git config --list | grep 'alias\\.' | sed 's/alias\\.\\([^=]*\\)=\\(.*\\)/\\1\\\t => \\2/' | sort
+# status/show (s)
+	s  = status
+	ss = status -s
+	sh = show
+# show status after add (a)
+	a  = !git add .  && git status
+	ad = !git add .  && git status
+	au = !git add -u && git status
+	aa = !git add .  && git add -u && git status
+# commit (c)
+	c   = commit
+	ca  = commit -a
+	cm  = commit -m
+	cam = commit -a --amend         # modify the last commit
+# checkout (ch)
+	co  = checkout
+	ch  = checkout
+	chb = checkout -b
+	chm = checkout master
+	chd = checkout devel
+# branch (b, br)
+	b   = branch
+	br  = branch
+	ba  = branch -a                  # show all branches
+	bra = branch -a                  # show all branches
+	bm  = branch --merged            # already merged branches
+	brm = branch --merged            # already merged branches
+	bn  = branch --no-merged         # not merged branches
+	brn = branch --no-merged         # not merged branches
+# pull/fetch
+	drag = pull --rebase
+	ft   = fetch
+# push
+	po = push origin
+# rebase (rb)
+	rbm = rebase master
+	rbd = rebase devel
+	rbc = rebase --continue
+	rba = rebase --abort
+# revert (rv)
+	rv  = revert 
+	rvh = revert HEAD
+# reset (rs)
+	rs   = reset
+	rsh  = reset HEAD
+	rssh = reset --soft HEAD
+	rshh = reset --hard HEAD
+# log (l)
+	l  = log
+	lp = log --oneline -p
+	ls = log --stat --abbrev-commit -n 1 # display previous log
+	lo = log origin
+# log tree
+	ln = log --graph --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset' --name-status
+	lt = log --oneline --since="00:00:01" --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
+	tr = log --graph --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
+# diff (d)
+	d  = diff
+	di  = diff
+	dm = diff master
+	dw = diff --color-words
+	d1 = diff HEAD~
+	d2 = diff HEAD~2
+	d3 = diff HEAD~3
+# grep (gr)
+	gr  = grep
+	grn = grep -n
+# stash (st)
+	st  = stash
+	stl = stash list
+	stp = stash pop
+	sts = stash save
+# cherry-pick (chpk)
+	chpk = cherry-pick
