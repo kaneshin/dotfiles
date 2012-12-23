@@ -2,7 +2,7 @@
 #
 # File:        .zshrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 14-Nov-2012.
+# Last Change: 23-Dec-2012.
 
 # source common shell run command
 source ~/.shrc.common
@@ -31,7 +31,7 @@ bindkey "^N" history-beginning-search-forward-end
 # Display
 PS1='%{]0;%/
 [32m%}(%n@%m)[%h] %{[33m%}%~%{[0m%}
-(/^o^)/< '
+(  ՞ਊ ՞)☞  '
 export LSCOLORS=gxfxcxdxbxegedabagacad
 
 case "${TERM}" in
