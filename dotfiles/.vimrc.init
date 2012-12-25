@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 23-Dec-2012.
+" Last Change: 24-Dec-2012.
 
 
 scriptencoding utf-8
@@ -54,6 +54,7 @@ cnoremap <c-h> <BS>
 
 " insert mode
 inoremap <c-k> <esc><right>Da
+inoremap <c-c> <esc>
 
 " normal mode
 " searching
