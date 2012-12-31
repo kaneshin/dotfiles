@@ -2,12 +2,14 @@
 #
 # File:        .shrc.common
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 26-Nov-2012.
+# Last Change: 01-Jan-2013.
 
 # Export environment variables
 export LANG=en_US.UTF-8
 export LESSCHARSET=UTF-8
 export PATH=/usr/local/bin:$PATH
+export LSCOLORS=gxfxcxdxbxegedabagacad
+export LS_COLORS='di=36:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
 
 # Add RVM to PATH for scripting
 # PATH=$PATH:$HOME/.rvm/bin
@@ -17,8 +19,7 @@ export PATH=/usr/local/bin:$PATH
 
 # alias
 alias ce='cd ../'
-alias ls="ls -G --color=auto"
-alias ls='ls -F'
+alias ls='ls -GF'
 alias la='ls -a'
 alias ll='ls -la'
 alias sl="ls"

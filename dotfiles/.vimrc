@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 01-Dec-2012.
+" Last Change: 01-Jan-2013.
 
 scriptencoding utf-8
 
