@@ -3,7 +3,7 @@
 "
 " File:        .gvimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 17-Oct-2012.
+" Last Change: 03-Jan-2013.
 
 scriptencoding utf-8
 
@@ -19,3 +19,7 @@ if has('mac')
   set transparency=5
   set linespace=2
 endif
+
+if has('mac')
+  set guifont=Ricty:h14
+else
