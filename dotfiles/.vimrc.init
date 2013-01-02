@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 01-Jan-2013.
+" Last Change: 03-Jan-2013.
 
 
 scriptencoding utf-8
@@ -29,6 +29,7 @@ if filereadable(expand('$DOTFILES/.vimrc.init'))
   nnoremap <silent> ,ev :EditVimrcInit<cr>
   nnoremap <silent> ,rv :ReadVimrcInit<cr>
 endif
+
 " use emacs key bind during command mode and a movement of insert mode
 " start of line
 cnoremap <c-a> <Home>
@@ -53,8 +54,10 @@ cnoremap <c-p> <Up>
 cnoremap <c-h> <BS>
 
 " insert mode
-" inoremap <c-k> <esc><right>Da
 inoremap <c-c> <esc>
+
+" kill line
+inoremap <c-k> <right><esc>Da
 
 " normal mode
 " searching
@@ -71,9 +74,11 @@ nnoremap <silent> <C-x>p :bprevious<CR>
 nnoremap <silent> <C-x>k :close<CR>
 
 " visual mode
+vnoremap <c-c> <esc>
+vnoremap f <esc>
+
 vnoremap <silent> > >gv
 vnoremap <silent> < <gv
-vnoremap f <esc>
 
 " brackets and else
 inoremap () ()<Left>
@@ -89,7 +94,7 @@ cnoremap '' ''<Left>
 inoremap <> <><Left>
 cnoremap <> <><Left>
 
-" modifying a typo
+" modify typo
 inoremap {] {}<Left>
 cnoremap {] {}<Left>
 
@@ -202,6 +207,12 @@ let g:ctrlp_max_files = 10000
 let g:ctrlp_mruf_max = 250
 let g:ctrlp_max_depth = 40
 let g:ctrlp_use_migemo = 0
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip
+let g:ctrlp_custom_ignore = {
+  \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+  \ 'file': '\v\.(exe|so|dll)$',
+  \ 'link': 'some_bad_symbolic_links',
+  \ }
 if finddir('.cache/ctrlp', $VIMHOME) == ''
   cal mkdir(expand('$VIMHOME/.cache/ctrlp'), "p")
 endif
@@ -209,7 +220,6 @@ let g:ctrlp_cache_dir = $VIMHOME.'/.cache/ctrlp'
 let g:ctrlp_extensions = [
       \'sonictemplate',
       \'memolist',
-      \'git_log',
       \]
 let g:ctrlp_filetype = {
       \'user': [
