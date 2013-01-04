@@ -2,7 +2,7 @@
 #
 # File:        .zshrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 01-Jan-2013.
+# Last Change: 04-Jan-2013.
 
 # source common shell run command
 source ~/.shrc.common
@@ -86,7 +86,7 @@ setopt auto_list
 # completion when pushed key for complement twice
 unsetopt bash_auto_list
 
-# move a command of candidates 
+# move a command of candidates
 setopt auto_menu
 
 # set a command immediately
@@ -104,7 +104,9 @@ setopt list_packed
 # show trailing character of file
 setopt list_types
 
-zstyle ':completion:*' menu true
+# set candidate immediately
+# zstyle ':completion:*' menu true
+
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*' use-cache true
 zstyle ':completion:*:default' menu select=3
