@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 03-Jan-2013.
+" Last Change: 04-Jan-2013.
 
 
 scriptencoding utf-8
@@ -147,7 +147,7 @@ Bundle 'mattn/ctrlp-sudden-death'
 Bundle 'kaneshin/ctrlp-memolist'
 Bundle 'kaneshin/ctrlp-sonictemplate'
 Bundle 'kaneshin/ctrlp-filetype'
-Bundle 'kaneshin/ctrlp-git-log'
+Bundle 'kaneshin/ctrlp-git'
 
 " twitter
 Bundle 'TwitVim'
@@ -220,6 +220,9 @@ let g:ctrlp_cache_dir = $VIMHOME.'/.cache/ctrlp'
 let g:ctrlp_extensions = [
       \'sonictemplate',
       \'memolist',
+      \'git_branch',
+      \'git_log',
+      \'git_diff',
       \]
 let g:ctrlp_filetype = {
       \'user': [
