@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 04-Jan-2013.
+" Last Change: 06-Jan-2013.
 
 
 scriptencoding utf-8
@@ -139,15 +139,19 @@ Bundle 'gmarik/vundle'
 
 " useful
 Bundle "autodate.vim"
+Bundle 'mattn/webapi-vim'
 
 " ctrlp
 Bundle 'kien/ctrlp.vim'
 Bundle 'mattn/ctrlp-gist'
-Bundle 'mattn/ctrlp-sudden-death'
+Bundle 'mattn/ctrlp-mark'
+Bundle 'mattn/ctrlp-launcher'
+Bundle 'mattn/ctrlp-register'
 Bundle 'kaneshin/ctrlp-memolist'
 Bundle 'kaneshin/ctrlp-sonictemplate'
 Bundle 'kaneshin/ctrlp-filetype'
 Bundle 'kaneshin/ctrlp-git'
+Bundle 'kaneshin/ctrlp-sudden-death'
 
 " twitter
 Bundle 'TwitVim'
@@ -162,7 +166,6 @@ Bundle 'tpope/vim-repeat'
 Bundle 'Lokaltog/vim-powerline'
 Bundle 'tpope/vim-fugitive'
 
-Bundle 'mattn/webapi-vim'
 Bundle 'mattn/gist-vim'
 Bundle 'mattn/zencoding-vim'
 Bundle 'glidenote/memolist.vim'
@@ -203,7 +206,7 @@ let g:ctrlp_max_height = 20
 let g:ctrlp_switch_buffer = 2
 let g:ctrlp_working_path_mode = 2
 let g:ctrlp_use_caching = 1
-let g:ctrlp_max_files = 10000
+let g:ctrlp_max_files = 5000
 let g:ctrlp_mruf_max = 250
 let g:ctrlp_max_depth = 40
 let g:ctrlp_use_migemo = 0
@@ -211,18 +214,17 @@ set wildignore+=*/tmp/*,*.so,*.swp,*.zip
 let g:ctrlp_custom_ignore = {
   \ 'dir':  '\v[\/]\.(git|hg|svn)$',
   \ 'file': '\v\.(exe|so|dll)$',
-  \ 'link': 'some_bad_symbolic_links',
+  \ 'link': '',
   \ }
 if finddir('.cache/ctrlp', $VIMHOME) == ''
   cal mkdir(expand('$VIMHOME/.cache/ctrlp'), "p")
 endif
 let g:ctrlp_cache_dir = $VIMHOME.'/.cache/ctrlp'
 let g:ctrlp_extensions = [
-      \'sonictemplate',
-      \'memolist',
       \'git_branch',
       \'git_log',
       \'git_diff',
+      \'sudden_death',
       \]
 let g:ctrlp_filetype = {
       \'user': [
@@ -240,6 +242,7 @@ let g:ctrlp_filetype = {
       \],
       \}
 nnoremap <c-e>g :<c-u>CtrlPGist<cr>
+nnoremap <c-e>l :<c-u>CtrlPLauncher<cr>
 nnoremap <c-e>t :<c-u>CtrlPSonictemplate<cr>
 nnoremap <c-e>m :<c-u>CtrlPMemolist<cr>
 nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
@@ -276,7 +279,7 @@ let g:quickrun_config = {
 \   'runner': 'system',
 \ },
 \ 'c': {
-\   'command': 'gcc',
+\   'command': 'clang',
 \   'exec': ['%c %o %s -o %s:p:r', '%s:p:r %a', 'rm -f %s:p:r'],
 \   'cmdopt': '-Wall',
 \   'tempfile': '%{tempname()}.c',
@@ -333,6 +336,10 @@ augroup TweetVimOptions
   autocmd FileType tweetvim :call s:tweetvim_options()
 augroup END
 " /=TweetVim }}}
+
+" easymotion {{{
+let g:EasyMotion_leader_key = '<Leader>'
+" /=easymotion }}}
 
 " powerline {{{
 if has('gui_running')
