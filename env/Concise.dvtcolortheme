@@ -5,37 +5,37 @@
 	<key>DVTConsoleDebuggerInputTextColor</key>
 	<string>0.995968 0.995968 0.995968 1</string>
 	<key>DVTConsoleDebuggerInputTextFont</key>
-	<string>Ricty-Regular - 14.0</string>
+	<string>Menlo-Regular - 11.0</string>
 	<key>DVTConsoleDebuggerOutputTextColor</key>
 	<string>0.995968 0.995968 0.995968 1</string>
 	<key>DVTConsoleDebuggerOutputTextFont</key>
-	<string>Ricty-Regular - 14.0</string>
+	<string>Menlo-Regular - 11.0</string>
 	<key>DVTConsoleDebuggerPromptTextColor</key>
 	<string>0.269583 0.704479 0.84096 1</string>
 	<key>DVTConsoleDebuggerPromptTextFont</key>
-	<string>Ricty-Regular - 14.0</string>
+	<string>Menlo-Regular - 11.0</string>
 	<key>DVTConsoleExectuableInputTextColor</key>
 	<string>0.995968 0.995968 0.995968 1</string>
 	<key>DVTConsoleExectuableInputTextFont</key>
-	<string>Ricty-Regular - 14.0</string>
+	<string>Menlo-Regular - 11.0</string>
 	<key>DVTConsoleExectuableOutputTextColor</key>
-	<string>0.995968 0.995968 0.995968 1</string>
+	<string>1 1 1 1</string>
 	<key>DVTConsoleExectuableOutputTextFont</key>
-	<string>Ricty-Regular - 14.0</string>
+	<string>Menlo-Regular - 11.0</string>
 	<key>DVTConsoleTextBackgroundColor</key>
-	<string>0.138326 0.138352 0.13832 1</string>
+	<string>0.1 0.1 0.1 1</string>
 	<key>DVTConsoleTextInsertionPointColor</key>
-	<string>0 0 0 1</string>
+	<string>0.5 0.5 0.5 1</string>
 	<key>DVTConsoleTextSelectionColor</key>
-	<string>0.891972 0.635291 1 1</string>
+	<string>0.2 0.2 0.2 1</string>
 	<key>DVTDebuggerInstructionPointerColor</key>
 	<string>0.705792 0.8 0.544 1</string>
 	<key>DVTSourceTextBackground</key>
-	<string>0.153735 0.158026 0.134656 1</string>
+	<string>0.1 0.1 0.1 1</string>
 	<key>DVTSourceTextBlockDimBackgroundColor</key>
 	<string>0.5 0.5 0.5 1</string>
 	<key>DVTSourceTextInsertionPointColor</key>
-	<string>0.458824 0.443137 0.368627 1</string>
+	<string>0.5 0.5 0.5 1</string>
 	<key>DVTSourceTextInvisiblesColor</key>
 	<string>0.5 0.5 0.5 1</string>
 	<key>DVTSourceTextSelectionColor</key>
