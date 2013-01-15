@@ -3,7 +3,7 @@
 "
 " File:        .gvimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 03-Jan-2013.
+" Last Change: 11-Jan-2013.
 
 scriptencoding utf-8
 
@@ -16,7 +16,7 @@ set cmdheight=2
 colorscheme cosine
 
 if has('mac')
-  set transparency=5
+  set transparency=3
   set linespace=2
 endif
 

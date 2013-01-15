@@ -133,3 +133,11 @@ setopt print_eight_bit
 setopt extended_glob
 setopt globdots
 
+brew=`which brew 2>&1`
+if [[ $? == 0 ]]; then
+    . `brew --prefix`/etc/profile.d/z.sh
+fi
+function precmd ()
+{
+    _z --add "$(pwd -P)"
+}

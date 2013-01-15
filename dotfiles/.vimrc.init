@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 06-Jan-2013.
+" Last Change: 14-Jan-2013.
 
 
 scriptencoding utf-8
@@ -72,6 +72,8 @@ nnoremap <silent> <C-x>3 :vsplit<CR>
 nnoremap <silent> <C-x>n :bnext<CR>
 nnoremap <silent> <C-x>p :bprevious<CR>
 nnoremap <silent> <C-x>k :close<CR>
+nnoremap <silent> ft :bnext<cr>
+nnoremap <silent> fT :bprevious<cr>
 
 " visual mode
 vnoremap <c-c> <esc>
@@ -93,6 +95,8 @@ inoremap '' ''<Left>
 cnoremap '' ''<Left>
 inoremap <> <><Left>
 cnoremap <> <><Left>
+
+inoremap {<cr> {<cr><cr>}<up>
 
 " modify typo
 inoremap {] {}<Left>
@@ -152,6 +156,7 @@ Bundle 'kaneshin/ctrlp-sonictemplate'
 Bundle 'kaneshin/ctrlp-filetype'
 Bundle 'kaneshin/ctrlp-git'
 Bundle 'kaneshin/ctrlp-sudden-death'
+Bundle 'kaneshin/ctrlp-project'
 
 " twitter
 Bundle 'TwitVim'
@@ -192,6 +197,7 @@ Bundle 'msanders/cocoa.vim'
 " ===== recently installed =====
 Bundle 'smartword'
 Bundle 'thinca/vim-ref'
+Bundle 'tpope/vim-abolish'
 
 filetype plugin indent on
 " /=vundle }}}
@@ -221,10 +227,8 @@ if finddir('.cache/ctrlp', $VIMHOME) == ''
 endif
 let g:ctrlp_cache_dir = $VIMHOME.'/.cache/ctrlp'
 let g:ctrlp_extensions = [
-      \'git_branch',
       \'git_log',
-      \'git_diff',
-      \'sudden_death',
+      \'project',
       \]
 let g:ctrlp_filetype = {
       \'user': [
@@ -246,6 +250,7 @@ nnoremap <c-e>l :<c-u>CtrlPLauncher<cr>
 nnoremap <c-e>t :<c-u>CtrlPSonictemplate<cr>
 nnoremap <c-e>m :<c-u>CtrlPMemolist<cr>
 nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
+nnoremap <c-e>p :<c-u>CtrlPProject<cr>
 " /=ctrlp }}}
 
 " gist-vim {{{
