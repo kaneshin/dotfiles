@@ -2,7 +2,7 @@
 #
 # File:        .zshrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 08-Jan-2013.
+# Last Change: 17-Jan-2013.
 
 # source common shell run command
 source ~/.shrc.common
@@ -139,5 +139,8 @@ if [[ $? == 0 ]]; then
 fi
 function precmd ()
 {
-    _z --add "$(pwd -P)"
+    brew=`which brew 2>&1`
+    if [[ $? == 0 ]]; then
+        _z --add "$(pwd -P)"
+    fi
 }
