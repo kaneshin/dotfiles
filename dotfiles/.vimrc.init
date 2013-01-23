@@ -265,6 +265,7 @@ endif
 " sonictemplate {{{
 let g:sonictemplate_vim_template_dir = [
       \expand('$VIMHOME/template'),
+      \expand('$DOTFILES/.vim/template'),
       \]
 " /=sonictemplate }}}
 
