@@ -55,6 +55,7 @@
 # push
 	po = push origin
 	pg = push github
+	pb = push bitbucket
 # rebase (rb)
 	rbm = rebase master
 	rbd = rebase devel
