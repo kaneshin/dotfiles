@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 14-Jan-2013.
+" Last Change: 20-Jan-2013.
 
 
 scriptencoding utf-8
@@ -265,6 +265,7 @@ endif
 " sonictemplate {{{
 let g:sonictemplate_vim_template_dir = [
       \expand('$VIMHOME/template'),
+      \expand('$DOTFILES/.vim/template'),
       \]
 " /=sonictemplate }}}
 
