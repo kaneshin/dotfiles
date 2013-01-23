@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 14-Jan-2013.
+" Last Change: 23-Jan-2013.
 
 
 scriptencoding utf-8
@@ -168,7 +168,7 @@ Bundle 'tpope/vim-surround'
 Bundle 'tpope/vim-repeat'
 
 " statusline
-Bundle 'Lokaltog/vim-powerline'
+Bundle 'ssh://kaneshinth.com/var/repositories/vim-plugin/vim-powerline.git'
 Bundle 'tpope/vim-fugitive'
 
 Bundle 'mattn/gist-vim'

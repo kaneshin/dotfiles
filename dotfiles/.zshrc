@@ -2,7 +2,7 @@
 #
 # File:        .zshrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 17-Jan-2013.
+# Last Change: 23-Jan-2013.
 
 # source common shell run command
 source ~/.shrc.common
@@ -73,7 +73,7 @@ SPROMPT="zsh: Did you mean: %{[4m[31m%}%r%{[14m[0m%} [nyae]? "
 
 # completion settings
 autoload -Uz compinit
-compinit
+compinit -u
 # don't create new prompt
 setopt always_last_prompt
 

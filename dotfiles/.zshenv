@@ -2,7 +2,7 @@
 #
 # File:        .zshenv
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 04-Jan-2013.
+# Last Change: 23-Jan-2013.
 
 export PATH=/usr/local/bin:$PATH
 export PATH=/usr/texbin:$PATH
@@ -24,7 +24,7 @@ export LS_COLORS='di=36:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 
 # perl
-source ~/perl5/perlbrew/etc/bashrc
+[[ -s "$HOME/perl5/perlbrew/etc/bashrc" ]] && source ~/perl5/perlbrew/etc/bashrc
 
 # node.js
 export PATH=$HOME/.nodebrew/current/bin:$PATH
