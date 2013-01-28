@@ -39,7 +39,7 @@
 	ch  = checkout
 	chb = checkout -b
 	chm = checkout master
-	chd = checkout devel
+	chd = checkout develop
 # branch (b, br)
 	b   = branch
 	br  = branch

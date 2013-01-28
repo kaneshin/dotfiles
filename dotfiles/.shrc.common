@@ -2,7 +2,7 @@
 #
 # File:        .shrc.common
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 08-Jan-2013.
+# Last Change: 27-Jan-2013.
 
 # alias
 alias ce='cd ../'
@@ -24,6 +24,8 @@ sw_vers=`which sw_vers 2>&1`
 if [[ $? == 0 ]]; then
     alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'
 fi
+
+alias jenkins='java -jar /usr/local/opt/jenkins/libexec/jenkins.war'
 
 parse_git_branch()
 {
