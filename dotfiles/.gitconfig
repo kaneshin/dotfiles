@@ -53,9 +53,12 @@
 	drag = pull --rebase
 	ft   = fetch
 # push
-	po = push origin
-	pg = push github
-	pb = push bitbucket
+	po  = push origin
+	pod = push origin develop
+	pg  = push github
+	pgd = push github develop
+	pb  = push bitbucket
+	pbd = push bitbucket develop
 # rebase (rb)
 	rbm = rebase master
 	rbd = rebase devel
