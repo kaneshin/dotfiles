@@ -4,9 +4,9 @@
 [github]
 	user = kaneshin
 [core]
-	excludesfile = ~/.gitconfig
 	editor = vim
 	pager = less -R
+	excludesfile = ~/.gitconfig.local
 	excludesfile = ~/.gitignore
 [color]
 	ui = auto
@@ -33,9 +33,8 @@
 	c   = commit
 	ca  = commit -a
 	cm  = commit -m
-	cam = commit -a --amend         # modify the last commit
+	cam = commit --amend
 # checkout (ch)
-	co  = checkout
 	ch  = checkout
 	chb = checkout -b
 	chm = checkout master
@@ -54,26 +53,30 @@
 	ft   = fetch
 # push
 	po  = push origin
+	pom = push origin master
 	pod = push origin develop
 	pg  = push github
+	pgm = push github master
 	pgd = push github develop
 	pb  = push bitbucket
+	pbm = push bitbucket master
 	pbd = push bitbucket develop
 # rebase (rb)
 	rbm = rebase master
-	rbd = rebase devel
+	rbd = rebase develop
 	rbc = rebase --continue
 	rba = rebase --abort
 # revert (rv)
-	rv  = revert 
+	rv  = revert
 	rvh = revert HEAD
 # reset (rs)
 	rs   = reset
-	rsh  = reset HEAD
+	rsh  = reset --hard
+	rss  = reset --soft
 	rssh = reset --soft HEAD
 	rshh = reset --hard HEAD
 # log (l)
-	l  = log
+	l  = log --oneline --stat
 	lp = log --oneline -p
 	ls = log --stat --abbrev-commit -n 1 # display previous log
 	lo = log origin
@@ -82,6 +85,7 @@
 	lt = log --oneline --since="00:00:01" --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
 	tr = log --graph --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
 	ta = log --graph --branches --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
+	tao = log origin --graph --branches --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
 # diff (d)
 	d  = diff
 	di  = diff
