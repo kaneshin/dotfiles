@@ -2,11 +2,11 @@
 #
 # File:        .shrc.common
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 27-Jan-2013.
+# Last Change: 07-Feb-2013.
 
 # alias
 alias ce='cd ../'
-alias ls='ls -GF'
+alias ls='ls -F'
 alias la='ls -a'
 alias ll='ls -la'
 alias sl="ls"
