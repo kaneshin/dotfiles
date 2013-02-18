@@ -2,7 +2,7 @@
 #
 # File:        .shrc.common
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 07-Feb-2013.
+# Last Change: 18-Feb-2013.
 
 # alias
 alias ce='cd ../'
@@ -26,6 +26,27 @@ if [[ $? == 0 ]]; then
 fi
 
 alias jenkins='java -jar /usr/local/opt/jenkins/libexec/jenkins.war'
+
+set_gitst()
+{
+    case $1 in
+    on )
+        GITST=1
+    ;;
+    off )
+        GITST=0
+    ;;
+    esac
+}
+
+set_gitst on
+alias gitst='set_gitst'
+parse_git_status()
+{
+    if [[ $GITST != 0 ]]; then
+        git status -s 2> /dev/null
+    fi
+}
 
 parse_git_branch()
 {

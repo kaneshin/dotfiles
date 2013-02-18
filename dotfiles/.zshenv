@@ -2,7 +2,7 @@
 #
 # File:        .zshenv
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 23-Jan-2013.
+# Last Change: 14-Feb-2013.
 
 export PATH=/usr/local/bin:$PATH
 export PATH=/usr/texbin:$PATH
@@ -29,3 +29,4 @@ export LS_COLORS='di=36:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46
 # node.js
 export PATH=$HOME/.nodebrew/current/bin:$PATH
 
+export ANDROID_HOME=/Applications/adt-bundle-mac-x86_64/sdk/

@@ -2,7 +2,7 @@
 #
 # File:        .zshrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 29-Jan-2013.
+# Last Change: 18-Feb-2013.
 
 # source common shell run command
 source ~/.shrc.common
@@ -61,7 +61,7 @@ setopt prompt_sp
 
 # PROMPT1
 PS1="%{[0m%}
-%{[37m%}\$(git status -s 2> /dev/null)%{[0m%}
+%{[37m%}\$(parse_git_status)%{[0m%}
 %{[32m%}[%n@%m] %{[33m%}%~%{[0m%}
 %(?|%{[36m%}( ^o^%) <|%{[31m%}(;^o^%) <)%{[35m%}\$(parse_git_branch) %{[0m%}"
 
