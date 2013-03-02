@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.init
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 23-Jan-2013.
+" Last Change: 19-Feb-2013.
 
 
 scriptencoding utf-8
@@ -192,7 +192,7 @@ Bundle 'vim-ruby/vim-ruby'
 Bundle 'JavaScript-syntax'
 Bundle 'jQuery'
 Bundle 'tpope/vim-markdown'
-Bundle 'msanders/cocoa.vim'
+Bundle 'b4winckler/vim-objc'
 
 " ===== recently installed =====
 Bundle 'smartword'
