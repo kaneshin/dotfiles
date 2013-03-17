@@ -17,6 +17,10 @@
 	grep = auto
 [merge]
 	tool = vimdiff
+[grep]
+	lineNumber = true
+[receive]
+	denyDeleteCurrent = warn
 [alias]
 	alias = !git config --list | grep 'alias\\.' | sed 's/alias\\.\\([^=]*\\)=\\(.*\\)/\\1\\\t => \\2/' | sort
 # status/show (s)
