@@ -2,11 +2,15 @@
 #
 # File:        .zshenv
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 14-Feb-2013.
+# Last Change: 23-Aug-2013.
 
 export PATH=/usr/local/bin:$PATH
 export PATH=/usr/texbin:$PATH
 export PATH=$HOME/local/bin:$PATH
+
+export ANDROID_HOME=/Users/kaneshin/local/sdk/android-sdk-macosx
+# export PATH=$PATH:$ANDROID_HOME/tools
+# export PATH=$PATH:$ANDROID_HOME/platform-tools
 
 # Export environment variables
 export LANG=en_US.UTF-8
