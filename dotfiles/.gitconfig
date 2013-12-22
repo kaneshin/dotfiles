@@ -38,6 +38,7 @@
 	ca  = commit -a
 	cm  = commit -m
 	cam = commit --amend
+	wip = commit -m 'wip'
 # checkout (ch)
 	ch  = checkout
 	chb = checkout -b
