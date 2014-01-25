@@ -2,7 +2,7 @@
 #
 # File:        .bashrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 14-Feb-2013.
+# Last Change: 13-Jan-2014.
 
 # source common shell run command
 source ~/.shrc.common
@@ -23,5 +23,4 @@ shopt -u histappend
 shopt -s checkwinsize
 
 PS1="\[\033[36m(\u@\h) \033[33m\w\\n\033[39m\$ \033[0m\]"
-ANDROID_HOME=~/Develop/adt-bundle-mac-x86_64/
 

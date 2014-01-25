@@ -2,13 +2,22 @@
 #
 # File:        .bash_profile
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 23-Aug-2013.
+# Last Change: 13-Jan-2014.
 
 export PATH=/usr/local/bin:$PATH
 export PATH=/usr/texbin:$PATH
 export PATH=$HOME/local/bin:$PATH
 
+export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home
+export M2_HOME=/usr/share/maven
+
 export ANDROID_HOME=/Users/kaneshin/local/sdk/android-sdk-macosx
+export ANDROID_SDK=$ANDROID_HOME
+export ANDROID_TOOLS=$ANDROID_HOME/tools
+
+export PATH=$PATH:$ANDROID_TOOLS
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+export PATH=$PATH:$M2_HOME/bin
 
 # Export environment variables
 export LANG=en_US.UTF-8
