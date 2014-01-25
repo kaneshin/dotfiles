@@ -323,6 +323,7 @@ Bundle 'JavaScript-syntax'
 Bundle 'jQuery'
 Bundle 'tpope/vim-markdown'
 Bundle 'b4winckler/vim-objc'
+Bundle 'cakebaker/scss-syntax.vim'
 
 " ===== recently installed =====
 Bundle 'smartword'

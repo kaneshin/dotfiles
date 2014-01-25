@@ -2,7 +2,7 @@
 #
 # File:        .shrc.common
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 14-Aug-2013.
+# Last Change: 25-Jan-2014.
 
 # alias
 alias ce='cd ../'
@@ -52,3 +52,9 @@ parse_git_branch()
 {
     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ \1/'
 }
+
+function gi()
+{
+    curl http://www.gitignore.io/api/\$@ ;
+}
+
