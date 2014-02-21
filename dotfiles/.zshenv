@@ -2,14 +2,14 @@
 #
 # File:        .zshenv
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 13-Jan-2014.
+# Last Change: 26-Jan-2014.
 
 export PATH=/usr/local/bin:$PATH
 export PATH=/usr/texbin:$PATH
 export PATH=$HOME/local/bin:$PATH
 
 export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home
-export M2_HOME=/usr/share/maven
+# export M2_HOME=/usr/share/maven
 
 export ANDROID_HOME=/Users/kaneshin/local/sdk/android-sdk-macosx
 export ANDROID_SDK=$ANDROID_HOME
