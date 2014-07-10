@@ -39,6 +39,7 @@
 	cm  = commit -m
 	cam = commit --amend
 	wip = commit -m 'wip'
+	wipom = !git commit -m 'wip' && git push origin master
 # checkout (ch)
 	ch  = checkout
 	chb = checkout -b

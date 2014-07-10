@@ -2,7 +2,7 @@
 #
 # File:        .shrc.common
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 25-Jan-2014.
+# Last Change: 05-Jul-2014.
 
 # alias
 alias ce='cd ../'
@@ -17,6 +17,8 @@ alias fgrep='fgrep --color=always'
 alias egrep='egrep --color=always'
 
 alias less='less -R'
+
+alias o='git ls-files | peco | xargs open'
 
 # alias for vim
 alias vi='vim -u $HOME/.virc'
@@ -56,5 +58,38 @@ parse_git_branch()
 function gi()
 {
     curl http://www.gitignore.io/api/$@ ;
+}
+
+function git_checkout_peco()
+{
+    branches='git branch --verbose'
+    if [[ $1 == '--all' || $1 == '-a' ]]; then
+        remote_flag=1
+        branches="${branches} $1"
+        echo $branches
+    fi
+    target=`git branch --verbose | peco | awk '{sub("\\\\*", " "); print $1}' | xargs git checkout`
+    echo $target
+}
+
+alias blp='bl | peco | chbarg'
+function chbarg()
+{
+    target=`awk '{print $1}' | sed -e 's/^remotes\///'`
+    branch=`echo $target | awk '{sub("/", "-"); print $0;}'`
+    git checkout -b $branch $target
+    if [[ $? != 0 ]]; then
+        git checkout $branch
+    fi
+}
+
+function bl()
+{
+    branches=`git branch -a 2> /dev/null | sed -e 's/^..//'` && tags=`git tag`
+    result=`echo $branches "\n" $tags | awk '{print $1}'`
+    while read LINE
+    do
+        echo $LINE " " `git log --oneline -n 1 $LINE`
+    done <<< $result
 }
 
