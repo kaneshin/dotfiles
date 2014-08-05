@@ -118,3 +118,5 @@
 	trustExitCode = true
 [help]
 	autocorrect = 0
+[init]
+	templatedir = ~/.git.templates
