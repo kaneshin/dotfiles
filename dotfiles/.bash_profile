@@ -2,7 +2,7 @@
 #
 # File:        .bash_profile
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 11-Aug-2014.
+# Last Change: 12-Aug-2014.
 
 export PATH=/usr/local/bin:$PATH
 export PATH=/usr/texbin:$PATH
@@ -19,8 +19,13 @@ export PATH=$PATH:$ANDROID_TOOLS
 export PATH=$PATH:$ANDROID_HOME/platform-tools
 export PATH=$PATH:$M2_HOME/bin
 
-export GOROOT=/usr/local/go
-export GOPATH=~/go
+sw_vers=`which sw_vers 2>&1`
+if [[ $? == 0 ]]; then
+    export GOROOT=~/local/go
+else
+    export GOROOT=/usr/local/go
+fi
+export GOPATH=~/gocode
 export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 
 # Export environment variables
