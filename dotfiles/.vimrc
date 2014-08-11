@@ -3,17 +3,13 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 25-Feb-2014.
+" Last Change: 11-Aug-2014.
 
 scriptencoding utf-8
 
 syntax on
 filetype plugin on
 filetype indent on
-
-" lazy mapping
-nnoremap ; :
-vnoremap ; :
 
 " windows
 let s:is_win = has('win32') || has('win64')
@@ -165,6 +161,9 @@ if filereadable(expand('$DOTFILES/.vimrc'))
   nnoremap <silent> ,rv :ReadVimrcInit<cr>
 endif
 
+nnoremap ; :
+vnoremap ; :
+
 " use emacs key bind during command mode and a movement of insert mode
 " start of line
 cnoremap <c-a> <Home>
@@ -271,10 +270,10 @@ endif
 " plugin {{{
 " vundle {{{
 filetype off
-set rtp+=$VIMHOME/bundle/vundle
-call vundle#rc('$VIMHOME/bundle')
+set rtp+=$VIMHOME/bundle/Vundle.vim
+call vundle#begin('$VIMHOME/bundle')
 " vundle is managed by itself
-Bundle 'gmarik/vundle'
+Bundle 'gmarik/Vundle.vim'
 
 " useful
 Bundle "autodate.vim"
@@ -325,11 +324,14 @@ Bundle 'tpope/vim-markdown'
 Bundle 'b4winckler/vim-objc'
 Bundle 'cakebaker/scss-syntax.vim'
 
-" ===== recently installed =====
 Bundle 'smartword'
 Bundle 'thinca/vim-ref'
 Bundle 'tpope/vim-abolish'
 
+" Golang
+Bundle 'fatih/vim-go'
+
+call vundle#end()
 filetype plugin indent on
 " /=vundle }}}
 
