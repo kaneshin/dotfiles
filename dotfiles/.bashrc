@@ -24,3 +24,6 @@ shopt -s checkwinsize
 
 PS1="\[\033[36m(\u@\h) \033[33m\w\\n\033[39m\$ \033[0m\]"
 
+
+# added by travis gem
+[ -f /Users/kaneshin/.travis/travis.sh ] && source /Users/kaneshin/.travis/travis.sh

@@ -145,3 +145,6 @@ function precmd ()
         _z --add "$(pwd -P)"
     fi
 }
+
+# added by travis gem
+[ -f /Users/kaneshin/.travis/travis.sh ] && source /Users/kaneshin/.travis/travis.sh
