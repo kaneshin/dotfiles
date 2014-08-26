@@ -120,3 +120,10 @@
 	autocorrect = 0
 [init]
 	templatedir = ~/.git.templates
+[filter "media"]
+	clean = git-media-clean %f
+	smudge = git-media-smudge %f
+#driver for merging XCode project files
+[merge "mergepbx"]
+	name = XCode project files merger
+	driver = mergepbx %O %A %B
