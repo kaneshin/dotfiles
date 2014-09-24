@@ -2,7 +2,7 @@
 #
 # File:        .shrc.common
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 05-Jul-2014.
+# Last Change: 21-Sep-2014.
 
 # alias
 alias ce='cd ../'
@@ -28,6 +28,12 @@ if [[ $? == 0 ]]; then
 fi
 
 alias jenkins='java -jar /usr/local/opt/jenkins/libexec/jenkins.war'
+
+XCODE=Xcode6.1-beta2.app
+alias swift_='/Applications/'$XCODE'/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift -sdk /Applications/'$XCODE'/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk'
+alias swiftc_='/Applications/'$XCODE'/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -sdk /Applications/'$XCODE'/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk'
+alias xcrun_='/Applications/'$XCODE'/Contents/Developer/usr/bin/xcrun'
+
 
 set_gitst()
 {
@@ -57,7 +63,7 @@ parse_git_branch()
 
 function gi()
 {
-    curl http://www.gitignore.io/api/$@ ;
+    curl https://www.gitignore.io/api/$@ ;
 }
 
 function git_checkout_peco()
@@ -92,4 +98,5 @@ function bl()
         echo $LINE " " `git log --oneline -n 1 $LINE`
     done <<< $result
 }
+
 

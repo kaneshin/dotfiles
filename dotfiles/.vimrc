@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 11-Aug-2014.
+" Last Change: 20-Sep-2014.
 
 scriptencoding utf-8
 
@@ -273,63 +273,64 @@ filetype off
 set rtp+=$VIMHOME/bundle/Vundle.vim
 call vundle#begin('$VIMHOME/bundle')
 " vundle is managed by itself
-Bundle 'gmarik/Vundle.vim'
+Plugin 'gmarik/Vundle.vim'
 
 " useful
-Bundle "autodate.vim"
-Bundle 'mattn/webapi-vim'
+Plugin "autodate.vim"
+Plugin 'mattn/webapi-vim'
 
 " ctrlp
-Bundle 'kien/ctrlp.vim'
-Bundle 'mattn/ctrlp-gist'
-Bundle 'mattn/ctrlp-mark'
-Bundle 'mattn/ctrlp-launcher'
-Bundle 'mattn/ctrlp-register'
-Bundle 'kaneshin/ctrlp-memolist'
-Bundle 'kaneshin/ctrlp-sonictemplate'
-Bundle 'kaneshin/ctrlp-filetype'
-Bundle 'kaneshin/ctrlp-git'
-Bundle 'kaneshin/ctrlp-sudden-death'
-Bundle 'kaneshin/ctrlp-project'
+Plugin 'kien/ctrlp.vim'
+Plugin 'mattn/ctrlp-gist'
+Plugin 'mattn/ctrlp-mark'
+Plugin 'mattn/ctrlp-launcher'
+Plugin 'mattn/ctrlp-register'
+Plugin 'kaneshin/ctrlp-memolist'
+Plugin 'kaneshin/ctrlp-sonictemplate'
+Plugin 'kaneshin/ctrlp-filetype'
+Plugin 'kaneshin/ctrlp-git'
+Plugin 'kaneshin/ctrlp-sudden-death'
+Plugin 'kaneshin/ctrlp-project'
 
 " vim-surround
-Bundle 'tpope/vim-surround'
-Bundle 'tpope/vim-repeat'
+Plugin 'tpope/vim-surround'
+Plugin 'tpope/vim-repeat'
 
 " statusline
-Bundle 'Lokaltog/vim-powerline'
-Bundle 'tpope/vim-fugitive'
+Plugin 'Lokaltog/vim-powerline'
+Plugin 'tpope/vim-fugitive'
 
-Bundle 'mattn/gist-vim'
-Bundle 'mattn/emmet-vim'
-Bundle 'glidenote/memolist.vim'
-Bundle 'mattn/sonictemplate-vim'
-Bundle 'thinca/vim-quickrun'
-Bundle 'Lokaltog/vim-easymotion'
+Plugin 'mattn/gist-vim'
+Plugin 'mattn/emmet-vim'
+Plugin 'glidenote/memolist.vim'
+Plugin 'mattn/sonictemplate-vim'
+Plugin 'thinca/vim-quickrun'
+Plugin 'Lokaltog/vim-easymotion'
 
 " misc
-Bundle 'tyru/open-browser.vim'
-Bundle 'scrooloose/nerdcommenter'
+Plugin 'tyru/open-browser.vim'
+Plugin 'scrooloose/nerdcommenter'
 
 " source
-Bundle 'wesleyche/SrcExpl'
-Bundle 'vim-scripts/taglist.vim'
-Bundle 'scrooloose/nerdtree'
+Plugin 'wesleyche/SrcExpl'
+Plugin 'vim-scripts/taglist.vim'
+Plugin 'scrooloose/nerdtree'
 
 " syntax
-Bundle 'vim-ruby/vim-ruby'
-Bundle 'JavaScript-syntax'
-Bundle 'jQuery'
-Bundle 'tpope/vim-markdown'
-Bundle 'b4winckler/vim-objc'
-Bundle 'cakebaker/scss-syntax.vim'
+Plugin 'vim-ruby/vim-ruby'
+Plugin 'JavaScript-syntax'
+Plugin 'jQuery'
+Plugin 'tpope/vim-markdown'
+Plugin 'b4winckler/vim-objc'
+Plugin 'cakebaker/scss-syntax.vim'
+Plugin 'Keithbsmiley/swift.vim'
 
-Bundle 'smartword'
-Bundle 'thinca/vim-ref'
-Bundle 'tpope/vim-abolish'
+Plugin 'smartword'
+Plugin 'thinca/vim-ref'
+Plugin 'tpope/vim-abolish'
 
 " Golang
-Bundle 'fatih/vim-go'
+Plugin 'fatih/vim-go'
 
 call vundle#end()
 filetype plugin indent on
@@ -402,6 +403,10 @@ let g:sonictemplate_vim_template_dir = [
       \]
 " /=sonictemplate }}}
 
+" vim-go {{{
+let g:go_fmt_autosave = 1
+" /=vim-go }}}
+
 " quickrun {{{
 " let g:loaded_quicklaunch = 1
 " 1. b:quickrun_config
@@ -410,11 +415,11 @@ let g:sonictemplate_vim_template_dir = [
 " 4. g:quickrun#default_conig._type_
 " 5. g:quickrunconfig.
 " 6. g:quickrun#defaultonig.
+"   'outputter/buffer/split': 'rightbelow 10sp',
 let b:quickrun_config = {}
 let g:quickrun_config = {
 \ '_': {
 \   'outputter' : 'buffer',
-\   'outputter/buffer/split': 'rightbelow 10sp',
 \   'runner': 'system',
 \ },
 \ 'c': {
