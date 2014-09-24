@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 20-Sep-2014.
+" Last Change: 24-Sep-2014.
 
 scriptencoding utf-8
 
@@ -331,6 +331,9 @@ Plugin 'tpope/vim-abolish'
 
 " Golang
 Plugin 'fatih/vim-go'
+
+
+Plugin 'airblade/vim-gitgutter'
 
 call vundle#end()
 filetype plugin indent on
