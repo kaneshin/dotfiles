@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 24-Sep-2014.
+" Last Change: 18-Oct-2014.
 
 scriptencoding utf-8
 
@@ -233,8 +233,8 @@ vnoremap <silent> < <gv
 " inoremap {<cr> {<cr><cr>}<up>
 
 " modify typo
-" inoremap {] {}<Left>
-" cnoremap {] {}<Left>
+inoremap {] {}<Left>
+cnoremap {] {}<Left>
 
 " quickfix
 nnoremap <silent> <leader>n :cn<cr>
@@ -266,6 +266,11 @@ if !has('gui_running')
   cal ColorschemeToggle()
   command! ColorschemeToggle call ColorschemeToggle()
 endif
+
+" useful {{{
+command! -nargs=1 -complete=filetype Tmp edit $VIMHOME/backup/tmp.<args>
+command! -nargs=1 -complete=filetype Temp edit $VIMHOME/backup/tmp.<args>
+" }}}
 
 " plugin {{{
 " vundle {{{
@@ -331,7 +336,6 @@ Plugin 'tpope/vim-abolish'
 
 " Golang
 Plugin 'fatih/vim-go'
-
 
 Plugin 'airblade/vim-gitgutter'
 
