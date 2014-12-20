@@ -1,0 +1,36 @@
+# vim:set ts=8 sts=2 sw=2 tw=0:
+# vim:set fdm=marker:
+#
+# File:        .shrc.darwin
+# Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
+# Last Change: 21-Dec-2014.
+# ============================================================
+
+# alias for macvim
+vim=/Applications/MacVim.app/Contents/MacOS/Vim
+[ -x $vim ] && alias vim=$vim
+
+# swift
+xcode=Xcode-6.1.1.app
+osxsdk=MacOSX10.10.sdk
+alias swift_="/Applications/${xcode}/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift -sdk /Applications/${xcode}/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/${osxsdk}"
+alias swiftc_="/Applications/${xcode}/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -sdk /Applications/${xcode}/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/${osxsdk}"
+alias xcrun_="/Applications/${xcode}/Contents/Developer/usr/bin/xcrun"
+
+# z
+brew=`which brew 2>&1`
+if [[ $? == 0 ]]; then
+  . `brew --prefix`/etc/profile.d/z.sh
+fi
+
+function precmd ()
+{
+  brew=`which brew 2>&1`
+  if [[ $? == 0 ]]; then
+    _z --add "$(pwd -P)"
+  fi
+}
+
+
+
+

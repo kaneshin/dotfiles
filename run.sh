@@ -1,102 +1,79 @@
 #!/bin/sh
+# vim:set ts=8 sts=2 sw=2 tw=0:
 #
-# File:        install.sh
+# File:        run.sh
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 17-Oct-2014.
+# Last Change: 21-Dec-2014.
+# ============================================================
 
 PROGNAME=$(basename $0)
 VERSION="0.1"
 
+DEST=$HOME
+DOTFILESDIR=dotfiles/
+
 usage()
 {
-    echo "Usage: ./$PROGNAME install"
-    echo "       ./$PROGNAME"
-    echo "Options:"
-    echo "    --version         print product version and exit"
-    echo "    -h | -help        print this help message"
-    echo
+  echo "Usage: ./$PROGNAME link"
+  echo "           create symbolic links of dotfiles and directories into $DEST"
+  echo "       ./$PROGNAME unlink"
+  echo "           delete symbolic links of dotfiles and directories from $DEST"
+  echo "       ./$PROGNAME version"
+  echo "           print the script version and exit"
+  echo "       ./$PROGNAME help"
+  echo "           print this help message"
 }
 
-check()
+_link()
 {
-    which $1 > /dev/null 2>&1
-    if [ $? = 0 ]; then
-        finish "$1 is already installed."
-    fi
+  case $1 in
+    'dotfiles')
+      _install $DEST
+      ;;
+    'homebrew')
+      brew=`which brew 2>&1`
+      if [ -x $brew ]; then
+        for x in $(brew list -1);
+        do
+          $brew unlink $x;
+          $brew link $x;
+        done
+      fi
+      ;;
+  esac
 }
 
-install()
+_unlink()
 {
-    case $1 in
-        'all')
-            ;;
-        'homebrew')
-            check "brew"
-            ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-            ;;
-        'tmux')
-            bin_dir=~/local/bin
-            src_dir=~/local/src
-            dest=tmux-MacOSX-pasteboard
-            bin=reattach-to-user-namespace
-            mkdir -p $bin_dir $src_dir && cd $src_dir
-            git clone https://github.com/ChrisJohnsen/tmux-MacOSX-pasteboard.git $dest && cd $dest
-            make $bin
-            ln -s $src_dir/$dest/$bin $bin_dir/$bin
-            ;;
-    esac
+  echo "Unlink"
 }
 
-link()
+_install()
 {
-    case $1 in
-        'dotfiles')
-            ;;
-        'homebrew')
-            for x in $(brew list -1);
-            do
-                brew unlink $x;
-                brew link $x;
-            done
-            ;;
-        'tmux')
-            ;;
-    esac
+  [ $1 -eq "" ] && return
+  cd $DOTFILESDIR
+  for dotfile in .?*; do
+    ln -sf $PWD/$dotfile $1/$dotfile
+    echo "created $1/$dotfile@"
+  done
 }
 
-finish()
-{
-    echo $1
-    exit 0
-}
-
-abort()
-{
-    echo $1 1>&2
-    exit 1
-}
-
-# ==========
-
-for OPT in $*
-do
-    case $OPT in
-        'install')
-            install $2
-            break
-            ;;
-        'link')
-            link $2
-            break
-            ;;
-        '--version')
-            finish $VERSION
-            ;;
-        '-h'|'--help')
-            usage
-            finish
-            ;;
-    esac
-    shift
-done
+cd $(dirname ${0})
+case $1 in
+  'link')
+    _link $2
+    ;;
+  'unlink')
+    _unlink $2
+    ;;
+  'version')
+    echo $VERSION
+    ;;
+  'help')
+    usage
+    ;;
+  *)
+    usage
+    ;;
+esac
 

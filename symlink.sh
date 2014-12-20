@@ -1,9 +1,11 @@
 #!/bin/bash
-
+# vim:set ts=8 sts=2 sw=2 tw=0:
+#
 # File:         symlink.sh
 # Version:      1.0.0
 # Maintainer:   Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change:  18-Nov-2012.
+# Last Change:  21-Dec-2014.
+# ============================================================
 
 TARGET=$HOME
 DOTFILESDIR=dotfiles/

@@ -1,0 +1,72 @@
+# vim:set ts=8 sts=2 sw=2 tw=0:
+# vim:set fdm=marker:
+#
+# File:        .shrc
+# Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
+# Last Change: 21-Dec-2014.
+# ============================================================
+
+# alias
+alias ce='cd ../'
+
+alias ls='ls -F'
+alias la='ls -a'
+alias ll='ls -la'
+alias sl="ls"
+alias l='ls -la'
+
+alias grep='grep --color=always'
+alias ngrep='grep -n --color=always'
+alias fgrep='fgrep --color=always'
+alias egrep='egrep --color=always'
+
+alias less='less -R'
+alias les='less -R'
+
+alias vi='vim -u $HOME/.virc'
+
+set_gitst()
+{
+  case $1 in
+    on )
+      GITST=1
+      ;;
+    off )
+      GITST=0
+      ;;
+  esac
+}
+
+set_gitst on
+alias gitst='set_gitst'
+parse_git_status()
+{
+  if [ $GITST -ne 0 ]; then
+    git status -s 2> /dev/null
+  fi
+}
+
+parse_git_branch()
+{
+  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ \1/'
+}
+
+function gi()
+{
+  curl https://www.gitignore.io/api/$@ ;
+}
+
+
+# OS
+case $OSTYPE in
+  darwin* )
+    [ -f ~/.shrc.darwin ] && source ~/.shrc.darwin
+    ;;
+  linux* )
+    [ -f ~/.shrc.linux ] && source ~/.shrc.linux
+    ;;
+esac
+
+# local
+[ -f ~/.shrc.local ] && source ~/.shrc.local
+

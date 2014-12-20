@@ -125,7 +125,6 @@
 	clean = git media clean %f
 	smudge = git media smudge %f
 	required = true
-#driver for merging XCode project files
 [merge "mergepbx"]
-	name = XCode project files merger
+	name = Xcode project files merger
 	driver = mergepbx %O %A %B

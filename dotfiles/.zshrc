@@ -1,11 +1,13 @@
+# vim:set ts=8 sts=2 sw=2 tw=0:
 # vim:set fdm=marker:
 #
 # File:        .zshrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 25-Jan-2014.
+# Last Change: 21-Dec-2014.
+# ============================================================
 
-# source common shell run command
-source ~/.shrc.common
+# common
+[ -f ~/.shrc ] && source ~/.shrc
 
 # use key map like emacs
 bindkey -e
@@ -134,17 +136,6 @@ setopt print_eight_bit
 setopt extended_glob
 setopt globdots
 
-brew=`which brew 2>&1`
-if [[ $? == 0 ]]; then
-    . `brew --prefix`/etc/profile.d/z.sh
-fi
-function precmd ()
-{
-    brew=`which brew 2>&1`
-    if [[ $? == 0 ]]; then
-        _z --add "$(pwd -P)"
-    fi
-}
+# local
+[ -f ~/.zshrc.local ] && source ~/.zshrc.local
 
-# added by travis gem
-[ -f /Users/kaneshin/.travis/travis.sh ] && source /Users/kaneshin/.travis/travis.sh
