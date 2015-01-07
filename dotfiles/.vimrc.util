@@ -1,0 +1,25 @@
+" vim:set ts=8 sts=2 sw=2 tw=0:
+" vim:set fdm=marker:
+"
+" File:        .vimrc.util
+" Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
+" Last Change: 07-Jan-2015.
+
+function! UtilIsDarwin()
+  return has('mac')
+endfunction
+
+function! UtilIsUnix()
+  return has('unix') && !UtilIsDarwin() && !UtilIsWindows()
+endfunction
+
+function! UtilIsWindows()
+  return has('win32') || has('win64')
+endfunction
+
+function! UtilSourceFile(filepath)
+  if filereadable(expand(a:filepath))
+    execute "silent! source " . a:filepath
+  endif
+endfunction
+

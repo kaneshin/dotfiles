@@ -3,9 +3,7 @@
 "
 " File:        .gvimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 21-Feb-2014.
-
-scriptencoding utf-8
+" Last Change: 07-Jan-2015.
 
 set guioptions=agirLt
 

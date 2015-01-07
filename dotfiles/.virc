@@ -1,0 +1,131 @@
+" vim:set ts=8 sts=2 sw=2 tw=0:
+" vim:set fdm=marker:
+"
+" File:        .virc
+" Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
+" Last Change: 07-Jan-2015.
+
+" set $VIMHOME
+if !exists('$VIMHOME')
+  let s:filepath = $HOME . '/.vim'
+  if UtilIsWindows()
+    let s:filepath = $HOME . '/vimfiles'
+  endif
+  let $VIMHOME = expand(s:filepath)
+endif
+
+" make $VIMHOME as directory
+if finddir($VIMHOME) == ''
+  cal mkdir($VIMHOME, "p")
+endif
+
+" backup, swap
+let s:dirpath = $VIMHOME . '/backup'
+if finddir(s:dirpath) == ''
+  cal mkdir(s:dirpath, "p")
+endif
+set backup
+set backupext=.bak
+set backupdir=$VIMHOME/backup
+set backupskip=/tmp/*,/private/tmp/*
+set swapfile
+set directory=$VIMHOME/backup
+augroup BackupOptions
+  autocmd!
+augroup END
+
+" fold
+let s:dirpath = $VIMHOME . '/view'
+if finddir(s:dirpath) == ''
+  cal mkdir(s:dirpath, "p")
+endif
+set viewdir=$VIMHOME/view
+augroup FoldOptions
+  autocmd!
+  autocmd BufWritePost * mkview
+  autocmd BufReadPost * loadview
+augroup END
+
+" undo
+if version >= 703
+  let s:dirpath = $VIMHOME . '/undo'
+  if finddir(s:dirpath) == ''
+    cal mkdir(s:dirpath, "p")
+  endif
+  set undofile
+  set undodir=$VIMHOME/undo
+  augroup UndoOptions
+    autocmd!
+  augroup END
+endif
+
+" encoding and format
+set fileencodings=utf-8,euc-jp,cp932,shiftjis,iso-2022-jp,latin1
+set encoding=utf-8
+set fileformats=unix,dos,mac
+set fileformat=unix
+"
+" display: title
+set title
+set titlelen=90
+
+" display: tabline
+set showtabline=2
+
+" display: main
+set splitbelow
+set splitright
+set nonumber
+set scrolloff=3
+set wrap
+set list
+set listchars=eol:-,tab:>~,trail:~,extends:>,precedes:<
+
+" display: statusline
+set laststatus=2
+set cmdheight=2
+set ruler
+set showcmd
+set wildmenu
+set wildmode=list:longest
+
+" cursor
+set nocursorline
+set nocursorcolumn
+
+" search
+set ignorecase
+set smartcase
+set nowrapscan
+set incsearch
+
+" edit: basic
+set autoindent
+set smartindent
+set showmatch
+set backspace=indent,eol,start
+set clipboard+=unnamed
+set pastetoggle=<F12>
+set formatoptions+=mM
+" time to wait after ESC
+set timeoutlen=350
+
+" edit: <Tab>
+set tabstop=4
+set shiftwidth=4
+set softtabstop=0
+set expandtab
+set smarttab
+set shiftround
+
+" edit: etc
+set tags=$VIMHOME/tags,./tags,tags
+set noshellslash
+set nrformats+=alpha
+set nrformats+=octal
+set nrformats+=hex
+set history=300
+set undolevels=2000
+set iminsert=0
+set imsearch=0
+

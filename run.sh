@@ -3,7 +3,7 @@
 #
 # File:        run.sh
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 21-Dec-2014.
+# Last Change: 07-Jan-2015.
 # ============================================================
 
 PROGNAME=$(basename $0)
@@ -53,8 +53,12 @@ _install()
   [ $1 -eq "" ] && return
   cd $DOTFILESDIR
   for dotfile in .?*; do
-    ln -sf $PWD/$dotfile $1/$dotfile
-    echo "created $1/$dotfile@"
+    if [ -d $dotfile ]; then
+      echo "Ignored $dotfile"
+    else
+      ln -sf $PWD/$dotfile $1/$dotfile
+      echo "Created $1/$dotfile@"
+    fi
   done
 }
 

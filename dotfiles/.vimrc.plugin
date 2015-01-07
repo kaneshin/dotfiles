@@ -1,0 +1,288 @@
+" vim:set ts=8 sts=2 sw=2 tw=0:
+" vim:set fdm=marker:
+"
+" File:        .vimrc.plugin
+" Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
+" Last Change: 07-Jan-2015.
+
+source $VIMRUNTIME/macros/matchit.vim
+
+" vundle {{{
+filetype off
+set rtp+=$VIMHOME/bundle/Vundle.vim
+call vundle#begin('$VIMHOME/bundle')
+" vundle is managed by itself
+Plugin 'gmarik/Vundle.vim'
+
+" essentials
+Plugin 'vim-scripts/autodate.vim'
+Plugin 'mattn/webapi-vim'
+
+" ctrlp
+Plugin 'kien/ctrlp.vim'
+Plugin 'mattn/ctrlp-gist'
+Plugin 'mattn/ctrlp-mark'
+Plugin 'mattn/ctrlp-launcher'
+Plugin 'mattn/ctrlp-register'
+Plugin 'kaneshin/ctrlp-memolist'
+Plugin 'kaneshin/ctrlp-sonictemplate'
+Plugin 'kaneshin/ctrlp-filetype'
+Plugin 'kaneshin/ctrlp-git'
+Plugin 'kaneshin/ctrlp-sudden-death'
+Plugin 'kaneshin/ctrlp-project'
+
+" vim-surround
+Plugin 'tpope/vim-surround'
+Plugin 'tpope/vim-repeat'
+
+" statusline
+Plugin 'Lokaltog/vim-powerline'
+Plugin 'tpope/vim-fugitive'
+
+" misc
+Plugin 'mattn/gist-vim'
+Plugin 'mattn/emmet-vim'
+Plugin 'glidenote/memolist.vim'
+Plugin 'mattn/sonictemplate-vim'
+Plugin 'thinca/vim-quickrun'
+Plugin 'Lokaltog/vim-easymotion'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'airblade/vim-gitgutter'
+
+" source
+Plugin 'wesleyche/SrcExpl'
+Plugin 'vim-scripts/taglist.vim'
+Plugin 'scrooloose/nerdtree'
+
+" syntax
+Plugin 'vim-ruby/vim-ruby'
+Plugin 'JavaScript-syntax'
+Plugin 'jQuery'
+Plugin 'tpope/vim-markdown'
+Plugin 'b4winckler/vim-objc'
+Plugin 'cakebaker/scss-syntax.vim'
+Plugin 'Keithbsmiley/swift.vim'
+
+Plugin 'smartword'
+Plugin 'thinca/vim-ref'
+Plugin 'tpope/vim-abolish'
+
+" Golang
+Plugin 'fatih/vim-go'
+
+Plugin 'tyru/open-browser.vim'
+
+call vundle#end()
+filetype plugin indent on
+" /=vundle }}}
+
+" ctrlp {{{
+" Set this to 0 to show the match window at the top of the screen
+let g:ctrlp_match_window_bottom = 1
+" Change the listing order of the files in the match window
+let g:ctrlp_match_window_reversed = 1
+" Set the maximum height of the match window
+let g:ctrlp_max_height = 20
+let g:ctrlp_switch_buffer = 2
+let g:ctrlp_working_path_mode = 2
+let g:ctrlp_use_caching = 1
+let g:ctrlp_max_files = 5000
+let g:ctrlp_mruf_max = 250
+let g:ctrlp_max_depth = 40
+let g:ctrlp_use_migemo = 0
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip
+let g:ctrlp_custom_ignore = {
+  \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+  \ 'file': '\v\.(exe|so|dll)$',
+  \ 'link': '',
+  \ }
+if finddir('.cache/ctrlp', $VIMHOME) == ''
+  cal mkdir(expand('$VIMHOME/.cache/ctrlp'), "p")
+endif
+let g:ctrlp_cache_dir = $VIMHOME.'/.cache/ctrlp'
+let g:ctrlp_extensions = [
+      \'git_log',
+      \'project',
+      \]
+let g:ctrlp_filetype = {
+      \'user': [
+      \   'c',
+      \   'objc',
+      \   'javascript',
+      \   'ruby',
+      \   'perl',
+      \   'html',
+      \   'css',
+      \   'sh',
+      \   'vim',
+      \   'cpp',
+      \   'java',
+      \],
+      \}
+nnoremap <c-e>g :<c-u>CtrlPGist<cr>
+nnoremap <c-e>l :<c-u>CtrlPLauncher<cr>
+nnoremap <c-e>t :<c-u>CtrlPSonictemplate<cr>
+nnoremap <c-e>m :<c-u>CtrlPMemolist<cr>
+nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
+nnoremap <c-e>p :<c-u>CtrlPProject<cr>
+" /=ctrlp }}}
+
+" gist-vim {{{
+let g:gist_show_privates = 1
+if UtilIsDarwin()
+  let g:gist_clip_command = 'pbcopy'
+elseif UtilIsUnix()
+  let g:gist_clip_command = 'xclip -selection clipboard'
+endif
+" /=gist-vim }}}
+
+" sonictemplate {{{
+let g:sonictemplate_vim_template_dir = [
+      \expand('$VIMHOME/template'),
+      \expand('$DOTFILES/.vim/template'),
+      \]
+" /=sonictemplate }}}
+
+" vim-go {{{
+let g:go_fmt_autosave = 1
+" /=vim-go }}}
+
+" quickrun {{{
+" let g:loaded_quicklaunch = 1
+" 1. b:quickrun_config
+" 2. 'filetype'
+" 3. g:quickrun_config._type_
+" 4. g:quickrun#default_conig._type_
+" 5. g:quickrunconfig.
+" 6. g:quickrun#defaultonig.
+"   'outputter/buffer/split': 'rightbelow 10sp',
+let b:quickrun_config = {}
+let g:quickrun_config = {
+\ '_': {
+\   'outputter' : 'buffer',
+\   'runner': 'system',
+\ },
+\ 'c': {
+\   'command': 'clang',
+\   'exec': ['%c %o %s -o %s:p:r', '%s:p:r %a', 'rm -f %s:p:r'],
+\   'cmdopt': '-Wall',
+\   'tempfile': '%{tempname()}.c',
+\ },
+\ 'cpp': {
+\   'command': 'clang++',
+\   'exec': ['%c %o %s -o %s:p:r', '%s:p:r %a', 'rm -f %s:p:r'],
+\   'cmdopt': '-Wall',
+\   'tempfile': '%{tempname()}.cpp',
+\ },
+\ 'ruby': {
+\   'command': 'ruby',
+\   'exec': ['%c %o %s %a'],
+\   'cmdopt': '',
+\   'tempfile': '%{tempname()}.rb',
+\ },
+\}
+" /=quickrun }}}
+
+" TwitVim {{{
+let g:twitvim_count = 50
+nnoremap <silent> ,tt :tabnew<cr>:<c-u>FriendsTwitter<cr>:close<cr>
+nnoremap <silent> ,tp :<c-u>PosttoTwitter<cr>
+function! s:twitvim_options()
+  setlocal nowrap
+  nnoremap <buffer> <silent> s :<c-u>PosttoTwitter<cr>
+  nnoremap <buffer> <silent> <c-n> :<c-u>NextTwitter<cr>
+  nnoremap <buffer> <silent> <c-p> :<c-u>BackTwitter<cr>
+  nnoremap <buffer> <silent> ,tu :<C-u>UserTwitter<CR>
+  nnoremap <buffer> <silent> ,tr :<C-u>RepliesTwitter<CR>
+endfunction
+augroup TwitVimOptions
+  autocmd!
+  autocmd FileType twitvim :call s:twitvim_options()
+augroup END
+" /=TwitVim }}}
+
+" TweetVim {{{
+nnoremap <silent> ,t1 :<c-u>TweetVimSwitchAccount _kaneshin<cr>
+nnoremap <silent> ,t2 :<c-u>TweetVimSwitchAccount kaneshinth<cr>
+nnoremap <silent> ,ts :<C-u>TweetVimSay<CR>
+nnoremap <silent> ,th :tabnew<cr>:<c-u>TweetVimHomeTimeline<cr>
+let g:tweetvim_tweet_per_page = 50
+let g:tweetvim_display_separator = 0
+let g:tweetvim_footer = ''
+function! s:tweetvim_options()
+  setlocal nowrap
+  nnoremap <buffer> <silent> 1 :<c-u>TweetVimSwitchAccount _kaneshin<cr>
+  nnoremap <buffer> <silent> 2 :<c-u>TweetVimSwitchAccount kaneshinth<cr>
+  nnoremap <buffer> <silent> s :<C-u>TweetVimSay<CR>
+endfunction
+augroup TweetVimOptions
+  autocmd!
+  autocmd FileType tweetvim :call s:tweetvim_options()
+augroup END
+" /=TweetVim }}}
+
+" easymotion {{{
+let g:EasyMotion_leader_key = '<Leader>'
+" /=easymotion }}}
+
+" powerline {{{
+if has('gui_running')
+  let g:Powerline_symbols = 'fancy'
+else
+  let g:Powerline_symbols = 'compatible'
+endif
+" /=powerline }}}
+
+" memolist {{{
+let g:memolist_path = $HOME.'/Dropbox/Documents/memolist'
+let g:memolist_memo_suffix = "mkd"
+let g:memolist_memo_date = "%Y-%m-%d %H:%M"
+let g:memolist_prompt_tags = 1
+let g:memolist_prompt_categories = 1
+" let g:memolist_qfixgrep = 1
+" let g:memolist_vimfiler = 1
+" /=memolist }}}
+
+" nerdcommenter {{{
+let g:NERDCreateDefaultMappings = 1
+let NERDSpaceDelims = 1
+" /=nerdcommenter }}}
+
+" taglist {{{
+let Tlist_Show_One_File = 0
+let Tlist_Use_Right_Window = 1
+let Tlist_Exit_OnlyWindow = 1
+" /=taglist }}}
+
+" SrcExpl {{{
+" // The switch of the Source Explorer
+nmap <F8> :SrcExplToggle<CR>
+" " // Set the height of Source Explorer window
+let g:SrcExpl_winHeight = 8
+" // Set 100 ms for refreshing the Source Explorer
+let g:SrcExpl_refreshTime = 100
+" // Set "Enter" key to jump into the exact definition context
+let g:SrcExpl_jumpKey = "<ENTER>"
+" // Set "Space" key for back from the definition context
+let g:SrcExpl_gobackKey = "<SPACE>"
+" // In order to Avoid conflicts, the Source Explorer should know what plugins
+" // are using buffers. And you need add their bufname into the list below
+" // according to the command ":buffers!"
+let g:SrcExpl_pluginList = [
+  \"__Tag_List__",
+  \"_NERD_tree_",
+  \"Source_Explorer"
+\]
+" // Enable/Disable the local definition searching, and note that this is not
+" // guaranteed to work, the Source Explorer doesn't check the syntax for now.
+" // It only searches for a match with the keyword according to command 'gd'
+let g:SrcExpl_searchLocalDef = 1
+" // Do not let the Source Explorer update the tags file when opening
+let g:SrcExpl_isUpdateTags = 0
+" // Use 'Exuberant Ctags' with '--sort=foldcase -R .' or '-L cscope.files' to
+" //  create/update a tags file
+let g:SrcExpl_updateTagsCmd = "ctags --sort=foldcase -R ."
+" // Set "<F12>" key for updating the tags file artificially
+let g:SrcExpl_updateTagsKey = "<F12>"
+" /=SrcExpl }}}
+

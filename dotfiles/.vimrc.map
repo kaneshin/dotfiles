@@ -1,0 +1,114 @@
+" vim:set ts=8 sts=2 sw=2 tw=0:
+" vim:set fdm=marker:
+"
+" File:        .vimrc.map
+" Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
+" Last Change: 07-Jan-2015.
+
+" edit and read .vimrc.init
+if filereadable(expand('$DOTFILES/.vimrc'))
+  command! EditVimrcInit :tabe   $DOTFILES/.vimrc
+  command! ReadVimrcInit :source $DOTFILES/.vimrc
+  nnoremap <silent> ,ev :EditVimrcInit<cr>
+  nnoremap <silent> ,rv :ReadVimrcInit<cr>
+endif
+
+nnoremap ; :
+vnoremap ; :
+
+" use emacs key bind during command mode and a movement of insert mode
+" start of line
+cnoremap <c-a> <Home>
+inoremap <c-a> <Home>
+" back one character
+cnoremap <c-b> <Left>
+inoremap <c-b> <Left>
+" delete character under cursor
+cnoremap <c-d> <Del>
+inoremap <c-d> <Del>
+" end of line
+cnoremap <c-e> <End>
+inoremap <c-e> <End>
+" forward one character
+cnoremap <c-f> <Right>
+inoremap <c-f> <Right>
+" recall newer command-line
+cnoremap <c-n> <Down>
+" recall previous (older) command-line
+cnoremap <c-p> <Up>
+" delete character backward
+cnoremap <c-h> <BS>
+
+" insert mode
+inoremap <c-c> <esc>
+
+" kill line
+inoremap <c-k> <right><esc>Da
+
+" normal mode
+" searching
+nnoremap n nzz
+nnoremap N Nzz
+nnoremap <silent> <ESC><ESC> :nohlsearch<CR>
+" spliting window
+nnoremap <silent> <C-x>0 :close<CR>
+nnoremap <silent> <C-x>1 :only<CR>
+nnoremap <silent> <C-x>2 :split<CR>
+nnoremap <silent> <C-x>3 :vsplit<CR>
+nnoremap <silent> <C-x>n :bnext<CR>
+nnoremap <silent> <C-x>p :bprevious<CR>
+nnoremap <silent> <C-x>k :close<CR>
+nnoremap <silent> ft :bnext<cr>
+nnoremap <silent> fT :bprevious<cr>
+
+" visual mode
+vnoremap <c-c> <esc>
+vnoremap f <esc>
+
+vnoremap <silent> > >gv
+vnoremap <silent> < <gv
+
+" brackets and else
+" inoremap () ()<Left>
+" cnoremap () ()<Left>
+" inoremap {} {}<Left>
+" cnoremap {} {}<Left>
+" inoremap [] []<Left>
+" cnoremap [] []<Left>
+" inoremap "" ""<Left>
+" cnoremap "" ""<Left>
+" inoremap '' ''<Left>
+" cnoremap '' ''<Left>
+" inoremap <> <><Left>
+" cnoremap <> <><Left>
+
+" inoremap {<cr> {<cr><cr>}<up>
+
+" modify typo
+inoremap {] {}<Left>
+cnoremap {] {}<Left>
+
+" quickfix
+nnoremap <silent> <leader>n :cn<cr>
+nnoremap <silent> <leader>p :cp<cr>
+nnoremap <silent> <leader>q :ccl<cr>
+
+" useful {{{
+command! -nargs=1 -complete=filetype Tmp edit $VIMHOME/backup/tmp.<args>
+command! -nargs=1 -complete=filetype Temp edit $VIMHOME/backup/tmp.<args>
+" }}}
+
+function! UpProject()
+  echo 'test'
+  :NERDTree
+endfunction
+function! DownProject()
+  echo 'test2'
+endfunction
+command! Uprj call UpProject()
+command! Dprj call DownProject()
+nnoremap <silent> ,up :<c-u>Uprj<cr>
+nnoremap <silent> ,dp :<c-u>Dprj<cr>
+
+
+

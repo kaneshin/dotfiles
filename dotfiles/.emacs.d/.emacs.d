@@ -1,1 +1,0 @@
-/Users/kaneshin/Develop/dotfiles/dotfiles/.emacs.d
