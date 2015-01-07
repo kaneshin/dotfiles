@@ -348,7 +348,6 @@ Plugin 'tpope/vim-abolish'
 " Golang
 Plugin 'fatih/vim-go'
 
-Plugin 'airblade/vim-gitgutter'
 Plugin 'tyru/open-browser.vim'
 
 call vundle#end()
