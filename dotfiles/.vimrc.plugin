@@ -11,14 +11,11 @@ source $VIMRUNTIME/macros/matchit.vim
 filetype off
 set rtp+=$VIMHOME/bundle/Vundle.vim
 call vundle#begin('$VIMHOME/bundle')
+
 " vundle is managed by itself
 Plugin 'gmarik/Vundle.vim'
 
-" essentials
-Plugin 'vim-scripts/autodate.vim'
-Plugin 'mattn/webapi-vim'
-
-" ctrlp
+" ctrlp {{{
 Plugin 'kien/ctrlp.vim'
 Plugin 'mattn/ctrlp-gist'
 Plugin 'mattn/ctrlp-mark'
@@ -30,6 +27,13 @@ Plugin 'kaneshin/ctrlp-filetype'
 Plugin 'kaneshin/ctrlp-git'
 Plugin 'kaneshin/ctrlp-sudden-death'
 Plugin 'kaneshin/ctrlp-project'
+" /=ctrlp }}}
+
+Plugin 'scrooloose/nerdtree'
+
+" essentials
+Plugin 'vim-scripts/autodate.vim'
+Plugin 'mattn/webapi-vim'
 
 " vim-surround
 Plugin 'tpope/vim-surround'
@@ -52,7 +56,6 @@ Plugin 'airblade/vim-gitgutter'
 " source
 Plugin 'wesleyche/SrcExpl'
 Plugin 'vim-scripts/taglist.vim'
-Plugin 'scrooloose/nerdtree'
 
 " syntax
 Plugin 'vim-ruby/vim-ruby'
@@ -68,7 +71,10 @@ Plugin 'thinca/vim-ref'
 Plugin 'tpope/vim-abolish'
 
 " Golang
-Plugin 'fatih/vim-go'
+" Plugin 'fatih/vim-go'
+Plugin 'dgryski/vim-godef'
+Plugin 'google/vim-ft-go'
+Plugin 'vim-jp/vim-go-extra'
 
 Plugin 'tyru/open-browser.vim'
 
@@ -126,6 +132,11 @@ nnoremap <c-e>m :<c-u>CtrlPMemolist<cr>
 nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
 nnoremap <c-e>p :<c-u>CtrlPProject<cr>
 " /=ctrlp }}}
+
+" nerdtree {{{
+nnoremap <silent><C-e> :NERDTreeToggle<CR>
+" /=nerdtree }}}
+
 
 " gist-vim {{{
 let g:gist_show_privates = 1
