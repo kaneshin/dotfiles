@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 21-Dec-2014.
+" Last Change: 07-Jan-2015.
 
 scriptencoding utf-8
 
@@ -272,6 +272,18 @@ command! -nargs=1 -complete=filetype Tmp edit $VIMHOME/backup/tmp.<args>
 command! -nargs=1 -complete=filetype Temp edit $VIMHOME/backup/tmp.<args>
 " }}}
 
+function! UpProject()
+  echo 'test'
+  :NERDTree
+endfunction
+function! DownProject()
+  echo 'test2'
+endfunction
+command! Uprj call UpProject()
+command! Dprj call DownProject()
+nnoremap <silent> ,up :<c-u>Uprj<cr>
+nnoremap <silent> ,dp :<c-u>Dprj<cr>
+
 " plugin {{{
 " vundle {{{
 filetype off
@@ -280,8 +292,8 @@ call vundle#begin('$VIMHOME/bundle')
 " vundle is managed by itself
 Plugin 'gmarik/Vundle.vim'
 
-" useful
-Plugin "autodate.vim"
+" essentials
+Plugin 'vim-scripts/autodate.vim'
 Plugin 'mattn/webapi-vim'
 
 " ctrlp
@@ -305,16 +317,15 @@ Plugin 'tpope/vim-repeat'
 Plugin 'Lokaltog/vim-powerline'
 Plugin 'tpope/vim-fugitive'
 
+" misc
 Plugin 'mattn/gist-vim'
 Plugin 'mattn/emmet-vim'
 Plugin 'glidenote/memolist.vim'
 Plugin 'mattn/sonictemplate-vim'
 Plugin 'thinca/vim-quickrun'
 Plugin 'Lokaltog/vim-easymotion'
-
-" misc
-Plugin 'tyru/open-browser.vim'
 Plugin 'scrooloose/nerdcommenter'
+Plugin 'airblade/vim-gitgutter'
 
 " source
 Plugin 'wesleyche/SrcExpl'
@@ -338,6 +349,7 @@ Plugin 'tpope/vim-abolish'
 Plugin 'fatih/vim-go'
 
 Plugin 'airblade/vim-gitgutter'
+Plugin 'tyru/open-browser.vim'
 
 call vundle#end()
 filetype plugin indent on
