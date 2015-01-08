@@ -3,7 +3,7 @@
 #
 # File:        .zshrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 21-Dec-2014.
+# Last Change: 08-Jan-2015.
 # ============================================================
 
 # common
@@ -135,6 +135,9 @@ setopt magic_equal_subst
 setopt print_eight_bit
 setopt extended_glob
 setopt globdots
+
+# bd.zsh
+[ -f ~/local/bin/bd.zsh ] && source ~/local/bin/bd.zsh
 
 # local
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
