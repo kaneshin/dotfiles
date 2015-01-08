@@ -136,6 +136,15 @@ setopt print_eight_bit
 setopt extended_glob
 setopt globdots
 
+export DIRSTACKSIZE=100
+setopt AUTO_PUSHD
+
+autoload -Uz compinit && compinit
+
+zstyle ':completion:*' menu select
+zstyle ':completion:*:cd:*' ignore-parents parent pwd
+zstyle ':completion:*:descriptions' format '%BCompleting%b %U%d%u'
+
 # bd.zsh
 [ -f ~/local/bin/bd.zsh ] && source ~/local/bin/bd.zsh
 
