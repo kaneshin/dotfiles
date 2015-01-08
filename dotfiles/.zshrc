@@ -139,6 +139,9 @@ setopt globdots
 # bd.zsh
 [ -f ~/local/bin/bd.zsh ] && source ~/local/bin/bd.zsh
 
+# autojump
+[[ -s $(brew --prefix)/etc/autojump.sh ]] && . $(brew --prefix)/etc/autojump.sh
+
 # local
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
 
