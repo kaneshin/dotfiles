@@ -3,12 +3,17 @@
 "
 " File:        .vimrc.autocmd
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 07-Jan-2015.
+" Last Change: 08-Jan-2015.
 
 augroup MyVimOptions
   autocmd!
   " change directory if you open a file.
   " autocmd BufEnter * execute ':lcd '.expand('%:p:h')
   autocmd QuickfixCmdPost vimgrep cw
+augroup END
+
+augroup MyProjectOptions
+  autocmd!
+  autocmd VimEnter * if system('a=`git status 2>&1`; echo $?') | echo '' | else | NERDTree | endif
 augroup END
 
