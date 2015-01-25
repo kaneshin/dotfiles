@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.plugin
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 07-Jan-2015.
+" Last Change: 25-Jan-2015.
 
 source $VIMRUNTIME/macros/matchit.vim
 
@@ -72,9 +72,9 @@ Plugin 'tpope/vim-abolish'
 
 " Golang
 " Plugin 'fatih/vim-go'
-Plugin 'dgryski/vim-godef'
 Plugin 'google/vim-ft-go'
 Plugin 'vim-jp/vim-go-extra'
+Plugin 'dgryski/vim-godef'
 
 Plugin 'tyru/open-browser.vim'
 

@@ -3,7 +3,7 @@
 #
 # File:        .shrc.darwin
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 21-Dec-2014.
+# Last Change: 18-Jan-2015.
 # ============================================================
 
 # alias for macvim
@@ -21,6 +21,7 @@ alias xcrun_="/Applications/${xcode}/Contents/Developer/usr/bin/xcrun"
 brew=`which brew 2>&1`
 if [[ $? == 0 ]]; then
   . `brew --prefix`/etc/profile.d/z.sh
+  . $(brew --prefix nvm)/nvm.sh
 fi
 
 function precmd ()

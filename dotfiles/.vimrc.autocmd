@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.autocmd
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 08-Jan-2015.
+" Last Change: 25-Jan-2015.
 
 augroup MyVimOptions
   autocmd!
@@ -17,3 +17,7 @@ augroup MyProjectOptions
   autocmd VimEnter * if system('a=`git status 2>&1`; echo $?') | echo '' | else | NERDTree | endif
 augroup END
 
+augroup MyGolang
+  autocmd!
+  autocmd FileType go autocmd BufWritePre <buffer> Fmt
+augroup END

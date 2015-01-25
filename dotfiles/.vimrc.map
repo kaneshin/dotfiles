@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.map
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 07-Jan-2015.
+" Last Change: 19-Jan-2015.
 
 " edit and read .vimrc.init
 if filereadable(expand('$DOTFILES/.vimrc'))
