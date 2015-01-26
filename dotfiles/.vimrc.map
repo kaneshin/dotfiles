@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.map
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 19-Jan-2015.
+" Last Change: 26-Jan-2015.
 
 " edit and read .vimrc.init
 if filereadable(expand('$DOTFILES/.vimrc'))
@@ -58,8 +58,11 @@ nnoremap <silent> <C-x>3 :vsplit<CR>
 nnoremap <silent> <C-x>n :bnext<CR>
 nnoremap <silent> <C-x>p :bprevious<CR>
 nnoremap <silent> <C-x>k :close<CR>
-nnoremap <silent> ft :bnext<cr>
-nnoremap <silent> fT :bprevious<cr>
+nnoremap g[ <c-w>h
+nnoremap g] <c-w>l
+
+nnoremap <silent> gb :bnext<cr>
+nnoremap <silent> gB :bprevious<cr>
 
 " visual mode
 vnoremap <c-c> <esc>

@@ -3,7 +3,7 @@
 #
 # File:        .shrc.darwin
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 18-Jan-2015.
+# Last Change: 26-Jan-2015.
 # ============================================================
 
 # alias for macvim
@@ -17,11 +17,10 @@ alias swift_="/Applications/${xcode}/Contents/Developer/Toolchains/XcodeDefault.
 alias swiftc_="/Applications/${xcode}/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -sdk /Applications/${xcode}/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/${osxsdk}"
 alias xcrun_="/Applications/${xcode}/Contents/Developer/usr/bin/xcrun"
 
-# z
 brew=`which brew 2>&1`
 if [[ $? == 0 ]]; then
   . `brew --prefix`/etc/profile.d/z.sh
-  . $(brew --prefix nvm)/nvm.sh
+  . `brew --prefix nvm`/nvm.sh
 fi
 
 function precmd ()
@@ -31,6 +30,7 @@ function precmd ()
     _z --add "$(pwd -P)"
   fi
 }
+
 
 
 

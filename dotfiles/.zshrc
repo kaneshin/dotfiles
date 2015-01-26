@@ -3,7 +3,7 @@
 #
 # File:        .zshrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 08-Jan-2015.
+# Last Change: 21-Jan-2015.
 # ============================================================
 
 # common
