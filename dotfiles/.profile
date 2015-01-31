@@ -18,9 +18,6 @@ export LS_COLORS='di=36:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46
 export PATH=/usr/local/bin:$PATH
 export PATH=$HOME/local/bin:$PATH
 
-# Pebble
-export PATH=$HOME/local/sdk/pebble-dev/PebbleSDK-current/bin:$PATH
-
 gtest=gtest-1.7.0
 export GTEST_INC=${HOME}/local/src/${gtest}/include
 export GTEST_LIB=${HOME}/local/src/${gtest}/build

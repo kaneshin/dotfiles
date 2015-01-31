@@ -23,3 +23,6 @@ export PATH=$PATH:$ANDROID_TOOLS
 export PATH=$PATH:$ANDROID_HOME/platform-tools
 export PATH=$PATH:$M2_HOME/bin
 
+# Pebble
+export PATH=$HOME/local/sdk/pebble-dev/PebbleSDK-current/bin:$PATH
+
