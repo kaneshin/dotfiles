@@ -3,19 +3,14 @@
 #
 # File:        .shrc.darwin
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 26-Jan-2015.
+# Last Change: 02-Feb-2015.
 # ============================================================
 
 # alias for macvim
 vim=/Applications/MacVim.app/Contents/MacOS/Vim
-[ -x $vim ] && alias vim=$vim
-
-# swift
-xcode=Xcode-6.1.1.app
-osxsdk=MacOSX10.10.sdk
-alias swift_="/Applications/${xcode}/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift -sdk /Applications/${xcode}/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/${osxsdk}"
-alias swiftc_="/Applications/${xcode}/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -sdk /Applications/${xcode}/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/${osxsdk}"
-alias xcrun_="/Applications/${xcode}/Contents/Developer/usr/bin/xcrun"
+if [ -x $vim ]; then
+  alias vim=$vim
+fi
 
 brew=`which brew 2>&1`
 if [[ $? == 0 ]]; then
@@ -32,7 +27,9 @@ function precmd ()
 }
 
 # bd.zsh
-[ -f ~/local/bin/bd.zsh ] && source ~/local/bin/bd.zsh
+if [ -f ~/local/bin/bd.zsh ]; then
+  . ~/local/bin/bd.zsh
+fi
 
 # autojump
 [[ -s $(brew --prefix)/etc/autojump.sh ]] && . $(brew --prefix)/etc/autojump.sh

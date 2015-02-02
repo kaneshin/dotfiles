@@ -3,11 +3,13 @@
 #
 # File:        .zshrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 21-Jan-2015.
+# Last Change: 02-Feb-2015.
 # ============================================================
 
 # common
-[ -f ~/.shrc ] && source ~/.shrc
+if [ -f ~/.shrc ]; then
+  . ~/.shrc
+fi
 
 # use key map like emacs
 bindkey -e
@@ -146,5 +148,10 @@ zstyle ':completion:*:cd:*' ignore-parents parent pwd
 zstyle ':completion:*:descriptions' format '%BCompleting%b %U%d%u'
 
 # local
-[ -f ~/.zshrc.local ] && source ~/.zshrc.local
+if [ ! -f ~/.zshrc.local ]; then
+  touch ~/.zshrc.local
+fi
+if [ -f ~/.zshrc.local ]; then
+  . ~/.zshrc.local
+fi
 

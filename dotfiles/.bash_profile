@@ -3,12 +3,19 @@
 #
 # File:        .bash_profile
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 21-Dec-2014.
+# Last Change: 02-Feb-2015.
 # ============================================================
 
 # common
-[ -f ~/.profile ] && source ~/.profile
+if [ -f ~/.profile ]; then
+  . ~/.profile
+fi
 
 # local
-[ -f ~/.bash_profile.local ] && source ~/.bash_profile.local
+if [ ! -f ~/.bash_profile.local ]; then
+  touch ~/.bash_profile.local
+fi
+if [ -f ~/.bash_profile.local ]; then
+  . ~/.bash_profile.local
+fi
 

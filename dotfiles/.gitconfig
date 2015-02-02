@@ -119,14 +119,10 @@
 	trustExitCode = true
 [help]
 	autocorrect = 0
-[init]
-	templatedir = ~/.git.templates
 [filter "media"]
 	required = true
 	clean = git media clean %f
 	smudge = git media smudge %f
-[url "git@github.com:"]
-	insteadOf = https://github.com/
 [merge "mergepbx"]
 	name = Xcode project files merger
 	driver = mergepbx %O %A %B

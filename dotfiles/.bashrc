@@ -3,11 +3,13 @@
 #
 # File:        .bashrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 21-Dec-2014.
+# Last Change: 02-Feb-2015.
 # ============================================================
 
 # common
-[ -f ~/.shrc ] && source ~/.shrc
+if [ -f ~/.shrc ]; then
+  . ~/.shrc
+fi
 
 # size of history
 function share_history {
@@ -30,5 +32,10 @@ PS1="
 \033[39m\$\033[35m\$(parse_git_branch) \033[0m\]"
 
 # local
-[ -f ~/.bashrc.local ] && source ~/.bashrc.local
+if [ ! -f ~/.bashrc.local ]; then
+  touch ~/.bashrc.local
+fi
+if [ -f ~/.bashrc.local ]; then
+  . ~/.bashrc.local
+fi
 
