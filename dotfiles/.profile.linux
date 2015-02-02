@@ -3,10 +3,10 @@
 #
 # File:        .profile.linux
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 21-Dec-2014.
+# Last Change: 02-Feb-2015.
 # ============================================================
 
-export GOROOT=/usr/local/go
-export GOPATH=~/gocode
+export GOROOT=/usr/local/share/go/default
+export GOPATH=~/gopath
 export PATH=$GOROOT/bin:$GOPATH/bin:$PATH
 

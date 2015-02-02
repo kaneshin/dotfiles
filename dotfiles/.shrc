@@ -3,7 +3,7 @@
 #
 # File:        .shrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 21-Dec-2014.
+# Last Change: 02-Feb-2015.
 # ============================================================
 
 # alias
@@ -22,8 +22,6 @@ alias egrep='egrep --color=always'
 
 alias less='less -R'
 alias les='less -R'
-
-alias vi='vim -u $HOME/.virc'
 
 set_gitst()
 {
@@ -60,13 +58,22 @@ function gi()
 # OS
 case $OSTYPE in
   darwin* )
-    [ -f ~/.shrc.darwin ] && source ~/.shrc.darwin
+    if [ -f ~/.shrc.darwin ]; then
+      . ~/.shrc.darwin
+    fi
     ;;
   linux* )
-    [ -f ~/.shrc.linux ] && source ~/.shrc.linux
+    if [ -f ~/.shrc.linux ]; then
+      . ~/.shrc.linux
+    fi
     ;;
 esac
 
 # local
-[ -f ~/.shrc.local ] && source ~/.shrc.local
+if [ ! -f ~/.shrc.local ]; then
+  touch ~/.shrc.local
+fi
+if [ -f ~/.shrc.local ]; then
+  . ~/.shrc.local
+fi
 

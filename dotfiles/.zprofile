@@ -3,12 +3,19 @@
 #
 # File:        .zprofile
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 21-Dec-2014.
+# Last Change: 02-Feb-2015.
 # ============================================================
 
 # common
-[ -f ~/.profile ] && source ~/.profile
+if [ -f ~/.profile ]; then
+  . ~/.profile
+fi
 
 # local
-[ -f ~/.zprofile.local ] && source ~/.zprofile.local
+if [ ! -f ~/.zprofile.local ]; then
+  touch ~/.zprofile.local
+fi
+if [ -f ~/.zprofile.local ]; then
+  . ~/.zprofile.local
+fi
 
