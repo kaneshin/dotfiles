@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.plugin
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 26-Jan-2015.
+" Last Change: 11-Feb-2015.
 
 source $VIMRUNTIME/macros/matchit.vim
 
@@ -16,7 +16,7 @@ call vundle#begin('$VIMHOME/bundle')
 Plugin 'gmarik/Vundle.vim'
 
 " ctrlp {{{
-Plugin 'kien/ctrlp.vim'
+Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'mattn/ctrlp-gist'
 Plugin 'mattn/ctrlp-mark'
 Plugin 'mattn/ctrlp-launcher'
@@ -78,6 +78,7 @@ Plugin 'dgryski/vim-godef'
 Plugin 'nsf/gocode', {'rtp': 'vim/'}
 
 Plugin 'tyru/open-browser.vim'
+Plugin 'altercation/solarized'
 
 call vundle#end()
 filetype plugin indent on
