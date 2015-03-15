@@ -1,0 +1,42 @@
+# vim:set ts=8 sts=2 sw=2 tw=0:
+# vim:set fdm=marker:
+# vim:set ft=sh:
+#
+# File:        .sh.function
+# Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
+# Last Change: 15-Mar-2015.
+# ============================================================
+
+_read_file()
+{
+  name=${1}
+  if [ -f ${HOME}/${name} ]; then
+    . ${HOME}/${name}
+    echo "Read ${HOME}/${name}"
+  fi
+}
+
+_read_type()
+{
+  name=${1}.default
+  case ${OSTYPE} in
+    darwin* )
+      name=${1}.darwin
+      ;;
+    linux* )
+      name=${1}.linux
+      ;;
+  esac
+  _read_file $name
+}
+
+_read_local()
+{
+  name=${1}.local
+  if [ ! -f ${HOME}/${name} ]; then
+    sampledir=$DOTFILES/samples
+    cp $sampledir/${name} ${HOME}/${name}
+  fi
+  _read_file $name
+}
+

@@ -1,21 +1,19 @@
 # vim:set ts=8 sts=2 sw=2 tw=0:
 # vim:set fdm=marker:
+# vim:set ft=sh:
 #
 # File:        .bash_profile
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 02-Feb-2015.
+# Last Change: 15-Mar-2015.
 # ============================================================
 
-# common
-if [ -f ~/.profile ]; then
-  . ~/.profile
+if [ -f ${HOME}/.sh.function ]; then
+  . ${HOME}/.sh.function
 fi
 
-# local
-if [ ! -f ~/.bash_profile.local ]; then
-  touch ~/.bash_profile.local
-fi
-if [ -f ~/.bash_profile.local ]; then
-  . ~/.bash_profile.local
-fi
+# source .profile
+_read_file ".profile"
+
+# source .bash_profile
+_read_local ".bash_profile"
 

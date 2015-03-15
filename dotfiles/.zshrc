@@ -1,15 +1,18 @@
 # vim:set ts=8 sts=2 sw=2 tw=0:
 # vim:set fdm=marker:
+# vim:set ft=sh:
 #
 # File:        .zshrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 02-Feb-2015.
+# Last Change: 15-Mar-2015.
 # ============================================================
 
-# common
-if [ -f ~/.shrc ]; then
-  . ~/.shrc
+if [ -f ${HOME}/.sh.function ]; then
+  . ${HOME}/.sh.function
 fi
+
+# source .shrc
+_read_file ".shrc"
 
 # use key map like emacs
 bindkey -e
@@ -147,11 +150,6 @@ zstyle ':completion:*' menu select
 zstyle ':completion:*:cd:*' ignore-parents parent pwd
 zstyle ':completion:*:descriptions' format '%BCompleting%b %U%d%u'
 
-# local
-if [ ! -f ~/.zshrc.local ]; then
-  touch ~/.zshrc.local
-fi
-if [ -f ~/.zshrc.local ]; then
-  . ~/.zshrc.local
-fi
+# source .zshrc.local
+_read_local ".zshrc"
 

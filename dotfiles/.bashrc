@@ -1,14 +1,14 @@
 # vim:set ts=8 sts=2 sw=2 tw=0:
 # vim:set fdm=marker:
+# vim:set ft=sh:
 #
 # File:        .bashrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 02-Feb-2015.
+# Last Change: 15-Mar-2015.
 # ============================================================
 
-# common
-if [ -f ~/.shrc ]; then
-  . ~/.shrc
+if [ -f ${HOME}/.sh.function ]; then
+  . ${HOME}/.sh.function
 fi
 
 # size of history
@@ -31,11 +31,7 @@ PS1="
 \033[36m[\u@\h] \033[33m\w \033[0m\]
 \033[39m\$\033[35m\$(parse_git_branch) \033[0m\]"
 
-# local
-if [ ! -f ~/.bashrc.local ]; then
-  touch ~/.bashrc.local
-fi
-if [ -f ~/.bashrc.local ]; then
-  . ~/.bashrc.local
-fi
+_read_file ".shrc"
+
+_read_local ".bashrc"
 

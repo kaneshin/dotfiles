@@ -1,29 +1,21 @@
 # vim:set ts=8 sts=2 sw=2 tw=0:
 # vim:set fdm=marker:
+# vim:set ft=sh:
 #
 # File:        .shrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 02-Feb-2015.
+# Last Change: 15-Mar-2015.
 # ============================================================
 
-# alias
-alias ce='cd ../'
+if [ -f ${HOME}/.sh.alias ]; then
+  . ${HOME}/.sh.alias
+fi
 
-alias ls='ls -F'
-alias la='ls -a'
-alias ll='ls -la'
-alias sl="ls"
-alias l='ls -la'
+if [ -f ${HOME}/.sh.function ]; then
+  . ${HOME}/.sh.function
+fi
 
-alias grep='grep --color=always'
-alias ngrep='grep -n --color=always'
-alias fgrep='fgrep --color=always'
-alias egrep='egrep --color=always'
-
-alias less='less -R'
-alias les='less -R'
-
-set_gitst()
+_set_gitst()
 {
   case $1 in
     on )
@@ -35,8 +27,6 @@ set_gitst()
   esac
 }
 
-set_gitst on
-alias gitst='set_gitst'
 parse_git_status()
 {
   if [ $GITST -ne 0 ]; then
@@ -49,31 +39,15 @@ parse_git_branch()
   git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ \1/'
 }
 
-function gi()
+_set_gitst on
+alias gitst='_set_gitst'
+
+gi()
 {
   curl https://www.gitignore.io/api/$@ ;
 }
 
+_read_type ".shrc"
 
-# OS
-case $OSTYPE in
-  darwin* )
-    if [ -f ~/.shrc.darwin ]; then
-      . ~/.shrc.darwin
-    fi
-    ;;
-  linux* )
-    if [ -f ~/.shrc.linux ]; then
-      . ~/.shrc.linux
-    fi
-    ;;
-esac
-
-# local
-if [ ! -f ~/.shrc.local ]; then
-  touch ~/.shrc.local
-fi
-if [ -f ~/.shrc.local ]; then
-  . ~/.shrc.local
-fi
+_read_local ".shrc"
 
