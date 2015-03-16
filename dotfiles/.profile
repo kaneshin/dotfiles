@@ -4,7 +4,7 @@
 #
 # File:        .profile
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 15-Mar-2015.
+# Last Change: 16-Mar-2015.
 # ============================================================
 
 # Export environment variables
@@ -21,7 +21,7 @@ export PATH=${HOME}/local/bin:${PATH}
 
 # DOTFILES
 if [ -f ${HOME}/.profile ]; then
-  export DOTFILES=$(dirname $(readlink -nf ${HOME}/.profile))
+  export DOTFILES=$(dirname $(readlink -n ${HOME}/.profile))
 fi
 
 if [ -f ${HOME}/.sh.function ]; then
