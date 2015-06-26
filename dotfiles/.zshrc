@@ -4,7 +4,7 @@
 #
 # File:        .zshrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 26-Jun-2015.
+# Last Change: 27-Jun-2015.
 # ============================================================
 
 if [ -f ${HOME}/.sh.function ]; then
@@ -51,7 +51,33 @@ zle -N history-beginning-search-backward-end history-search-end
 zle -N history-beginning-search-forward-end history-search-end
 bindkey "^P" history-beginning-search-backward-end
 bindkey "^N" history-beginning-search-forward-end
-bindkey "^O"
+
+# make key map
+function _git_commit() {
+  git commit -m "${BUFFER}"
+  zle reset-prompt
+}
+zle -N _git_commit
+
+function _ce() {
+  cd ../
+  zle reset-prompt
+}
+zle -N _ce
+
+function _clear_screen() {
+  clear
+  ls -alh | grep --color=none "^d" && ls -la | grep -v "^d\|^total" 
+  zle reset-prompt
+  zle -R
+}
+zle -N _clear_screen
+
+bindkey "^Y" _git_commit
+bindkey "^O" _ce
+bindkey "^V" _ce
+bindkey "^L" _clear_screen
+>>>>>>> Stashed changes
 
 # prompt settings
 # variable expansion for prompt
