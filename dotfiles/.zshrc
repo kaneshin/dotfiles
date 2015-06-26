@@ -4,7 +4,7 @@
 #
 # File:        .zshrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 27-Jun-2015.
+# Last Change: 26-Jun-2015.
 # ============================================================
 
 if [ -f ${HOME}/.sh.function ]; then
@@ -77,7 +77,6 @@ bindkey "^Y" _git_commit
 bindkey "^O" _ce
 bindkey "^V" _ce
 bindkey "^L" _clear_screen
->>>>>>> Stashed changes
 
 # prompt settings
 # variable expansion for prompt
