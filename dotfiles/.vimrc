@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 07-Jan-2015.
+" Last Change: 27-Jun-2015.
 
 syntax on
 filetype plugin on

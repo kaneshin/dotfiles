@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.autocmd
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 26-Jun-2015.
+" Last Change: 27-Jun-2015.
 
 augroup MyVimOptions
   autocmd!
@@ -20,4 +20,6 @@ augroup END
 augroup MyGolang
   autocmd!
   autocmd FileType go autocmd BufWritePre <buffer> Fmt
+  autocmd FileType go autocmd BufWritePre * :global/^func\s/ if (getline(line(".")-1) == "") | s/^func\s\((.\{-})\s\|\)\(.\{-}\)(.*\s{$/\/\/ \2 ...\r\0/
+  autocmd FileType go autocmd BufWritePre * :global/^type.*struct\s.*$/ if (getline(line(".")-1) == "") | s/^type\s\(.\{-}\)\sstruct.*$/\/\/ \1 is\r\0/
 augroup END
