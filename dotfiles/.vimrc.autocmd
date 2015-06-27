@@ -16,10 +16,18 @@ augroup END
   " autocmd!
   " autocmd VimEnter * if system('a=`git status 2>&1`; echo $?') | echo '' | else | NERDTree | endif
 " augroup END
+"
+
+function! s:add_gocomment()
+  let cursor = getpos(".")
+  global/^func\s/ if (getline(line(".")-1) == "") | s/^func\s\((.\{-})\s\|\)\(.\{-}\)(.*\s{$/\/\/ \2 ...\r\0/
+  global/^type.*struct\s.*$/ if (getline(line(".")-1) == "") | s/^type\s\(.\{-}\)\sstruct.*$/\/\/ \1 is\r\0/
+  call setpos(".", cursor)
+  unlet cursor
+endfunction
 
 augroup MyGolang
   autocmd!
   autocmd FileType go autocmd BufWritePre <buffer> Fmt
-  autocmd FileType go autocmd BufWritePre * :global/^func\s/ if (getline(line(".")-1) == "") | s/^func\s\((.\{-})\s\|\)\(.\{-}\)(.*\s{$/\/\/ \2 ...\r\0/
-  autocmd FileType go autocmd BufWritePre * :global/^type.*struct\s.*$/ if (getline(line(".")-1) == "") | s/^type\s\(.\{-}\)\sstruct.*$/\/\/ \1 is\r\0/
+  autocmd FileType go autocmd BufWritePre <buffer> call <SID>add_gocomment()
 augroup END
