@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.map
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 26-Jan-2015.
+" Last Change: 27-Jun-2015.
 
 " edit and read .vimrc.init
 if filereadable(expand('$DOTFILES/.vimrc'))
@@ -99,3 +99,6 @@ nnoremap <silent> <leader>q :ccl<cr>
 command! -nargs=1 -complete=filetype Tmp edit $VIMHOME/backup/tmp.<args>
 command! -nargs=1 -complete=filetype Temp edit $VIMHOME/backup/tmp.<args>
 
+" Leader
+" autocmd BufEnter * execute ':lcd '.expand('%:p:h')
+nnoremap <silent> <leader>t :execute 'lcd '.expand('%:p:h')<cr>:!go test -tags=tests<cr>
