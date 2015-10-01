@@ -4,7 +4,7 @@
 #
 # File:        .profile
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 16-Mar-2015.
+# Last Change: 01-Oct-2015.
 # ============================================================
 
 # Export environment variables
@@ -32,3 +32,7 @@ _read_type ".profile"
 
 _read_local ".profile"
 
+rbenv=`which rbenv 2>&1`
+if [[ "${?}" = "0" ]]; then
+  eval "$(rbenv init -)"
+fi

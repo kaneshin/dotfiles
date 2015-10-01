@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.autocmd
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 27-Jun-2015.
+" Last Change: 10-Sep-2015.
 
 augroup MyVimOptions
   autocmd!
@@ -29,5 +29,5 @@ endfunction
 augroup MyGolang
   autocmd!
   autocmd FileType go autocmd BufWritePre <buffer> Fmt
-  autocmd FileType go autocmd BufWritePre <buffer> call <SID>add_gocomment()
+  " autocmd FileType go autocmd BufWritePre <buffer> call <SID>add_gocomment()
 augroup END
