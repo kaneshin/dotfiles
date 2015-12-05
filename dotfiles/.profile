@@ -4,7 +4,7 @@
 #
 # File:        .profile
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 01-Oct-2015.
+# Last Change: 06-Dec-2015.
 # ============================================================
 
 # Export environment variables
@@ -32,7 +32,12 @@ _read_type ".profile"
 
 _read_local ".profile"
 
-rbenv=`which rbenv 2>&1`
-if [[ "${?}" = "0" ]]; then
+if which rbenv > /dev/null; then
   eval "$(rbenv init -)"
 fi
+
+if which pyenv > /dev/null; then
+  eval "$(pyenv init -)"
+fi
+
+
