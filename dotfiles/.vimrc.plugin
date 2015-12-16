@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.plugin
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 18-Jul-2015.
+" Last Change: 10-Dec-2015.
 
 source $VIMRUNTIME/macros/matchit.vim
 
@@ -69,6 +69,8 @@ Plugin 'Keithbsmiley/swift.vim'
 Plugin 'smartword'
 Plugin 'thinca/vim-ref'
 Plugin 'tpope/vim-abolish'
+
+Plugin 'chase/vim-ansible-yaml'
 
 " Golang
 " Plugin 'fatih/vim-go'
