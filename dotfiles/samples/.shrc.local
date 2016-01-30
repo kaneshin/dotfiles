@@ -4,9 +4,21 @@
 #
 # File:        .shrc.local
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 15-Mar-2015.
+# Last Change: 30-Jan-2016.
 # ============================================================
 
 if [ -f ${HOME}/.gig/rupa/z/z.sh ]; then
   . ${HOME}/.gig/rupa/z/z.sh
 fi
+
+if [ -f ${HOME}/.nvm/nvm.sh ]; then
+  . ~/.nvm/nvm.sh
+  nvm use default
+fi
+
+export PATH="$HOME/.rbenv/bin:$PATH"
+rbenv=`which rbenv 2>&1`
+if [[ "${?}" = "0" ]]; then
+  eval "$(rbenv init -)"
+fi
+

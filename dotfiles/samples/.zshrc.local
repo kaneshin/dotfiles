@@ -4,6 +4,10 @@
 #
 # File:        .zshrc.local
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 15-Mar-2015.
+# Last Change: 30-Jan-2016.
 # ============================================================
 
+direnv=`which direnv 2>&1`
+if [[ "${?}" = "0" ]]; then
+  eval "$(direnv hook zsh)"
+fi

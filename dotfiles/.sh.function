@@ -4,7 +4,7 @@
 #
 # File:        .sh.function
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 15-Mar-2015.
+# Last Change: 30-Jan-2016.
 # ============================================================
 
 _read_file()
