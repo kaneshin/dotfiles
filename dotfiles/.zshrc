@@ -4,7 +4,7 @@
 #
 # File:        .zshrc
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 26-Jun-2015.
+# Last Change: 31-Jan-2016.
 # ============================================================
 
 if [ -f ${HOME}/.sh.function ]; then

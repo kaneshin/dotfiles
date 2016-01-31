@@ -4,7 +4,7 @@
 #
 # File:        .profile.local
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 30-Jan-2016.
+# Last Change: 31-Jan-2016.
 # ============================================================
 
 export GOROOT=/usr/local/share/go/default
@@ -19,4 +19,22 @@ export PATH=${GOBIN}:${PATH}
 
 # go_appengine
 export PATH=${PATH}:/usr/local/share/google/go_appengine/
+
+export PATH="${HOME}/.rbenv/bin:${PATH}"
+if which rbenv > /dev/null; then
+  eval "$(rbenv init -)"
+fi
+
+if which pyenv > /dev/null; then
+  eval "$(pyenv init -)"
+fi
+
+if [ -f ${HOME}/.gig/rupa/z/z.sh ]; then
+  . ${HOME}/.gig/rupa/z/z.sh
+fi
+
+export NVM_DIR="${HOME}/.nvm"
+if [ -f ${NVM_DIR}/nvm.sh ]; then
+  . ${NVM_DIR}/nvm.sh
+fi
 
