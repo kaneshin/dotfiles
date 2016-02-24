@@ -84,10 +84,13 @@
 	rssh = reset --soft HEAD
 	rshh = reset --hard HEAD
 # log (l)
+	filelog = log -u
+	fl = log -u
 	l  = log --oneline --stat
 	lp = log --oneline -p
 	ls = log --stat --abbrev-commit -n 1 # display previous log
 	lo = log origin
+	ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
 # log tree
 	ln = log --graph --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset' --name-status
 	lt = log --oneline --since="00:00:01" --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
@@ -95,6 +98,9 @@
 	ta = log --graph --branches --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
 	tao = log origin --graph --branches --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
 # diff (d)
+	dr  = "!f() { git diff "$1"^.."$1"; }; f"
+	lc  = "!f() { git ll "$1"^.."$1"; }; f"
+	diffr  = "!f() { git diff "$1"^.."$1"; }; f"
 	d  = diff
 	di  = diff
 	dm = diff master
@@ -105,6 +111,7 @@
 # grep (gr)
 	gr  = grep
 	grn = grep -n
+	f = "!git ls-files | grep -i"
 # stash (st)
 	st  = stash
 	stl = stash list
