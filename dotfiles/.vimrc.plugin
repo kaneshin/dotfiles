@@ -181,18 +181,6 @@ let g:quickrun_config = {
 \   'outputter' : 'buffer',
 \   'runner': 'system',
 \ },
-\ 'c': {
-\   'command': 'clang',
-\   'exec': ['%c %o %s -o %s:p:r', '%s:p:r %a', 'rm -f %s:p:r'],
-\   'cmdopt': '-Wall',
-\   'tempfile': '%{tempname()}.c',
-\ },
-\ 'cpp': {
-\   'command': 'clang++',
-\   'exec': ['%c %o %s -o %s:p:r', '%s:p:r %a', 'rm -f %s:p:r'],
-\   'cmdopt': '-Wall',
-\   'tempfile': '%{tempname()}.cpp',
-\ },
 \ 'ruby': {
 \   'command': 'ruby',
 \   'exec': ['%c %o %s %a'],
