@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+
+
+# Bomb out if we hit an error, ever
+set -e
+
+# Verbose output in debug mode
+[ -n "$DOTFILES_DEBUG" ] && {
+  set -x
+}
+
+# Helper functions
+resolve_link() {
+  $(type -p greadlink readlink | head -1) "$1"
+}
+
+abs_dirname() {
+  local cwd="$(pwd)"
+  local path="$1"
+
+  while [ -n "$path" ]; do
+    cd "${path%/*}"
+    local name="${path##*/}"
+    path="$(resolve_link "$name" || true)"
+  done
+
+  pwd
+  cd "$cwd"
+}
+
+# Set up DOTFILES_ROOT, location where everything lives
+
+if [ -z "${DOTFILES_ROOT}" ]; then
+  DOTFILES_ROOT="${HOME}/develop/dotfiles"
+else
+  DOTFILES_ROOT="${DOTFILES_ROOT%/}"
+fi
+
+export DOTFILES_ROOT
+
+# Pop the first argument, our subcommand
+command="$1"
+
+# Make sure we can find out utilities on PATH
+bin_path="$(abs_dirname "$0")"
+export PATH="${bin_path}":$PATH
+
+case "$command" in
+  "-v" | "--version" )
+    exec dotfiles-version
+    ;;
+  "" | "-h" | "--help" )
+    exec dotfiles-help
+    ;;
+  * )
+    command_path="${bin_path}/dotfiles-${command}"
+    [ -x "${command_path}" ] || {
+      echo "no such command \`$command'" >&2
+      exit 1
+    }
+
+    shift 1
+    if [ "$1" = --help ]; then
+      exec dotfiles-help "$command"
+    else
+      exec "$command_path" "$@"
+    fi
+    ;;
+esac
+
+# vim:set ts=8 sts=2 sw=2 tw=0:
+# vim:set ft=sh:

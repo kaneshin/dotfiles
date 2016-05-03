@@ -178,3 +178,9 @@ zstyle ':completion:*:descriptions' format '%BCompleting%b %U%d%u'
 # source .zshrc.local
 _read_local ".zshrc"
 
+
+# The next line updates PATH for the Google Cloud SDK.
+source '/Users/kaneshin/google-cloud-sdk/path.zsh.inc'
+
+# The next line enables shell command completion for gcloud.
+source '/Users/kaneshin/google-cloud-sdk/completion.zsh.inc'

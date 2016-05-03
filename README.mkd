@@ -1,8 +1,0 @@
-dotfiles
-========
-
-Maintainer
-----------
-
-Shintaro Kaneko <kaneshin0120@gmail.com>
-
