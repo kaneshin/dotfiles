@@ -3,51 +3,61 @@
 	email = kaneshin0120@gmail.com
 [github]
 	user = kaneshin
+[url "git@github.com:"]
+	insteadOf = https://github.com/
 [core]
-	editor = vim
 	pager = less -R
-	excludesfile = ~/.gitconfig.local
+	editor = vim
 	excludesfile = ~/.gitignore
 [color]
 	ui = auto
-	status = auto
-	branch = auto
 	diff = auto
-	interactive = auto
 	grep = auto
+	branch = auto
+	status = auto
+	interactive = auto
+[push]
+	default = nothing
+[pull]
+	default = nothing
+	rebase = true
+	ff = only
 [merge]
+	ff = false
 	tool = vimdiff
+	keepBackup = false
+[mergetool]
+	keepBackup = false
 [grep]
 	lineNumber = true
 [receive]
 	denyDeleteCurrent = warn
 [alias]
 	alias = !git config --get-regexp '^alias\\.' | sed 's/alias\\.\\([^ ]*\\) \\(.*\\)/\\1\\\t => \\2/' | sort
-	# alias = !git config --list | grep 'alias\\.' | sed 's/alias\\.\\([^=]*\\)=\\(.*\\)/\\1\\\t => \\2/' | sort
 	refresh= !git fetch origin && git remote prune origin
-# status/show (s)
+	# status/show (s)
 	s  = status
 	ss = status -s
 	sh = show
-# show status after add (a)
+	# show status after add (a)
 	a  = !git add .  && git status
 	ad = !git add .  && git status
 	au = !git add -u && git status
 	aa = !git add .  && git add -u && git status
 	ap = add -p
-# commit (c)
+	# commit (c)
 	c   = commit
 	ca  = commit -a
 	cm  = commit -m
 	cam = commit --amend
 	wip = commit -m 'wip'
 	wipom = !git commit -m 'wip' && git push origin master
-# checkout (ch)
+	# checkout (ch)
 	ch  = checkout
 	chb = checkout -b
 	chm = checkout master
 	chd = checkout develop
-# branch (b, br)
+	# branch (b, br)
 	b   = branch
 	br  = branch
 	ba  = branch -a                  # show all branches
@@ -56,34 +66,28 @@
 	brm = branch --merged            # already merged branches
 	bn  = branch --no-merged         # not merged branches
 	brn = branch --no-merged         # not merged branches
-# pull/fetch
+	# pull/fetch
 	drag = pull --rebase
 	ft   = fetch
-# push
+	# push
 	po  = push origin
 	pom = push origin master
 	pod = push origin develop
-	pg  = push github
-	pgm = push github master
-	pgd = push github develop
-	pb  = push bitbucket
-	pbm = push bitbucket master
-	pbd = push bitbucket develop
-# rebase (rb)
+	# rebase (rb)
 	rbm = rebase master
 	rbd = rebase develop
 	rbc = rebase --continue
 	rba = rebase --abort
-# revert (rv)
+	# revert (rv)
 	rv  = revert
 	rvh = revert HEAD
-# reset (rs)
+	# reset (rs)
 	rs   = reset
 	rsh  = reset --hard
 	rss  = reset --soft
 	rssh = reset --soft HEAD
 	rshh = reset --hard HEAD
-# log (l)
+	# log (l)
 	filelog = log -u
 	fl = log -u
 	l  = log --oneline --stat
@@ -91,13 +95,13 @@
 	ls = log --stat --abbrev-commit -n 1 # display previous log
 	lo = log origin
 	ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
-# log tree
+	# log tree
 	ln = log --graph --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset' --name-status
 	lt = log --oneline --since="00:00:01" --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
 	tr = log --graph --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
 	ta = log --graph --branches --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
 	tao = log origin --graph --branches --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
-# diff (d)
+	# diff (d)
 	dr  = "!f() { git diff "$1"^.."$1"; }; f"
 	lc  = "!f() { git ll "$1"^.."$1"; }; f"
 	diffr  = "!f() { git diff "$1"^.."$1"; }; f"
@@ -108,33 +112,23 @@
 	d1 = diff HEAD~
 	d2 = diff HEAD~2
 	d3 = diff HEAD~3
-# grep (gr)
+	# grep (gr)
 	gr  = grep
 	grn = grep -n
 	f = "!git ls-files | grep -i"
-# stash (st)
+	# stash (st)
 	st  = stash
 	stl = stash list
 	stp = stash pop
 	sts = stash save
-# cherry-pick (chpk)
+	# cherry-pick (chpk)
 	chpk = cherry-pick
-[difftool "sourcetree"]
-	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	path = 
-[mergetool "sourcetree"]
-	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-	trustExitCode = true
 [help]
 	autocorrect = 0
 [filter "media"]
 	required = true
 	clean = git media clean %f
 	smudge = git media smudge %f
-[url "git@github.com:"]
-	insteadOf = https://github.com/
 [merge "mergepbx"]
 	name = Xcode project files merger
 	driver = mergepbx %O %A %B
-[pull]
-	default = current
