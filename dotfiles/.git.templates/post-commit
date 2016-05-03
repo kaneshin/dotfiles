@@ -1,4 +1,0 @@
-#!/bin/sh
-
-git log -1 --format=format:%h | pbcopy
-

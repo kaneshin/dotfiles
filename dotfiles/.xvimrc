@@ -1,8 +1,0 @@
-" vim:set ts=8 sts=2 sw=2 tw=0:
-" vim:set fdm=marker:
-"
-" File:        .xvimrc
-" Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 23-Jan-2013.
-
-imap <c-e> <esc>A
