@@ -5,8 +5,11 @@ export LESSCHARSET=UTF-8
 export LSCOLORS=gxfxcxdxbxegedabagacad
 export LS_COLORS='di=36:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
 
-export HOMEBIN="$HOME/local/bin"
-export PATH="$HOMEBIN:/usr/local/bin:$PATH"
+export LOCALROOT="$HOME/local"
+export LOCALSRC="$LOCALROOT/src"
+export LOCALBIN="$LOCALROOT/bin"
+
+export PATH="$LOCALBIN:/usr/local/bin:$PATH"
 
 # Setup dotfiles
 if [ -d "$HOME/develop/dotfiles" ]; then
@@ -34,14 +37,6 @@ if [ -d "$HOME/.goenv" ]; then
   export PATH="$GOENV_ROOT/bin:$PATH"
   which goenv > /dev/null && eval "$(goenv init -)"
 fi
-export PATH=$GOROOT/bin:$PATH
-export GOPATH="$HOME/gopath"
-export GOBIN="$HOMEBIN"
-# export PATH="$GOBIN:$PATH"
-export GO15VENDOREXPERIMENT=1
-
-# Setup go_appengine
-# export PATH=$PATH:/usr/local/share/google/go_appengine/
 
 # Setup nodenv
 if [ -d "$HOME/.nodenv" ]; then
@@ -50,8 +45,19 @@ if [ -d "$HOME/.nodenv" ]; then
   which nodenv > /dev/null && eval "$(nodenv init -)"
 fi
 
+# Setup golang
+export PATH=$GOROOT/bin:$PATH
+export GOPATH="$LOCALROOT"
+export GOBIN="$LOCALBIN"
+# export PATH="$GOBIN:$PATH"
+export GO15VENDOREXPERIMENT=1
+
+# Setup go_appengine
+# export PATH=$PATH:/usr/local/share/google/go_appengine/
+
+
 # Setup z
-[ -f $HOME/local/src/.z/z.sh ] && . $HOME/local/src/.z/z.sh
+[ -f $LOCALSRC/github.com/rupa/z/z.sh ] && . $LOCALSRC/github.com/rupa/z/z.sh
 
 # source ~/.zplug/init.zsh
 # zplug "zsh-users/zsh-history-substring-search"
