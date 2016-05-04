@@ -1,3 +1,7 @@
 [ui]
 username = Shintaro Kaneko <kaneshin0120@gmail.com>
 verbose = True
+editor = vim
+
+[color]
+mode = ansi
