@@ -1,44 +1,9 @@
-# alias
-## ls command
-alias ls='ls -F'
-alias la='ls -a'
-alias ll='ls -la'
-alias sl="ls"
-alias l='ls -la'
-alias l.='ls -d .*'
-
-## cd command
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
-alias ce='cd ..'
-alias cd..='cd ..'
-
-## grep command
-alias grep='grep --color=always'
-alias ngrep='grep -n --color=always'
-alias fgrep='fgrep --color=always'
-alias egrep='egrep --color=always'
-
-## mkdir command
-alias mkdir='mkdir -p'
-
-## less command
-alias less='less -R'
-
-## useful command
-alias path='echo -e ${PATH//:/\\n}'
-alias now='date +"%T"'
-alias nowtime=now
-alias nowdate='date +"%d-%m-%Y"'
+# Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
+# Last Change: 04-May-2016.
 
 # use key map like emacs
 bindkey -e
 
-# history settings
-export HISTFILE=~/.zsh_history
-export HISTSIZE=10000
-export SAVEHIST=10000
 # append history when exit shell
 setopt append_history
 
@@ -70,32 +35,6 @@ zle -N history-beginning-search-forward-end history-search-end
 bindkey "^P" history-beginning-search-backward-end
 bindkey "^N" history-beginning-search-forward-end
 
-# make key map
-function _git_commit() {
-  git commit -m "${BUFFER}"
-  zle reset-prompt
-}
-zle -N _git_commit
-
-function _ce() {
-  cd ../
-  zle reset-prompt
-}
-zle -N _ce
-
-function _clear_screen() {
-  clear
-  ls -alh | grep --color=none "^d" && ls -la | grep -v "^d\|^total" 
-  zle reset-prompt
-  zle -R
-}
-zle -N _clear_screen
-
-bindkey "^Y" _git_commit
-bindkey "^O" _ce
-bindkey "^V" _ce
-bindkey "^L" _clear_screen
-
 # prompt settings
 # variable expansion for prompt
 setopt prompt_subst
@@ -109,22 +48,9 @@ setopt prompt_cr
 # visible CR when output CR by prompt_cr
 setopt prompt_sp
 
-# PROMPT1
-PS1="%{[0m%}
-%{[37m%}\$(parse_git_status)%{[0m%}
-%{[32m%}[%n@%m] %{[33m%}%~%{[0m%}
-%(?|%{[36m%}( ^o^%) <|%{[31m%}(;^o^%) <)%{[35m%}\$(parse_git_branch) %{[0m%}"
-
-# PROMPT2
-PS2="%_> "
-
-# PROMPT for correct
-SPROMPT="zsh: Did you mean: %{[4m[31m%}%r%{[14m[0m%} [nyae]? "
-
-
 # completion settings
-autoload -Uz compinit
-compinit -u
+autoload -Uz compinit && compinit -u
+
 # don't create new prompt
 setopt always_last_prompt
 
@@ -157,11 +83,13 @@ setopt list_types
 
 # set candidate immediately
 # zstyle ':completion:*' menu true
-
+# zstyle ':completion:*:default' menu select=3
+zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*' use-cache true
-zstyle ':completion:*:default' menu select=3
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*:cd:*' ignore-parents parent pwd
+zstyle ':completion:*:descriptions' format '%BCompleting%b %U%d%u'
 
 # color settings
 autoload -U colors: colors
@@ -184,47 +112,24 @@ setopt print_eight_bit
 setopt extended_glob
 setopt globdots
 
-export DIRSTACKSIZE=100
-setopt AUTO_PUSHD
+# load $HOME/.zsh/*
+if [ -d $HOME/.zsh ]; then
+  for i in `ls -1 $HOME/.zsh`; do
+    src=$HOME/.zsh/$i; [ -f $src ] && . $src
+  done
+fi
 
-autoload -Uz compinit && compinit
+# PROMPT1
+PS1="%{[0m%}
+%{[37m%}\$(git_short_status)%{[0m%}
+%{[32m%}[%n@%m] %{[33m%}%~%{[35m%} \$(git_info)%{[0m%}
+ %(?|%{[36m%}( ^o^%) <|%{[31m%}(;^o^%) <) %{[0m%}"
 
-zstyle ':completion:*' menu select
-zstyle ':completion:*:cd:*' ignore-parents parent pwd
-zstyle ':completion:*:descriptions' format '%BCompleting%b %U%d%u'
+# PROMPT2
+PS2="%_> "
 
-
-_set_gitst()
-{
-  case $1 in
-    on )
-      GITST=1
-      ;;
-    off )
-      GITST=0
-      ;;
-  esac
-}
-
-parse_git_status()
-{
-  if [ $GITST -ne 0 ]; then
-    git status -s 2> /dev/null
-  fi
-}
-
-parse_git_branch()
-{
-  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ \1/'
-}
-
-_set_gitst on
-alias gitst='_set_gitst'
-
-gi()
-{
-  curl https://www.gitignore.io/api/$@ ;
-}
+# PROMPT for correct
+SPROMPT="zsh: Did you mean: %{[4m[31m%}%r%{[14m[0m%} [nyae]? "
 
 # vim:set ts=8 sts=2 sw=2 tw=0:
 # vim:set ft=sh:
