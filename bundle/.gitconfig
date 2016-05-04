@@ -124,6 +124,7 @@
 	# cherry-pick (chpk)
 	chpk = cherry-pick
 	ignore = "!gi() { curl -L -s https://www.gitignore.io/api/$@ ;}; gi"
+	root = rev-parse --show-toplevel
 [help]
 	autocorrect = 0
 [filter "media"]

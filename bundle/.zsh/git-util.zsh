@@ -28,7 +28,7 @@ function git_short_status() {
 }
 
 function git_root_dir_name() {
-  basename $(cd ./`git rev-parse --show-cdup`;pwd)
+  basename $(cd ./`git rev-parse --show-toplevel`;pwd)
 }
 
 function git_info() {
