@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.plugin
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 18-Feb-2016.
+" Last Change: 05-May-2016.
 
 source $VIMRUNTIME/macros/matchit.vim
 
@@ -158,7 +158,7 @@ endif
 " sonictemplate {{{
 let g:sonictemplate_vim_template_dir = [
       \expand('$VIMHOME/template'),
-      \expand('$DOTFILES/.vim/template'),
+      \expand('$HOME/.vim/template'),
       \]
 " /=sonictemplate }}}
 

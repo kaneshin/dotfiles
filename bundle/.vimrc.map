@@ -3,12 +3,12 @@
 "
 " File:        .vimrc.map
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 27-Jun-2015.
+" Last Change: 05-May-2016.
 
 " edit and read .vimrc.init
-if filereadable(expand('$DOTFILES/.vimrc'))
-  command! EditVimrcInit :tabe   $DOTFILES/.vimrc
-  command! ReadVimrcInit :source $DOTFILES/.vimrc
+if filereadable(expand('$HOME/.vimrc'))
+  command! EditVimrcInit :tabe   $HOME/.vimrc
+  command! ReadVimrcInit :source $HOME/.vimrc
   nnoremap <silent> ,ev :EditVimrcInit<cr>
   nnoremap <silent> ,rv :ReadVimrcInit<cr>
 endif

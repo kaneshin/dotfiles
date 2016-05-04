@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 27-Jun-2015.
+" Last Change: 05-May-2016.
 
 syntax on
 filetype plugin on
@@ -13,12 +13,6 @@ filetype indent on
 let s:utilfile = expand($HOME.'/.vimrc.util')
 if filereadable(s:utilfile)
   execute "silent! source " . s:utilfile
-endif
-
-" set $DOTFILES
-let s:dirpath = $HOME . '/Develop/dotfiles/dotfiles'
-if !exists('$DOTFILES') && finddir(s:dirpath) != ''
-  let $DOTFILES = s:dirpath
 endif
 
 " load pure run command
