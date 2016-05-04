@@ -23,6 +23,7 @@ export LS_COLORS='di=36:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46
 
 export HISTFILE=~/.zsh_history
 export HISTSIZE=10000
+export HISTFILESIZE=10000
 export SAVEHIST=10000
 export DIRSTACKSIZE=100
 

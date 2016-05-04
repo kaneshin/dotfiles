@@ -1,6 +1,5 @@
-;; File:        .init.el
 ;; Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-;; Last Change: 07-Jan-2013.
+;; Last Change: 04-May-2016.
 
 ;; auto-install.el
 (add-to-list 'load-path (expand-file-name "~/.emacs.d"))
