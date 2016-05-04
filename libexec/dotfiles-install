@@ -47,6 +47,7 @@ jobs_await() {
 {
   unset VERBOSE
   unset DRY_RUN
+  unset FORCE
 
   parse_options "$@"
   for option in "${OPTIONS[@]}"; do
@@ -56,6 +57,9 @@ jobs_await() {
         ;;
       "v" | "verbose" )
         VERBOSE=true
+        ;;
+      "f" | "force" )
+        FORCE=true
         ;;
     esac
   done
@@ -80,8 +84,12 @@ jobs_await() {
         dest=$HOME
       fi
       dest="$dest/$name"
-      [ -f "$dest" ] && continue
-      [ -d "$dest" ] && continue
+      if [ ! -n "$FORCE" ]; then
+        [ -f "$dest" ] && continue
+        [ -d "$dest" ] && continue
+      else
+        [ -d "$dest" ] && rm -f "$dest"
+      fi
       [ ! -d "$(dirname $dest)" ] && mkdir -p $(dirname $dest)
       ln -sf "$org" "$dest"
       if [ -n "$VERBOSE" ]; then
