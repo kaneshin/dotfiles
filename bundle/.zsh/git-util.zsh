@@ -38,8 +38,5 @@ function git_info() {
   fi
 }
 
-# gi
-function gi() { curl -L -s https://www.gitignore.io/api/$@ ;}
-
 # vim:set ts=8 sts=2 sw=2 tw=0:
 # vim:set ft=sh:
