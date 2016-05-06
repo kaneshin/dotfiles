@@ -44,14 +44,16 @@ if [ -d "$HOME/.nodenv" ]; then
 fi
 
 # setup golang
-export PATH=$GOROOT/bin:$PATH
 export GOPATH="$LOCALROOT"
 export GOBIN="$LOCALBIN"
 # export PATH="$GOBIN:$PATH" already set
 export GO15VENDOREXPERIMENT=1
 
 # setup go_appengine
-# export PATH=$PATH:/usr/local/share/google/go_appengine/
+if [ -d "/usr/local/share/google/go_appengine" ]; then
+  export GOAPPENGINE_ROOT="/usr/local/share/google/go_appengine"
+  export PATH="$PATH:$GOAPPENGINE_ROOT"
+fi
 
 # vim:set ts=8 sts=2 sw=2 tw=0:
 # vim:set ft=sh:
