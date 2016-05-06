@@ -71,6 +71,18 @@ function gce_create() {
   return 0
 }
 
+function gce() {
+  line=$(_gce_instances list | peco)
+  name=$(echo $line | awk '{print $1}')
+  zone=$(echo $line | awk '{print $2}')
+  cmd=$(echo "start\nstop\ndelete" | peco)
+  [ $cmd = "" ] && return 0
+  echo gcloud compute instances $cmd $name --zone $zone
+  {
+    gcloud compute instances $cmd $name --zone $zone
+  } & pid=$!; jobs_await $pid; wait $pid 1> /dev/null 2> /dev/null
+}
+
 function gce_list() {
   _gce_instances list
 }
