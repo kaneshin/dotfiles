@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.plugin
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 05-May-2016.
+" Last Change: 06-May-2016.
 
 source $VIMRUNTIME/macros/matchit.vim
 
@@ -106,7 +106,7 @@ let g:ctrlp_max_depth = 40
 let g:ctrlp_use_migemo = 0
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip
 let g:ctrlp_custom_ignore = {
-  \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+  \ 'dir':  '\v[\/](node_modules|target|dist)|(\.(swp|ico|git|svn))$',
   \ 'file': '\v\.(exe|so|dll)$',
   \ 'link': '',
   \ }
