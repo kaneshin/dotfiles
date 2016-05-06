@@ -56,8 +56,9 @@ function gce_create() {
   local machine=$(gcloud compute machine-types list | grep -E "$GCE_ZONE" | cut -f 1 -d ' ' | peco)
   [ "$machine" = "" ] && return 1
 
+  name=$1
+  [ "$name" = "" ] && name=`get_name`
   {
-    name=`get_name`
     res=$(_gce_instances create $name --image $image --zone $GCE_ZONE --machine-type $machine)
     echo $res
     ip=`echo $res | tail -n 1 | sed -e "s#.* \(.*\) RUNNING#\\1#"`
@@ -80,7 +81,7 @@ function gce() {
   echo gcloud compute instances $cmd $name --zone $zone
   {
     gcloud compute instances $cmd $name --zone $zone
-  } & pid=$!; jobs_await $pid; wait $pid 1> /dev/null 2> /dev/null
+  } # & pid=$!; jobs_await $pid; wait $pid 1> /dev/null 2> /dev/null
 }
 
 function gce_list() {
