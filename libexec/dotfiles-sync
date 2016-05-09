@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+# Summary: Install dotfiles
+#
+# Usage: dotfiles install [arguments] <path>
+
+# Bomb out if we hit an error, ever
+set -e
+[ -n "$DOTFILES_DEBUG" ] && set -x
+
+parse_options() {
+  OPTIONS=()
+  ARGUMENTS=()
+  local arg option index
+
+  for arg in "$@"; do
+    if [ "${arg:0:1}" = "-" ]; then
+      if [ "${arg:1:1}" = "-" ]; then
+        OPTIONS[${#OPTIONS[*]}]="${arg:2}"
+      else
+        index=1
+        while option="${arg:$index:1}"; do
+          [ -n "$option" ] || break
+          OPTIONS[${#OPTIONS[*]}]="$option"
+          index=$(($index+1))
+        done
+      fi
+    else
+      ARGUMENTS[${#ARGUMENTS[*]}]="$arg"
+    fi
+  done
+}
+
+jobs_await() {
+  local pid="$1"
+  local spinners=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
+  while true; do
+    for spinner in ${spinners[@]}; do
+      printf "  $spinner  \r" > /dev/stderr
+      sleep 0.05
+    done
+    if ! jobs -rp | grep "$pid" > /dev/null; then
+      break
+    fi
+  done
+}
+
+{
+  unset VERBOSE
+  unset DRY_RUN
+  unset FORCE
+
+  parse_options "$@"
+  for option in "${OPTIONS[@]}"; do
+    case "$option" in
+      "dry-run" )
+        DRY_RUN=true
+        ;;
+      "v" | "verbose" )
+        VERBOSE=true
+        ;;
+      "f" | "force" )
+        FORCE=true
+        ;;
+    esac
+  done
+
+  res=$(git stash > /dev/null 2> /dev/null)
+  if [ -n "$VERBOSE" ]; then
+    echo $res
+  fi
+
+  res=$(git pull --rebase)
+  if [ -n "$VERBOSE" ]; then
+    echo $res
+  fi
+
+  res=$(git stash pop > /dev/null 2> /dev/null)
+  if [ -n "$VERBOSE" ]; then
+    echo $res
+  fi
+} &
+pid=$!
+jobs_await $pid
+wait $pid
+
+exit 0
+
+# vim:set ts=8 sts=2 sw=2 tw=0:
+# vim:set ft=sh:
