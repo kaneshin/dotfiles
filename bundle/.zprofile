@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 04-May-2016.
+# Last Change: 11-May-2016.
 
 # local directory
 export LOCALROOT="$HOME/local"
@@ -50,10 +50,13 @@ export GOBIN="$LOCALBIN"
 export GO15VENDOREXPERIMENT=1
 
 # setup go_appengine
-if [ -d "/usr/local/share/google/go_appengine" ]; then
-  export GOAPPENGINE_ROOT="/usr/local/share/google/go_appengine"
-  export PATH="$PATH:$GOAPPENGINE_ROOT"
-fi
+# if [ -d "/usr/local/share/google/go_appengine" ]; then
+#   export GOAPPENGINE_ROOT="/usr/local/share/google/go_appengine"
+#   export PATH="$PATH:$GOAPPENGINE_ROOT"
+# fi
+
+# setup ghq
+which ghq > /dev/null && export GHQ_ROOT=$LOCALSRC
 
 # vim:set ts=8 sts=2 sw=2 tw=0:
 # vim:set ft=sh:

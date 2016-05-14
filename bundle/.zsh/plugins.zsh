@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 09-May-2016.
+# Last Change: 10-May-2016.
 
 shell=$(echo ${0/*plugins./})
 
