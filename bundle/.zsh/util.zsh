@@ -11,7 +11,7 @@ function ssh-pubkey() {
 }
 
 function goimp() {
-  grep -e "\t\"\(github\|bitbucket\|golang\|google\).*\"$" . -R --color=none | grep -v -e "\.git" -e "README" -e "wercker" -e "ansible" | cut -f2 | sort -u
+  grep -e "\t\"\(github\|bitbucket\|golang\|google\|gopkg\).*\"$" . -R --color=none | grep -v -e "\.git" -e "README" -e "wercker" -e "ansible" | cut -f2 | sort -u
 }
 
 # vim:set ts=8 sts=2 sw=2 tw=0:
