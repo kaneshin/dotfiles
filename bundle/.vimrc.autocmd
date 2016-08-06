@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.autocmd
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 10-Sep-2015.
+" Last Change: 06-Aug-2016.
 
 augroup MyVimOptions
   autocmd!
@@ -12,22 +12,20 @@ augroup MyVimOptions
   autocmd QuickfixCmdPost vimgrep cw
 augroup END
 
-" augroup MyProjectOptions
-  " autocmd!
-  " autocmd VimEnter * if system('a=`git status 2>&1`; echo $?') | echo '' | else | NERDTree | endif
-" augroup END
-"
-
-function! s:add_gocomment()
-  let cursor = getpos(".")
-  global/^func\s/ if (getline(line(".")-1) == "") | s/^func\s\((.\{-})\s\|\)\(.\{-}\)(.*\s{$/\/\/ \2 ...\r\0/
-  global/^type.*struct\s.*$/ if (getline(line(".")-1) == "") | s/^type\s\(.\{-}\)\sstruct.*$/\/\/ \1 is\r\0/
-  call setpos(".", cursor)
-  unlet cursor
+" run :GoBuild or :GoTestCompile based on the go file
+function! s:build_go_files()
+  let l:file = expand('%')
+  if l:file =~# '^\f\+_test\.go$'
+    call go#cmd#Test(0, 1)
+  elseif l:file =~# '^\f\+\.go$'
+    call go#cmd#Build(0)
+  endif
 endfunction
 
 augroup MyGolang
   autocmd!
-  autocmd FileType go autocmd BufWritePre <buffer> Fmt
-  " autocmd FileType go autocmd BufWritePre <buffer> call <SID>add_gocomment()
+  autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
+  autocmd FileType go nmap <leader>r  <Plug>(go-run)
+  autocmd FileType go nmap <leader>t  <Plug>(go-test)
 augroup END
+

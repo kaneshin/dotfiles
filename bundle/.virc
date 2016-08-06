@@ -3,7 +3,7 @@
 "
 " File:        .virc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 07-Jan-2015.
+" Last Change: 06-Aug-2016.
 
 " set $VIMHOME
 if !exists('$VIMHOME')
@@ -128,4 +128,3 @@ set history=300
 set undolevels=2000
 set iminsert=0
 set imsearch=0
-

@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 11-May-2016.
+# Last Change: 06-Aug-2016.
 
 # local directory
 export LOCALROOT="$HOME/local"
@@ -26,6 +26,7 @@ fi
 if [ -d "$HOME/.pyenv" ]; then
   export PYENV_ROOT="$HOME/.pyenv"
   export PATH="$PYENV_ROOT/bin:$PATH"
+  export PYTHON_CONFIGURE_OPTS="--enable-shared"
   which pyenv > /dev/null && eval "$(pyenv init -)"
 fi
 

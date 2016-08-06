@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.map
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 05-May-2016.
+" Last Change: 06-Aug-2016.
 
 " edit and read .vimrc.init
 if filereadable(expand('$HOME/.vimrc'))
@@ -92,13 +92,16 @@ inoremap {] {}<Left>
 cnoremap {] {}<Left>
 
 " quickfix
-nnoremap <silent> <leader>n :cn<cr>
-nnoremap <silent> <leader>p :cp<cr>
-nnoremap <silent> <leader>q :ccl<cr>
+nnoremap <silent> <leader>n :cnext<cr>
+nnoremap <silent> <leader>p :cprevious<cr>
+nnoremap <silent> <leader>q :cclose<cr>
+nnoremap <silent> <c-n> :cnext<cr>
+nnoremap <silent> <c-m> :cprevious<cr>
+nnoremap <leader>a :cclose<cr>
 
 command! -nargs=1 -complete=filetype Tmp edit $VIMHOME/backup/tmp.<args>
 command! -nargs=1 -complete=filetype Temp edit $VIMHOME/backup/tmp.<args>
 
 " Leader
 " autocmd BufEnter * execute ':lcd '.expand('%:p:h')
-nnoremap <silent> <leader>t :execute 'lcd '.expand('%:p:h')<cr>:!go test -tags=tests<cr>
+" nnoremap <silent> <leader>t :execute 'lcd '.expand('%:p:h')<cr>:!go test<cr>

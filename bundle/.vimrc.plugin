@@ -3,7 +3,7 @@
 "
 " File:        .vimrc.plugin
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 06-May-2016.
+" Last Change: 06-Aug-2016.
 
 source $VIMRUNTIME/macros/matchit.vim
 
@@ -73,12 +73,17 @@ Plugin 'tpope/vim-abolish'
 Plugin 'chase/vim-ansible-yaml'
 
 " Golang
-" Plugin 'fatih/vim-go'
-Plugin 'google/vim-ft-go'
-Plugin 'vim-jp/vim-go-extra'
-Plugin 'dgryski/vim-godef'
-Plugin 'nsf/gocode', {'rtp': 'vim/'}
-Plugin 'godoctor/godoctor.vim'
+Plugin 'fatih/vim-go'
+Plugin 'AndrewRadev/splitjoin.vim'
+" Plugin 'SirVer/ultisnips'
+" Snippets are separated from the engine. Add this if you want them:
+" Plugin 'honza/vim-snippets'
+"
+" Plugin 'google/vim-ft-go'
+" Plugin 'vim-jp/vim-go-extra'
+" Plugin 'dgryski/vim-godef'
+" Plugin 'nsf/gocode', {'rtp': 'vim/'}
+" Plugin 'godoctor/godoctor.vim'
 
 Plugin 'tyru/open-browser.vim'
 Plugin 'altercation/solarized'
@@ -89,6 +94,24 @@ Plugin 'Shougo/vimshell.vim'
 call vundle#end()
 filetype plugin indent on
 " /=vundle }}}
+
+" vim-go {{{
+let g:go_list_type = "quickfix"
+let g:go_fmt_command = "goimports"
+let g:go_snippet_case_type = "camelcase"
+let g:go_highlight_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_metalinter_enabled = ['vet', 'golint', 'errcheck']
+" }}}
+
+" https://github.com/Valloric/YouCompleteMe.
+" let g:UltiSnipsExpandTrigger="<tab>"
+" let g:UltiSnipsJumpForwardTrigger="<c-b>"
+" let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+" " If you want :UltiSnipsEdit to split your window.
+" let g:UltiSnipsEditSplit="vertical"
 
 " ctrlp {{{
 " Set this to 0 to show the match window at the top of the screen
@@ -136,6 +159,7 @@ let g:ctrlp_filetype = {
 nnoremap <c-e>g :<c-u>CtrlPGist<cr>
 nnoremap <c-e>l :<c-u>CtrlPLauncher<cr>
 nnoremap <c-e>t :<c-u>CtrlPSonictemplate<cr>
+inoremap <c-e>t <esc>:<c-u>CtrlPSonictemplate<cr>
 nnoremap <c-e>m :<c-u>CtrlPMemolist<cr>
 nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
 nnoremap <c-e>p :<c-u>CtrlPProject<cr>
