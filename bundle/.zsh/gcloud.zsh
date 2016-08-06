@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 06-May-2016.
+# Last Change: 06-Aug-2016.
 
 function jobs_await() {
   spinners=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
@@ -53,21 +53,22 @@ function _gce_cmd() {
 function gce_create() {
   local image=$(gcloud compute images list | grep -E READY | awk '{print $3}' | grep -v READY | peco)
   [ "$image" = "" ] && return 1
-  local machine=$(gcloud compute machine-types list | grep -E "$GCE_ZONE" | cut -f 1 -d ' ' | peco)
+  local machine=$(gcloud compute machine-types list --zone "$GCE_ZONE" | awk 'NR!=1 {print $1};' | peco)
   [ "$machine" = "" ] && return 1
+  local disk=$(gcloud compute disk-types list --zone asia-east1-c | awk 'NR!=1 {print $1};' | peco)
+  [ "$disk" = "" ] && return 1
 
   name=$1
   [ "$name" = "" ] && name=`get_name`
   {
-    res=$(_gce_instances create $name --image $image --zone $GCE_ZONE --machine-type $machine)
+    res=$(_gce_instances create $name --image $image --zone $GCE_ZONE --machine-type $machine --boot-disk-size 30GB --boot-disk-type $disk)
     echo $res
     ip=`echo $res | tail -n 1 | sed -e "s#.* \(.*\) RUNNING#\\1#"`
-    if [ ! "$ip" = ""]; then
-      ssh-keygen -f "/home/kaneshin/.ssh/known_hosts" -R "$ip" 1> /dev/null 2> /dev/null
-    fi
+    [ ! "$ip" = "" ] && ssh-keygen -f "/home/kaneshin/.ssh/known_hosts" -R "$ip" 1> /dev/null 2> /dev/null
     user=$(git config --get github.user)
-    echo "curl -L -s \"https://github.com/${user}.keys\" >> ~/.ssh/authorized_keys"
-    echo "gcloud compute ssh $name --zone $GCE_ZONE"
+    cmd="curl -L -s \"https://github.com/${user}.keys\" >> ~/.ssh/authorized_keys"
+    gcloud compute ssh $name --zone $GCE_ZONE --command "$cmd"
+    echo ansible-playbook -i "$ip," --user=`whoami` --private-key=~/.ssh/id_rsa develop.yml
   } & pid=$!; jobs_await $pid; wait $pid 1> /dev/null 2> /dev/null
   return 0
 }
