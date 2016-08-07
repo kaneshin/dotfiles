@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 06-Aug-2016.
+# Last Change: 07-Aug-2016.
 
 function jobs_await() {
   spinners=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
@@ -63,12 +63,12 @@ function gce_create() {
   {
     res=$(_gce_instances create $name --image $image --zone $GCE_ZONE --machine-type $machine --boot-disk-size 30GB --boot-disk-type $disk)
     echo $res
-    ip=`echo $res | tail -n 1 | sed -e "s#.* \(.*\) RUNNING#\\1#"`
+    ip=`echo $res | tail -n 1 | sed -e "s#.* \([0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\).*#\\1#"`
     [ ! "$ip" = "" ] && ssh-keygen -f "/home/kaneshin/.ssh/known_hosts" -R "$ip" 1> /dev/null 2> /dev/null
     user=$(git config --get github.user)
     cmd="curl -L -s \"https://github.com/${user}.keys\" >> ~/.ssh/authorized_keys"
     gcloud compute ssh $name --zone $GCE_ZONE --command "$cmd"
-    echo ansible-playbook -i "$ip," --user=`whoami` --private-key=~/.ssh/id_rsa develop.yml
+    echo "ansible-playbook -i \"$ip,\" --user=`whoami` --private-key=~/.ssh/id_rsa playbook.yml"
   } & pid=$!; jobs_await $pid; wait $pid 1> /dev/null 2> /dev/null
   return 0
 }
