@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 06-Aug-2016.
+# Last Change: 11-Aug-2016.
 
 # local directory
 export LOCALROOT="$HOME/local"
@@ -10,8 +10,8 @@ export PATH="/usr/local/bin:$PATH"
 export PATH="$LOCALBIN:$PATH"
 
 # setup dotfiles
-if [ -d "$HOME/develop/dotfiles" ]; then
-  export DOTFILES_ROOT="$HOME/develop/dotfiles"
+if [ -d "$LOCALSRC/github.com/kaneshin/dotfiles" ]; then
+  export DOTFILES_ROOT="$LOCALSRC/github.com/kaneshin/dotfiles"
   export PATH="$DOTFILES_ROOT/bin:$PATH"
 fi
 
