@@ -45,14 +45,16 @@ function _gce_cmd() {
     res=`echo "$res" | tr '[a-z]' '[A-Z]'`
   done
   if [ "$res" = "Y" ]; then
-    { _gce_instances $1 $name --zones $zone
+    { _gce_instances $1 $name --zone $zone
     } # & pid=$!; jobs_await $pid; wait $pid 1> /dev/null 2> /dev/null
   fi
 }
 
 function gce_create() {
-  local image=$(gcloud compute images list | grep -E READY | awk '{print $3}' | grep -v READY | peco)
+  local image="$(gcloud compute images list | grep -E READY --color=none | peco)"
   [ "$image" = "" ] && return 1
+  project=$(echo $image | awk '{print $2};')
+  family=$(echo $image | awk '{print $3};')
   local machine=$(gcloud compute machine-types list --zones "$GCE_ZONE" | awk 'NR!=1 {print $1};' | peco)
   [ "$machine" = "" ] && return 1
   local disk=$(gcloud compute disk-types list --zones "$GCE_ZONE" | awk 'NR!=1 {print $1};' | peco)
@@ -61,13 +63,13 @@ function gce_create() {
   name=$1
   [ "$name" = "" ] && name=`get_name`
   {
-    res=$(_gce_instances create $name --image $image --zones $GCE_ZONE --machine-type $machine --boot-disk-size 30GB --boot-disk-type $disk)
+    res=$(_gce_instances create $name --image-family $family --image-project $project --zone $GCE_ZONE --machine-type $machine --boot-disk-size 30GB --boot-disk-type $disk)
     echo $res
     ip=`echo $res | tail -n 1 | sed -e "s#.* \([0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\).*#\\1#"`
     [ ! "$ip" = "" ] && ssh-keygen -f "/home/kaneshin/.ssh/known_hosts" -R "$ip" 1> /dev/null 2> /dev/null
     user=$(git config --get github.user)
     cmd="curl -L -s \"https://github.com/${user}.keys\" >> ~/.ssh/authorized_keys"
-    gcloud compute ssh $name --zones $GCE_ZONE --command "$cmd"
+    gcloud compute ssh $name --zone $GCE_ZONE --command "$cmd"
     echo "ansible-playbook -i \"$ip,\" --user=`whoami` --private-key=~/.ssh/id_rsa playbook.yml"
   } & pid=$!; jobs_await $pid; wait $pid 1> /dev/null 2> /dev/null
   return 0
@@ -79,9 +81,9 @@ function gce() {
   zone=$(echo $line | awk '{print $2}')
   cmd=$(echo "start\nstop\ndelete" | peco)
   [ $cmd = "" ] && return 0
-  echo gcloud compute instances $cmd $name --zones $zone
+  echo gcloud compute instances $cmd $name --zone $zone
   {
-    gcloud compute instances $cmd $name --zones $zone
+    gcloud compute instances $cmd $name --zone $zone
   } # & pid=$!; jobs_await $pid; wait $pid 1> /dev/null 2> /dev/null
 }
 
