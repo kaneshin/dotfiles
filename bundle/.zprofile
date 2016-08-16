@@ -1,47 +1,59 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 11-Aug-2016.
+# Last Change: 16-Aug-2016.
 
 # local directory
 export LOCALROOT="$HOME/local"
 export LOCALSRC="$LOCALROOT/src"
 export LOCALBIN="$LOCALROOT/bin"
 
-export PATH="/usr/local/bin:$PATH"
-export PATH="$LOCALBIN:$PATH"
+if [[ ":${PATH}:" != *:"${LOCALBIN}":* ]]; then
+  export PATH="/usr/local/bin:$PATH"
+  export PATH="$LOCALBIN:$PATH"
+fi
 
 # setup dotfiles
 if [ -d "$LOCALSRC/github.com/kaneshin/dotfiles" ]; then
   export DOTFILES_ROOT="$LOCALSRC/github.com/kaneshin/dotfiles"
-  export PATH="$DOTFILES_ROOT/bin:$PATH"
+  if [[ ":${PATH}:" != *:"${DOTFILES_ROOT}/bin":* ]]; then
+    export PATH="$DOTFILES_ROOT/bin:$PATH"
+  fi
 fi
 
 # setup rbenv
 if [ -d "$HOME/.rbenv" ]; then
   export RBENV_ROOT="$HOME/.rbenv"
-  export PATH="$RBENV_ROOT/bin:$PATH"
-  which rbenv > /dev/null && eval "$(rbenv init -)"
+  if [[ ":${PATH}:" != *:"${RBENV_ROOT}/bin":* ]]; then
+    export PATH="$RBENV_ROOT/bin:$PATH"
+    which rbenv > /dev/null && eval "$(rbenv init -)"
+  fi
 fi
 
 # setup pyenv
 if [ -d "$HOME/.pyenv" ]; then
-  export PYENV_ROOT="$HOME/.pyenv"
-  export PATH="$PYENV_ROOT/bin:$PATH"
   export PYTHON_CONFIGURE_OPTS="--enable-shared"
-  which pyenv > /dev/null && eval "$(pyenv init -)"
+  export PYENV_ROOT="$HOME/.pyenv"
+  if [[ ":${PATH}:" != *:"${PYENV_ROOT}/bin":* ]]; then
+    export PATH="$PYENV_ROOT/bin:$PATH"
+    which pyenv > /dev/null && eval "$(pyenv init -)"
+  fi
 fi
 
 # setup goenv
 if [ -d "$HOME/.goenv" ]; then
   export GOENV_ROOT="$HOME/.goenv"
-  export PATH="$GOENV_ROOT/bin:$PATH"
-  which goenv > /dev/null && eval "$(goenv init -)"
+  if [[ ":${PATH}:" != *:"${GOENV_ROOT}/bin":* ]]; then
+    export PATH="$GOENV_ROOT/bin:$PATH"
+    which goenv > /dev/null && eval "$(goenv init -)"
+  fi
 fi
 
 # setup nodenv
 if [ -d "$HOME/.nodenv" ]; then
   export NODENV_ROOT="$HOME/.nodenv"
-  export PATH="$NODENV_ROOT/bin:$PATH"
-  which nodenv > /dev/null && eval "$(nodenv init -)"
+  if [[ ":${PATH}:" != *:"${NODENV_ROOT}/bin":* ]]; then
+    export PATH="$NODENV_ROOT/bin:$PATH"
+    which nodenv > /dev/null && eval "$(nodenv init -)"
+  fi
 fi
 
 # setup golang
