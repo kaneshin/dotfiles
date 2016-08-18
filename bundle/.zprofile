@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 16-Aug-2016.
+# Last Change: 18-Aug-2016.
 
 # local directory
 export LOCALROOT="$HOME/local"
@@ -70,6 +70,9 @@ export GO15VENDOREXPERIMENT=1
 
 # setup ghq
 which ghq > /dev/null && export GHQ_ROOT=$LOCALSRC
+
+# local
+[ -f ~/.profile.local ] && source ~/.profile.local
 
 # vim:set ts=8 sts=2 sw=2 tw=0:
 # vim:set ft=sh:
