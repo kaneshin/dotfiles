@@ -276,6 +276,8 @@ augroup MyGolang
   autocmd FileType go nmap <leader>t  <Plug>(go-test)
   autocmd FileType go nmap <silent><leader>l  :GoLint<CR>
   autocmd FileType go nmap <silent><leader>f  :GoImports<CR>
+  autocmd FileType go nmap <c-e>e :<c-u>GoDecls<cr>
+  autocmd FileType go nmap <c-e>d :<c-u>GoDeclsDir<cr>
 augroup END
 
 source $VIMRUNTIME/macros/matchit.vim
