@@ -296,12 +296,9 @@ Plugin 'mattn/ctrlp-gist'
 Plugin 'mattn/ctrlp-mark'
 Plugin 'mattn/ctrlp-launcher'
 Plugin 'mattn/ctrlp-register'
-Plugin 'kaneshin/ctrlp-memolist'
 Plugin 'kaneshin/ctrlp-sonictemplate'
 Plugin 'kaneshin/ctrlp-filetype'
-Plugin 'kaneshin/ctrlp-git'
 Plugin 'kaneshin/ctrlp-sudden-death'
-Plugin 'kaneshin/ctrlp-project'
 " /=ctrlp }}}
 
 Plugin 'scrooloose/nerdtree'
@@ -321,7 +318,6 @@ Plugin 'tpope/vim-fugitive'
 " misc
 Plugin 'mattn/gist-vim'
 Plugin 'mattn/emmet-vim'
-Plugin 'glidenote/memolist.vim'
 Plugin 'mattn/sonictemplate-vim'
 Plugin 'thinca/vim-quickrun'
 Plugin 'Lokaltog/vim-easymotion'
@@ -335,7 +331,6 @@ Plugin 'vim-scripts/taglist.vim'
 " syntax
 Plugin 'vim-ruby/vim-ruby'
 Plugin 'JavaScript-syntax'
-Plugin 'jQuery'
 Plugin 'tpope/vim-markdown'
 Plugin 'b4winckler/vim-objc'
 Plugin 'cakebaker/scss-syntax.vim'
@@ -350,15 +345,6 @@ Plugin 'chase/vim-ansible-yaml'
 " Golang
 Plugin 'fatih/vim-go'
 Plugin 'AndrewRadev/splitjoin.vim'
-" Plugin 'SirVer/ultisnips'
-" Snippets are separated from the engine. Add this if you want them:
-" Plugin 'honza/vim-snippets'
-"
-" Plugin 'google/vim-ft-go'
-" Plugin 'vim-jp/vim-go-extra'
-" Plugin 'dgryski/vim-godef'
-" Plugin 'nsf/gocode', {'rtp': 'vim/'}
-" Plugin 'godoctor/godoctor.vim'
 
 Plugin 'tyru/open-browser.vim'
 Plugin 'altercation/solarized'
@@ -416,11 +402,10 @@ if finddir('.cache/ctrlp', $VIMHOME) == ''
 endif
 let g:ctrlp_cache_dir = $VIMHOME.'/.cache/ctrlp'
 let g:ctrlp_extensions = [
-      \'git_log',
-      \'project',
       \]
 let g:ctrlp_filetype = {
       \'user': [
+      \   'go',
       \   'c',
       \   'objc',
       \   'javascript',
@@ -438,9 +423,7 @@ nnoremap <c-e>g :<c-u>CtrlPGist<cr>
 nnoremap <c-e>l :<c-u>CtrlPLauncher<cr>
 nnoremap <c-e>t :<c-u>CtrlPSonictemplate<cr>
 inoremap <c-e>t <esc>:<c-u>CtrlPSonictemplate<cr>
-nnoremap <c-e>m :<c-u>CtrlPMemolist<cr>
 nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
-nnoremap <c-e>p :<c-u>CtrlPProject<cr>
 " /=ctrlp }}}
 
 " nerdtree {{{
@@ -492,44 +475,6 @@ let g:quickrun_config = {
 \}
 " /=quickrun }}}
 
-" TwitVim {{{
-let g:twitvim_count = 50
-nnoremap <silent> ,tt :tabnew<cr>:<c-u>FriendsTwitter<cr>:close<cr>
-nnoremap <silent> ,tp :<c-u>PosttoTwitter<cr>
-function! s:twitvim_options()
-  setlocal nowrap
-  nnoremap <buffer> <silent> s :<c-u>PosttoTwitter<cr>
-  nnoremap <buffer> <silent> <c-n> :<c-u>NextTwitter<cr>
-  nnoremap <buffer> <silent> <c-p> :<c-u>BackTwitter<cr>
-  nnoremap <buffer> <silent> ,tu :<C-u>UserTwitter<CR>
-  nnoremap <buffer> <silent> ,tr :<C-u>RepliesTwitter<CR>
-endfunction
-augroup TwitVimOptions
-  autocmd!
-  autocmd FileType twitvim :call s:twitvim_options()
-augroup END
-" /=TwitVim }}}
-
-" TweetVim {{{
-nnoremap <silent> ,t1 :<c-u>TweetVimSwitchAccount _kaneshin<cr>
-nnoremap <silent> ,t2 :<c-u>TweetVimSwitchAccount kaneshinth<cr>
-nnoremap <silent> ,ts :<C-u>TweetVimSay<CR>
-nnoremap <silent> ,th :tabnew<cr>:<c-u>TweetVimHomeTimeline<cr>
-let g:tweetvim_tweet_per_page = 50
-let g:tweetvim_display_separator = 0
-let g:tweetvim_footer = ''
-function! s:tweetvim_options()
-  setlocal nowrap
-  nnoremap <buffer> <silent> 1 :<c-u>TweetVimSwitchAccount _kaneshin<cr>
-  nnoremap <buffer> <silent> 2 :<c-u>TweetVimSwitchAccount kaneshinth<cr>
-  nnoremap <buffer> <silent> s :<C-u>TweetVimSay<CR>
-endfunction
-augroup TweetVimOptions
-  autocmd!
-  autocmd FileType tweetvim :call s:tweetvim_options()
-augroup END
-" /=TweetVim }}}
-
 " easymotion {{{
 let g:EasyMotion_leader_key = '<Leader>'
 " /=easymotion }}}
@@ -541,16 +486,6 @@ else
   let g:Powerline_symbols = 'compatible'
 endif
 " /=powerline }}}
-
-" memolist {{{
-let g:memolist_path = $HOME.'/Dropbox/Documents/memolist'
-let g:memolist_memo_suffix = "mkd"
-let g:memolist_memo_date = "%Y-%m-%d %H:%M"
-let g:memolist_prompt_tags = 1
-let g:memolist_prompt_categories = 1
-" let g:memolist_qfixgrep = 1
-" let g:memolist_vimfiler = 1
-" /=memolist }}}
 
 " nerdcommenter {{{
 let g:NERDCreateDefaultMappings = 1
