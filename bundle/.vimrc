@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 16-Aug-2016.
+" Last Change: 22-Aug-2016.
 
 syntax on
 filetype plugin on
@@ -274,6 +274,7 @@ augroup MyGolang
   autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
   autocmd FileType go nmap <leader>r  <Plug>(go-run)
   autocmd FileType go nmap <leader>t  <Plug>(go-test)
+  autocmd FileType go nmap <leader>l  :GoLint<CR>
 augroup END
 
 source $VIMRUNTIME/macros/matchit.vim
