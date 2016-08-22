@@ -274,7 +274,8 @@ augroup MyGolang
   autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
   autocmd FileType go nmap <leader>r  <Plug>(go-run)
   autocmd FileType go nmap <leader>t  <Plug>(go-test)
-  autocmd FileType go nmap <leader>l  :GoLint<CR>
+  autocmd FileType go nmap <silent><leader>l  :GoLint<CR>
+  autocmd FileType go nmap <silent><leader>f  :GoImports<CR>
 augroup END
 
 source $VIMRUNTIME/macros/matchit.vim
@@ -369,7 +370,7 @@ filetype plugin indent on
 
 " vim-go {{{
 let g:go_list_type = "quickfix"
-let g:go_fmt_command = "goimports"
+" let g:go_fmt_command = "goimports"
 let g:go_snippet_case_type = "camelcase"
 let g:go_highlight_types = 1
 let g:go_highlight_fields = 1
