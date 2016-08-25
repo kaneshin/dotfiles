@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 22-Aug-2016.
+" Last Change: 25-Aug-2016.
 
 syntax on
 filetype plugin on
@@ -278,6 +278,8 @@ augroup MyGolang
   autocmd FileType go nmap <silent><leader>f  :GoImports<CR>
   autocmd FileType go nmap <c-e>e :<c-u>GoDecls<cr>
   autocmd FileType go nmap <c-e>d :<c-u>GoDeclsDir<cr>
+  autocmd FileType go :highlight goErr cterm=bold ctermfg=214
+  autocmd FileType go :match goErr /\<err\>/
 augroup END
 
 source $VIMRUNTIME/macros/matchit.vim
@@ -364,6 +366,9 @@ let g:go_highlight_types = 1
 let g:go_highlight_fields = 1
 let g:go_highlight_functions = 1
 let g:go_highlight_methods = 1
+let g:go_highlight_structs = 0
+let g:go_highlight_interfaces = 0
+let g:go_highlight_operators = 0
 let g:go_metalinter_enabled = ['vet', 'golint', 'errcheck']
 if finddir('shims', $GOENV_ROOT) != ''
   let g:go_bin_path = expand('$GOENV_ROOT/shims')
