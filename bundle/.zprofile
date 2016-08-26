@@ -1,13 +1,23 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 18-Aug-2016.
+# Last Change: 26-Aug-2016.
 
 # local directory
 export LOCALROOT="$HOME/local"
 export LOCALSRC="$LOCALROOT/src"
 export LOCALBIN="$LOCALROOT/bin"
 
+if which brew > /dev/null; then
+  # setup for OS X
+  GNUBIN_PATH="`brew --prefix coreutils`/libexec/gnubin"
+  if [ -d "$GNUBIN_PATH" ]; then
+    export PATH="$GNUBIN_PATH:$PATH"
+    export MANPATH="`brew --prefix coreutils`/libexec/gnuman:$MANPATH"
+  fi
+fi
+
+# setup local dir
 if [[ ":${PATH}:" != *:"${LOCALBIN}":* ]]; then
-  export PATH="/usr/local/bin:$PATH"
+  # export PATH="/usr/local/bin:$PATH"
   export PATH="$LOCALBIN:$PATH"
 fi
 
@@ -59,14 +69,10 @@ fi
 # setup golang
 export GOPATH="$LOCALROOT"
 export GOBIN="$LOCALBIN"
-# export PATH="$GOBIN:$PATH" already set
+if [[ ":${PATH}:" != *:"${GOBIN}":* ]]; then
+  export PATH="$GOBIN:$PATH"
+fi
 export GO15VENDOREXPERIMENT=1
-
-# setup go_appengine
-# if [ -d "/usr/local/share/google/go_appengine" ]; then
-#   export GOAPPENGINE_ROOT="/usr/local/share/google/go_appengine"
-#   export PATH="$PATH:$GOAPPENGINE_ROOT"
-# fi
 
 # setup ghq
 which ghq > /dev/null && export GHQ_ROOT=$LOCALSRC
