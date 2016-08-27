@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 14-May-2016.
+# Last Change: 27-Aug-2016.
 
 # alias
 ## ls command
@@ -20,8 +20,7 @@ alias cd..='cd ..'
 ## grep command
 alias grep='grep --color=always'
 alias ngrep='grep -n --color=always'
-alias fgrep='fgrep --color=always'
-alias egrep='egrep --color=always'
+alias fgrep='fgrep --color=none -l'
 
 ## mkdir command
 alias mkdir='mkdir -p'
