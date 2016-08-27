@@ -31,7 +31,7 @@ abs_dirname() {
 # Set up DOTFILES_ROOT, location where everything lives
 
 if [ -z "${DOTFILES_ROOT}" ]; then
-  DOTFILES_ROOT="${HOME}/develop/dotfiles"
+  DOTFILES_ROOT="${HOME}/.dotfiles"
 else
   DOTFILES_ROOT="${DOTFILES_ROOT%/}"
 fi
