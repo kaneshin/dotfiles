@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 25-Aug-2016.
+" Last Change: 20-Sep-2016.
 
 syntax on
 filetype plugin on
@@ -337,6 +337,8 @@ Plugin 'tpope/vim-markdown'
 Plugin 'b4winckler/vim-objc'
 Plugin 'cakebaker/scss-syntax.vim'
 Plugin 'Keithbsmiley/swift.vim'
+Plugin 'leafgarland/typescript-vim'
+Plugin 'editorconfig/editorconfig-vim'
 
 Plugin 'smartword'
 Plugin 'thinca/vim-ref'
