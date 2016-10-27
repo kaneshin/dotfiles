@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 11-Aug-2016.
+# Last Change: 28-Oct-2016.
 
 function jobs_await() {
   spinners=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
@@ -24,7 +24,7 @@ function get_name() {
 
 # ===== GCE =====
 
-GCE_REGION='asia-east1'
+GCE_REGION='asia-northeast1'
 GCE_ZONE="${GCE_REGION}-c"
 
 function _gce_instances() {
