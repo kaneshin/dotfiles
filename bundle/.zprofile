@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 26-Aug-2016.
+# Last Change: 19-Nov-2016.
 
 # local directory
 export LOCALROOT="$HOME/local"
@@ -76,6 +76,16 @@ export GO15VENDOREXPERIMENT=1
 
 # setup ghq
 which ghq > /dev/null && export GHQ_ROOT=$LOCALSRC
+
+# setup gcloud
+if which gcloud > /dev/null; then
+  local gcloud=$(which gcloud)
+  # verify symlink
+  [ -n "$(readlink $gcloud)" ] && gcloud=$(readlink $gcloud)
+  # verify absolute path
+  local cloud_sdk=$(cd $(dirname $gcloud)/..; pwd)
+  export CLOUDSDK_ROOT=$cloud_sdk
+fi
 
 # local
 [ -f ~/.profile.local ] && source ~/.profile.local
