@@ -3,6 +3,13 @@
 
 shellname=$(basename $SHELL)
 
+# setup goenv
+if [ -n "$GOENV_ROOT" ]; then
+  if [ -f "$GOENV_ROOT/completions/goenv.$shellname" ]; then
+    source "$GOENV_ROOT/completions/goenv.$shellname"
+  fi
+fi
+
 # setup gcloud
 if [ -n "$CLOUDSDK_ROOT" ]; then
   # The next line updates PATH for the Google Cloud SDK.
