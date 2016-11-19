@@ -81,10 +81,11 @@ which ghq > /dev/null && export GHQ_ROOT=$LOCALSRC
 if which gcloud > /dev/null; then
   local gcloud=$(which gcloud)
   # verify symlink
-  [ -n "$(readlink $gcloud)" ] && gcloud=$(readlink $gcloud)
+  if [ -n "$(readlink $gcloud)" ]; then
+    gcloud=$(cd $(dirname $gcloud); cd $(dirname "$(readlink $gcloud)"); pwd)/gcloud
+  fi
   # verify absolute path
-  local cloud_sdk=$(cd $(dirname $gcloud)/..; pwd)
-  export CLOUDSDK_ROOT=$cloud_sdk
+  export CLOUDSDK_ROOT=$(cd $(dirname $gcloud)/..; pwd)
 fi
 
 # local
