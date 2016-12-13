@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 20-Sep-2016.
+" Last Change: 20-Nov-2016.
 
 syntax on
 filetype plugin on
@@ -349,6 +349,9 @@ Plugin 'chase/vim-ansible-yaml'
 " Golang
 Plugin 'fatih/vim-go'
 Plugin 'AndrewRadev/splitjoin.vim'
+
+" Crystal
+Plugin 'rhysd/vim-crystal'
 
 Plugin 'tyru/open-browser.vim'
 Plugin 'altercation/solarized'
