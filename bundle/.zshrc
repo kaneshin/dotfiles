@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 04-May-2016.
+# Last Change: 13-Dec-2016.
 
 # use key map like emacs
 bindkey -e
@@ -120,10 +120,11 @@ if [ -d $HOME/.zsh ]; then
 fi
 
 # PROMPT1
-PS1="%{[0m%}
-%{[37m%}\$(git_short_status)%{[0m%}
-%{[32m%}[%n@%m] %{[33m%}%~%{[35m%} \$(git_info)%{[0m%}
- %(?|%{[36m%}( ^o^%) <|%{[31m%}(;^o^%) <) %{[0m%}"
+# PS1="%{[0m%}
+# %{[37m%}\$(git_short_status)%{[0m%}
+# %{[32m%}[%n@%m] %{[33m%}%~%{[35m%} \$(git_info)%{[0m%}
+#  %(?|%{[36m%}( ^o^%) <|%{[31m%}(;^o^%) <) %{[0m%}"
+PS1="%{[0m%}%n@%m%% "
 
 # PROMPT2
 PS2="%_> "
