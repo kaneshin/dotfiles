@@ -1,5 +1,12 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 19-Nov-2016.
+# Last Change: 13-Dec-2016.
+
+# FXXK OS X
+# system-wide environment settings for zsh(1)
+if [ -x /usr/libexec/path_helper ]; then
+  PATH=""
+  eval `/usr/libexec/path_helper -s`
+fi
 
 # local directory
 export LOCALROOT="$HOME/local"

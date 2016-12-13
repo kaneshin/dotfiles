@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 20-Nov-2016.
+" Last Change: 13-Dec-2016.
 
 syntax on
 filetype plugin on
@@ -82,6 +82,7 @@ if version >= 703
 endif
 
 " encoding and format
+set ambiwidth=double
 set fileencodings=utf-8,euc-jp,cp932,shiftjis,iso-2022-jp,latin1
 set encoding=utf-8
 set fileformats=unix,dos,mac
