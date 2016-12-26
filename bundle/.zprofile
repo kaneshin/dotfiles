@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 13-Dec-2016.
+# Last Change: 18-Dec-2016.
 
 # FXXK OS X
 # system-wide environment settings for zsh(1)
@@ -80,6 +80,15 @@ if [[ ":${PATH}:" != *:"${GOBIN}":* ]]; then
   export PATH="$GOBIN:$PATH"
 fi
 export GO15VENDOREXPERIMENT=1
+
+# setup crenv
+if [ -d "$HOME/.crenv" ]; then
+  export CRENV_ROOT="$HOME/.crenv"
+  if [[ ":${PATH}:" != *:"${CRENV_ROOT}/bin":* ]]; then
+    export PATH="$CRENV_ROOT/bin:$PATH"
+    which crenv > /dev/null && eval "$(crenv init -)"
+  fi
+fi
 
 # setup ghq
 which ghq > /dev/null && export GHQ_ROOT=$LOCALSRC
