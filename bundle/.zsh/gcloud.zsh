@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 27-Dec-2016.
+# Last Change: 29-Dec-2016.
 
 function jobs_await() {
   spinners=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
@@ -69,7 +69,7 @@ function gce_create() {
   local image="$(_gce images list --standard-images | tail -n +2 | peco)"
   local project="$(echo $image | awk '{print $2}')"
   local family="$(echo $image | awk '{print $3}')"
-  [ -z "$image" ] || [ -z "$project" ] || [ -z "$family" ] && return 1
+  [ -z "$project" ] || [ -z "$family" ] && return 1
 
   local machine="$(_gce machine-types list --zones "$GCE_ZONE" | tail -n +2 | peco)"
   machine=$(echo $machine | awk '{print $1}')
@@ -112,6 +112,40 @@ function gce_create() {
   if [ -f "playbook.yml" ]; then
     ansible-playbook -i "$ip," --user=$(whoami) --private-key=~/.ssh/id_rsa playbook.yml
   fi
+}
+
+function gce_create_snapshot() {
+  local snapshot="$(_gce snapshots list | tail -n +2 | peco)"
+  local device="$(echo $snapshot | awk '{print $1}')"
+  [ -z "$device" ] && return 1
+
+  local machine="$(_gce machine-types list --zones "$GCE_ZONE" | tail -n +2 | peco)"
+  machine=$(echo $machine | awk '{print $1}')
+  [ -z "$machine" ] && return 1
+
+  # local disk="$(_gce disk-types list --zones "$GCE_ZONE" | tail -n +2 | peco)"
+  # disk=$(echo $disk | awk '{print $1}')
+  local disk="$GCE_INSTANCES_DEFAULT_DISK_TYPE"
+  [ -z "$disk" ] && return 1
+
+  local name=$(get_name)
+  if [ -n "$1" ] && ! echo "$1" | grep "^--" > /dev/null; then
+    name="$1"
+    shift
+  fi
+  {
+    result=$(_gce_instances create $name \
+      --zone $GCE_ZONE \
+      --machine-type $machine \
+      --boot-disk-device-name $device \
+      --boot-disk-size $GCE_INSTANCES_DEFAULT_DISK_SIZE \
+      --boot-disk-type $disk \
+      $@)
+    echo $result
+  } & pid=$!; jobs_await $pid; wait $pid 1> /dev/null 2> /dev/null
+
+  ip=$(_gce_instances list $name | tail -n 1 | sed -e "s#.* \([0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\).*#\\1#")
+  [ -n "$ip" ] && ssh-keygen -f "$HOME/.ssh/known_hosts" -R "$ip" 1> /dev/null 2> /dev/null
 }
 
 # vim:set ts=8 sts=2 sw=2 tw=0:
