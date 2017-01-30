@@ -20,10 +20,8 @@ if [ -d $HOME/.bash ]; then
   done
 fi
 
-PS1="
-\033[37m\$(git_short_status) \033[0m\]
-\033[36m[\u@\h] \033[33m\w \\033[31m$(git_info)\033[0m\]
-\033[39m\$ \033[0m\]"
+# PS1="%{[0m%}%n@%m%% "
+PS1="\033[0m\u@\h% "
 
 # vim:set ts=8 sts=2 sw=2 tw=0:
 # vim:set ft=sh:
