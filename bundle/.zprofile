@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 18-Dec-2016.
+# Last Change: 09-Feb-2017.
 
 # FXXK OS X
 # system-wide environment settings for zsh(1)
@@ -13,7 +13,7 @@ export LOCALROOT="$HOME/local"
 export LOCALSRC="$LOCALROOT/src"
 export LOCALBIN="$LOCALROOT/bin"
 
-if which brew > /dev/null; then
+if which brew > /dev/null 2>&1; then
   # setup for OS X
   GNUBIN_PATH="`brew --prefix coreutils`/libexec/gnubin"
   if [ -d "$GNUBIN_PATH" ]; then
@@ -41,7 +41,7 @@ if [ -d "$HOME/.rbenv" ]; then
   export RBENV_ROOT="$HOME/.rbenv"
   if [[ ":${PATH}:" != *:"${RBENV_ROOT}/bin":* ]]; then
     export PATH="$RBENV_ROOT/bin:$PATH"
-    which rbenv > /dev/null && eval "$(rbenv init -)"
+    which rbenv > /dev/null 2>&1 && eval "$(rbenv init -)"
   fi
 fi
 
@@ -51,7 +51,7 @@ if [ -d "$HOME/.pyenv" ]; then
   export PYENV_ROOT="$HOME/.pyenv"
   if [[ ":${PATH}:" != *:"${PYENV_ROOT}/bin":* ]]; then
     export PATH="$PYENV_ROOT/bin:$PATH"
-    which pyenv > /dev/null && eval "$(pyenv init -)"
+    which pyenv > /dev/null 2>&1 && eval "$(pyenv init -)"
   fi
 fi
 
@@ -60,7 +60,7 @@ if [ -d "$HOME/.goenv" ]; then
   export GOENV_ROOT="$HOME/.goenv"
   if [[ ":${PATH}:" != *:"${GOENV_ROOT}/bin":* ]]; then
     export PATH="$GOENV_ROOT/bin:$PATH"
-    which goenv > /dev/null && eval "$(goenv init -)"
+    which goenv > /dev/null 2>&1 && eval "$(goenv init -)"
   fi
 fi
 
@@ -69,7 +69,7 @@ if [ -d "$HOME/.nodenv" ]; then
   export NODENV_ROOT="$HOME/.nodenv"
   if [[ ":${PATH}:" != *:"${NODENV_ROOT}/bin":* ]]; then
     export PATH="$NODENV_ROOT/bin:$PATH"
-    which nodenv > /dev/null && eval "$(nodenv init -)"
+    which nodenv > /dev/null 2>&1 && eval "$(nodenv init -)"
   fi
 fi
 
@@ -86,15 +86,15 @@ if [ -d "$HOME/.crenv" ]; then
   export CRENV_ROOT="$HOME/.crenv"
   if [[ ":${PATH}:" != *:"${CRENV_ROOT}/bin":* ]]; then
     export PATH="$CRENV_ROOT/bin:$PATH"
-    which crenv > /dev/null && eval "$(crenv init -)"
+    which crenv > /dev/null 2>&1 && eval "$(crenv init -)"
   fi
 fi
 
 # setup ghq
-which ghq > /dev/null && export GHQ_ROOT=$LOCALSRC
+which ghq > /dev/null 2>&1 && export GHQ_ROOT=$LOCALSRC
 
 # setup gcloud
-if which gcloud > /dev/null; then
+if which gcloud > /dev/null 2>&1; then
   local gcloud=$(which gcloud)
   # verify symlink
   if [ -n "$(readlink $gcloud)" ]; then

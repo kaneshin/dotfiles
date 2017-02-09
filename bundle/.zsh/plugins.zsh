@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 10-May-2016.
+# Last Change: 09-Feb-2017.
 
 shell=$(echo ${0/*plugins./})
 
@@ -7,7 +7,7 @@ shell=$(echo ${0/*plugins./})
 [ -f $LOCALSRC/github.com/rupa/z/z.sh ] && . $LOCALSRC/github.com/rupa/z/z.sh
 
 # setup direnv
-which direnv > /dev/null && eval "$(direnv hook $shell)"
+which direnv > /dev/null 2>&1 && eval "$(direnv hook $shell)"
 
 # setup gi
 function gi() { curl -L -s https://www.gitignore.io/api/$@ ;}
