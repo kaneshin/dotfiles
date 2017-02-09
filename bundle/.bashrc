@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 04-May-2016.
+# Last Change: 09-Feb-2017.
 
 # size of history
 function share_history {
@@ -19,9 +19,6 @@ if [ -d $HOME/.bash ]; then
     src=$HOME/.bash/$i; [ -f $src ] && . $src
   done
 fi
-
-# PS1="%{[0m%}%n@%m%% "
-PS1="\033[0m\u@\h% "
 
 # vim:set ts=8 sts=2 sw=2 tw=0:
 # vim:set ft=sh:
