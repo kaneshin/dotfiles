@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 13-Dec-2016.
+" Last Change: 02-Mar-2017.
 
 syntax on
 filetype plugin on
@@ -102,7 +102,7 @@ set nonumber
 set scrolloff=3
 set wrap
 set list
-set listchars=eol:-,tab:>~,trail:~,extends:>,precedes:<
+set listchars=eol:\ ,tab:>-,trail:~,extends:\ ,precedes:\ 
 
 " display: statusline
 set laststatus=2
