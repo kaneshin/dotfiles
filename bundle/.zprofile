@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 09-Feb-2017.
+# Last Change: 31-Mar-2017.
 
 # FXXK OS X
 # system-wide environment settings for zsh(1)
@@ -33,6 +33,14 @@ if [ -d "$LOCALSRC/github.com/kaneshin/dotfiles" ]; then
   export DOTFILES_ROOT="$LOCALSRC/github.com/kaneshin/dotfiles"
   if [[ ":${PATH}:" != *:"${DOTFILES_ROOT}/bin":* ]]; then
     export PATH="$DOTFILES_ROOT/bin:$PATH"
+  fi
+fi
+
+# setup rust
+if [ -d "$HOME/.cargo" ]; then
+  export CARGO_ROOT="$HOME/.cargo"
+  if [[ ":${PATH}:" != *:"${CARGO_ROOT}/bin":* ]]; then
+    export PATH="$CARGO_ROOT/bin:$PATH"
   fi
 fi
 
