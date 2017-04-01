@@ -3,6 +3,8 @@
 	email = kaneshin0120@gmail.com
 [github]
 	user = kaneshin
+[url "https://github.com/rust-lang"]
+	insteadOf = https://github.com/rust-lang
 [url "git@github.com:"]
 	insteadOf = https://github.com/
 [core]
