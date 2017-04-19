@@ -3,7 +3,7 @@
 "
 " File:        .gvimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 07-Jan-2015.
+" Last Change: 14-Feb-2017.
 
 set guioptions=agirLt
 
@@ -19,6 +19,6 @@ if has('mac')
 endif
 
 if has('mac')
-  set guifont=Ricty:h14
+  set guifont=Menlo:h14
 endif
 

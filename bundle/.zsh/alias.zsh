@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 27-Aug-2016.
+# Last Change: 19-Apr-2017.
 
 # alias
 ## ls command
@@ -33,6 +33,7 @@ alias path='echo -e ${PATH//:/\\n}'
 alias now='date +"%T"'
 alias nowtime=now
 alias nowdate='date +"%d-%m-%Y"'
+alias peco='peco --initial-filter=Fuzzy'
 
 # vim:set ts=8 sts=2 sw=2 tw=0:
 # vim:set ft=sh:
