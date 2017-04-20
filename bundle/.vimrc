@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 02-Mar-2017.
+" Last Change: 20-Apr-2017.
 
 syntax on
 filetype plugin on
@@ -398,7 +398,7 @@ let g:ctrlp_max_height = 20
 let g:ctrlp_switch_buffer = 2
 let g:ctrlp_working_path_mode = 2
 let g:ctrlp_use_caching = 1
-let g:ctrlp_max_files = 10000
+let g:ctrlp_max_files = 30000
 let g:ctrlp_mruf_max = 250
 let g:ctrlp_max_depth = 40
 let g:ctrlp_use_migemo = 0
