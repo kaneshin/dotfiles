@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 31-Mar-2017.
+# Last Change: 06-Sep-2018.
 
 # FXXK OS X
 # system-wide environment settings for zsh(1)
@@ -88,6 +88,7 @@ if [[ ":${PATH}:" != *:"${GOBIN}":* ]]; then
   export PATH="$GOBIN:$PATH"
 fi
 export GO15VENDOREXPERIMENT=1
+export GO111MODULE=1
 
 # setup crenv
 if [ -d "$HOME/.crenv" ]; then
