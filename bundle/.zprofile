@@ -88,7 +88,7 @@ if [[ ":${PATH}:" != *:"${GOBIN}":* ]]; then
   export PATH="$GOBIN:$PATH"
 fi
 export GO15VENDOREXPERIMENT=1
-export GO111MODULE=1
+export GO111MODULE=on
 
 # setup crenv
 if [ -d "$HOME/.crenv" ]; then
