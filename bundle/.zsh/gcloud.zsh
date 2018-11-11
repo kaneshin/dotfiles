@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 29-Dec-2016.
+# Last Change: 11-Nov-2018.
 
 function jobs_await() {
   spinners=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
@@ -39,7 +39,7 @@ function _gcloud() {
 ## ===== GCE =====
 
 GCE_INSTANCES_DEFAULT_DISK_TYPE="pd-ssd"
-GCE_INSTANCES_DEFAULT_DISK_SIZE="30GB"
+GCE_INSTANCES_DEFAULT_DISK_SIZE="50GB"
 
 function _gce() {
   _gcloud compute $@
