@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 18-Sep-2018.
+" Last Change: 11-Nov-2018.
 
 syntax on
 filetype plugin on
@@ -329,7 +329,7 @@ Plugin 'airblade/vim-gitgutter'
 
 " source
 Plugin 'wesleyche/SrcExpl'
-Plugin 'vim-scripts/taglist.vim'
+" Plugin 'vim-scripts/taglist.vim'
 
 " syntax
 Plugin 'vim-ruby/vim-ruby'
