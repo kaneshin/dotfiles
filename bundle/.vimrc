@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 11-Nov-2018.
+" Last Change: 25-Apr-2019.
 
 syntax on
 filetype plugin on
@@ -374,9 +374,7 @@ let g:go_highlight_structs = 0
 let g:go_highlight_interfaces = 0
 let g:go_highlight_operators = 0
 let g:go_metalinter_enabled = ['vet', 'golint', 'errcheck']
-if finddir('shims', $GOENV_ROOT) != ''
-  let g:go_bin_path = expand('$GOENV_ROOT/shims')
-endif
+let g:go_bin_path = expand('$LOCALROOT/bin')
 " }}}
 
 " https://github.com/Valloric/YouCompleteMe.
