@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 25-Apr-2019.
+" Last Change: 19-May-2019.
 
 syntax on
 filetype plugin on
@@ -340,6 +340,7 @@ Plugin 'cakebaker/scss-syntax.vim'
 Plugin 'Keithbsmiley/swift.vim'
 Plugin 'leafgarland/typescript-vim'
 Plugin 'editorconfig/editorconfig-vim'
+Plugin 'hashivim/vim-terraform'
 
 Plugin 'smartword'
 Plugin 'thinca/vim-ref'
