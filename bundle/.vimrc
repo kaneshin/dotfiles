@@ -340,7 +340,11 @@ Plugin 'cakebaker/scss-syntax.vim'
 Plugin 'Keithbsmiley/swift.vim'
 Plugin 'leafgarland/typescript-vim'
 Plugin 'editorconfig/editorconfig-vim'
+<<<<<<< HEAD
 Plugin 'hashivim/vim-terraform'
+=======
+Plugin 'posva/vim-vue'
+>>>>>>> Update
 
 Plugin 'smartword'
 Plugin 'thinca/vim-ref'
