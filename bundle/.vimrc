@@ -291,7 +291,7 @@ set rtp+=$VIMHOME/bundle/Vundle.vim
 call vundle#begin('$VIMHOME/bundle')
 
 " vundle is managed by itself
-Plugin 'gmarik/Vundle.vim'
+Plugin 'VundleVim/Vundle.vim'
 
 " ctrlp {{{
 Plugin 'ctrlpvim/ctrlp.vim'
