@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 13-Dec-2016.
+# Last Change: 05-Nov-2019.
 
 # use key map like emacs
 bindkey -e
@@ -134,10 +134,3 @@ SPROMPT="zsh: Did you mean: %{[4m[31m%}%r%{[14m[0m%} [nyae]? "
 
 # vim:set ts=8 sts=2 sw=2 tw=0:
 # vim:set ft=sh:
-
-# rbenv
-eval "$(rbenv init -)"
-
-# fastlane locales
-export LC_ALL=en_US.UTF-8
-export LANG=en_US.UTF-8
