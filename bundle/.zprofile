@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 06-Sep-2018.
+# Last Change: 04-Aug-2019.
 
 # FXXK OS X
 # system-wide environment settings for zsh(1)
@@ -12,6 +12,7 @@ fi
 export LOCALROOT="$HOME/local"
 export LOCALSRC="$LOCALROOT/src"
 export LOCALBIN="$LOCALROOT/bin"
+export LOCALSDK="$LOCALROOT/sdk"
 
 if which brew > /dev/null 2>&1; then
   # setup for OS X
@@ -103,6 +104,12 @@ fi
 which ghq > /dev/null 2>&1 && export GHQ_ROOT=$LOCALSRC
 
 # setup gcloud
+if [ -d "$LOCALSDK/google-cloud-sdk" ]; then
+  export CLOUDSDK_ROOT="$LOCALSDK/google-cloud-sdk"
+  if [[ ":${PATH}:" != *:"${CLOUDSDK_ROOT}/bin":* ]]; then
+    export PATH="$CLOUDSDK_ROOT/bin:$PATH"
+  fi
+fi
 if which gcloud > /dev/null 2>&1; then
   local gcloud=$(which gcloud)
   # verify symlink

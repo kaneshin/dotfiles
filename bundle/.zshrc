@@ -134,3 +134,10 @@ SPROMPT="zsh: Did you mean: %{[4m[31m%}%r%{[14m[0m%} [nyae]? "
 
 # vim:set ts=8 sts=2 sw=2 tw=0:
 # vim:set ft=sh:
+
+# rbenv
+eval "$(rbenv init -)"
+
+# fastlane locales
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
