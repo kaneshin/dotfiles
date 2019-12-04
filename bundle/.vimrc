@@ -3,11 +3,13 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 19-May-2019.
+" Last Change: 02-Dec-2019.
 
 syntax on
 filetype plugin on
 filetype indent on
+
+let g:go_version_warning = 0
 
 function! UtilIsDarwin()
   return has('mac')

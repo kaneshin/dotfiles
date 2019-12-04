@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 04-Aug-2019.
+# Last Change: 02-Dec-2019.
 
 # FXXK OS X
 # system-wide environment settings for zsh(1)
@@ -109,6 +109,10 @@ if [ -d "$LOCALSDK/google-cloud-sdk" ]; then
   if [[ ":${PATH}:" != *:"${CLOUDSDK_ROOT}/bin":* ]]; then
     export PATH="$CLOUDSDK_ROOT/bin:$PATH"
   fi
+  # The next line updates PATH for the Google Cloud SDK.
+  if [ -f "$CLOUDSDK_ROOT/path.zsh.inc" ]; then . "$CLOUDSDK_ROOT/path.zsh.inc"; fi
+  # The next line enables shell command completion for gcloud.
+  if [ -f "$CLOUDSDK_ROOT/completion.zsh.inc" ]; then . "$CLOUDSDK_ROOT/completion.zsh.inc"; fi
 fi
 if which gcloud > /dev/null 2>&1; then
   local gcloud=$(which gcloud)
