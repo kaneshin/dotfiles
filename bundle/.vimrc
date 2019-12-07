@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 02-Dec-2019.
+" Last Change: 07-Dec-2019.
 
 syntax on
 filetype plugin on
@@ -179,7 +179,7 @@ inoremap <c-d> <Del>
 cnoremap <c-e> <End>
 inoremap <c-e> <End>
 " forward one character
-cnoremap <c-f> <Right>
+" cnoremap <c-f> <Right>
 inoremap <c-f> <Right>
 " recall newer command-line
 cnoremap <c-n> <Down>
