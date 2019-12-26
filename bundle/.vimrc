@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 07-Dec-2019.
+" Last Change: 26-Dec-2019.
 
 syntax on
 filetype plugin on
@@ -306,32 +306,19 @@ Plugin 'kaneshin/ctrlp-filetype'
 Plugin 'kaneshin/ctrlp-sudden-death'
 " /=ctrlp }}}
 
-Plugin 'scrooloose/nerdtree'
-
 " essentials
 Plugin 'vim-scripts/autodate.vim'
 Plugin 'mattn/webapi-vim'
-
-" vim-surround
-Plugin 'tpope/vim-surround'
-Plugin 'tpope/vim-repeat'
 
 " statusline
 Plugin 'Lokaltog/vim-powerline'
 Plugin 'tpope/vim-fugitive'
 
-" misc
-Plugin 'mattn/gist-vim'
-Plugin 'mattn/emmet-vim'
-Plugin 'mattn/sonictemplate-vim'
-Plugin 'thinca/vim-quickrun'
-Plugin 'Lokaltog/vim-easymotion'
-Plugin 'scrooloose/nerdcommenter'
-Plugin 'airblade/vim-gitgutter'
-
-" source
-Plugin 'wesleyche/SrcExpl'
-" Plugin 'vim-scripts/taglist.vim'
+" go
+Plugin 'prabirshrestha/async.vim'
+Plugin 'prabirshrestha/vim-lsp'
+Plugin 'mattn/vim-lsp-settings'
+Plugin 'mattn/vim-goimports'
 
 " syntax
 Plugin 'vim-ruby/vim-ruby'
@@ -344,49 +331,31 @@ Plugin 'leafgarland/typescript-vim'
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'hashivim/vim-terraform'
 Plugin 'posva/vim-vue'
-
 Plugin 'smartword'
 Plugin 'thinca/vim-ref'
 Plugin 'tpope/vim-abolish'
-
 Plugin 'chase/vim-ansible-yaml'
 
-" Golang
-Plugin 'fatih/vim-go'
-Plugin 'AndrewRadev/splitjoin.vim'
-
-" Crystal
-Plugin 'rhysd/vim-crystal'
-
-Plugin 'tyru/open-browser.vim'
+" misc
+Plugin 'scrooloose/nerdtree'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'mattn/gist-vim'
+Plugin 'mattn/sonictemplate-vim'
+Plugin 'thinca/vim-quickrun'
+Plugin 'airblade/vim-gitgutter'
 Plugin 'altercation/solarized'
+Plugin 'kristijanhusak/vim-carbon-now-sh'
 
 " ...
 call vundle#end()
 filetype plugin indent on
 " /=vundle }}}
 
-" vim-go {{{
-let g:go_list_type = "quickfix"
-" let g:go_fmt_command = "goimports"
-let g:go_snippet_case_type = "camelcase"
-let g:go_highlight_types = 1
-let g:go_highlight_fields = 1
-let g:go_highlight_functions = 1
-let g:go_highlight_methods = 1
-let g:go_highlight_structs = 0
-let g:go_highlight_interfaces = 0
-let g:go_highlight_operators = 0
-let g:go_metalinter_enabled = ['vet', 'golint', 'errcheck']
-let g:go_bin_path = expand('$LOCALROOT/bin')
+" vim-lsp {{{
+let g:lsp_diagnostics_enabled = 0
+let g:lsp_signs_enabled = 1
+let g:lsp_diagnostics_echo_cursor = 1
 " }}}
-
-" https://github.com/Valloric/YouCompleteMe.
-" let g:UltiSnipsExpandTrigger="<tab>"
-" let g:UltiSnipsJumpForwardTrigger="<c-b>"
-" let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-" " If you want :UltiSnipsEdit to split your window.
-" let g:UltiSnipsEditSplit="vertical"
 
 " ctrlp {{{
 " Set this to 0 to show the match window at the top of the screen
@@ -458,10 +427,6 @@ let g:sonictemplate_vim_template_dir = [
       \]
 " /=sonictemplate }}}
 
-" vim-go {{{
-let g:go_fmt_autosave = 1
-" /=vim-go }}}
-
 " quickrun {{{
 " let g:loaded_quicklaunch = 1
 " 1. b:quickrun_config
@@ -486,10 +451,6 @@ let g:quickrun_config = {
 \}
 " /=quickrun }}}
 
-" easymotion {{{
-let g:EasyMotion_leader_key = '<Leader>'
-" /=easymotion }}}
-
 " powerline {{{
 if has('gui_running')
   let g:Powerline_symbols = 'fancy'
@@ -503,47 +464,37 @@ let g:NERDCreateDefaultMappings = 1
 let NERDSpaceDelims = 1
 " /=nerdcommenter }}}
 
-" taglist {{{
-let Tlist_Show_One_File = 0
-let Tlist_Use_Right_Window = 1
-let Tlist_Exit_OnlyWindow = 1
-" /=taglist }}}
-
-" SrcExpl {{{
-" // The switch of the Source Explorer
-nmap <F8> :SrcExplToggle<CR>
-" " // Set the height of Source Explorer window
-let g:SrcExpl_winHeight = 8
-" // Set 100 ms for refreshing the Source Explorer
-let g:SrcExpl_refreshTime = 100
-" // Set "Enter" key to jump into the exact definition context
-let g:SrcExpl_jumpKey = "<ENTER>"
-" // Set "Space" key for back from the definition context
-let g:SrcExpl_gobackKey = "<SPACE>"
-" // In order to Avoid conflicts, the Source Explorer should know what plugins
-" // are using buffers. And you need add their bufname into the list below
-" // according to the command ":buffers!"
-let g:SrcExpl_pluginList = [
-  \"__Tag_List__",
-  \"_NERD_tree_",
-  \"Source_Explorer"
-\]
-" // Enable/Disable the local definition searching, and note that this is not
-" // guaranteed to work, the Source Explorer doesn't check the syntax for now.
-" // It only searches for a match with the keyword according to command 'gd'
-let g:SrcExpl_searchLocalDef = 1
-" // Do not let the Source Explorer update the tags file when opening
-let g:SrcExpl_isUpdateTags = 0
-" // Use 'Exuberant Ctags' with '--sort=foldcase -R .' or '-L cscope.files' to
-" //  create/update a tags file
-let g:SrcExpl_updateTagsCmd = "ctags --sort=foldcase -R ."
-" // Set "<F12>" key for updating the tags file artificially
-let g:SrcExpl_updateTagsKey = "<F12>"
-" /=SrcExpl }}}
-
 " set colorscheme
 silent! colorscheme concise
+
+" CarbonNowSh {{{
+let g:carbon_now_sh_options = {
+  \ 'ln': 'false',
+  \ 'fm': 'Source Code Pro'
+\}
+vnoremap <silent> <c-i> :CarbonNowSh<CR>
+" /=CarbonNowSh }}}
 
 " load local configuration
 call UtilSourceFile($HOME . "/.vimrc.local")
 
+" open buffer
+function s:OpenBuf(target, name)
+  execute a:target.' '.a:name
+  setlocal noswapfile buflisted buftype=nofile bufhidden=hide
+endfunction
+
+function s:GoDoc(target, args)
+  let arg = join(split(a:args), '.')
+  call s:OpenBuf(a:target, arg)
+  silent! let res = system('go doc -cmd -all '.arg.' 2>/dev/null')
+  call append(line('^'), split(res, '\n'))
+  silent! $d
+  execute 'normal! 1G'
+  setlocal ft=godoc
+  setlocal nomodifiable nomodified
+  setlocal nonumber nobinary nolist
+endfunction
+
+command -bar -bang -nargs=1 GoDoc
+      \ call s:GoDoc('<bang>' == '' ? 'split' : 'tabnew', <f-args>)
