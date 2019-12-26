@@ -337,8 +337,6 @@ Plugin 'tpope/vim-abolish'
 Plugin 'chase/vim-ansible-yaml'
 
 " misc
-Plugin 'scrooloose/nerdtree'
-Plugin 'scrooloose/nerdcommenter'
 Plugin 'mattn/gist-vim'
 Plugin 'mattn/sonictemplate-vim'
 Plugin 'thinca/vim-quickrun'
@@ -399,17 +397,12 @@ let g:ctrlp_filetype = {
       \   'java',
       \],
       \}
-nnoremap <c-e>g :<c-u>CtrlPGist<cr>
+nnoremap <c-e>g :<c-u>CtrlPGoDoc<cr>
 nnoremap <c-e>l :<c-u>CtrlPLauncher<cr>
 nnoremap <c-e>t :<c-u>CtrlPSonictemplate<cr>
 inoremap <c-e>t <esc>:<c-u>CtrlPSonictemplate<cr>
 nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
 " /=ctrlp }}}
-
-" nerdtree {{{
-nnoremap <silent><C-e> :NERDTreeToggle<CR>
-" /=nerdtree }}}
-
 
 " gist-vim {{{
 let g:gist_show_privates = 1
@@ -459,11 +452,6 @@ else
 endif
 " /=powerline }}}
 
-" nerdcommenter {{{
-let g:NERDCreateDefaultMappings = 1
-let NERDSpaceDelims = 1
-" /=nerdcommenter }}}
-
 " set colorscheme
 silent! colorscheme concise
 
@@ -478,23 +466,36 @@ vnoremap <silent> <c-i> :CarbonNowSh<CR>
 " load local configuration
 call UtilSourceFile($HOME . "/.vimrc.local")
 
+""" ============
+""" Experimental
+""" ============
+
 " open buffer
-function s:OpenBuf(target, name)
+function s:OpenBuf(target, name, body)
   execute a:target.' '.a:name
   setlocal noswapfile buflisted buftype=nofile bufhidden=hide
-endfunction
-
-function s:GoDoc(target, args)
-  let arg = join(split(a:args), '.')
-  call s:OpenBuf(a:target, arg)
-  silent! let res = system('go doc -cmd -all '.arg.' 2>/dev/null')
-  call append(line('^'), split(res, '\n'))
+  setlocal nonumber nobinary nolist
+  cal append(line('^'), split(a:body, '\n'))
   silent! $d
   execute 'normal! 1G'
-  setlocal ft=godoc
-  setlocal nomodifiable nomodified
-  setlocal nonumber nobinary nolist
 endfunction
 
-command -bar -bang -nargs=1 GoDoc
-      \ call s:GoDoc('<bang>' == '' ? 'split' : 'tabnew', <f-args>)
+" Plugin for godoc
+function s:GoDoc(target, args)
+  let arg = join(split(a:args), '.')
+  silent! let res = system('go doc -cmd -all '.arg.' 2>/dev/null')
+  if v:shell_error != 0
+    let err = systemlist('go doc '.arg.' 1>/dev/null')
+    redraw | echohl ErrorMsg | echoerr err
+    return
+  endif
+  call s:OpenBuf(a:target, arg, res)
+  setlocal ft=godoc
+  setlocal nomodifiable nomodified
+  nnoremap <buffer> <silent> q :q<cr>
+endfunction
+command -bar -bang -nargs=1 GoDoc cal s:GoDoc('<bang>' == '' ? 'split!' : 'tabnew', <f-args>)
+
+" CtrlPGoDoc
+" depending the s:GoDoc above
+command! CtrlPGoDoc cal ctrlp#init(ctrlp#godoc#id())
