@@ -259,28 +259,16 @@ augroup MyVimOptions
   autocmd!
   " change directory if you open a file.
   " autocmd BufEnter * execute ':lcd '.expand('%:p:h')
-  autocmd QuickfixCmdPost vimgrep cw
-augroup END
 
-" run :GoBuild or :GoTestCompile based on the go file
-function! s:build_go_files()
-  let l:file = expand('%')
-  if l:file =~# '^\f\+_test\.go$'
-    call go#cmd#Test(0, 1)
-  elseif l:file =~# '^\f\+\.go$'
-    call go#cmd#Build(0)
-  endif
-endfunction
+  autocmd QuickfixCmdPost vimgrep cw
+
+  " In the quickfix window, <CR> is used to jump to the error under the
+  " cursor, so undefine the mapping there.
+  autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
+augroup END
 
 augroup MyGolang
   autocmd!
-  autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
-  autocmd FileType go nmap <leader>r  <Plug>(go-run)
-  autocmd FileType go nmap <leader>t  <Plug>(go-test)
-  autocmd FileType go nmap <silent><leader>l  :GoLint<CR>
-  autocmd FileType go nmap <silent><leader>f  :GoImports<CR>
-  autocmd FileType go nmap <c-e>e :<c-u>GoDecls<cr>
-  autocmd FileType go nmap <c-e>d :<c-u>GoDeclsDir<cr>
   autocmd FileType go :highlight goErr cterm=bold ctermfg=214
   autocmd FileType go :match goErr /\<err\>/
 augroup END
