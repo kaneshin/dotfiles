@@ -1,4 +1,0 @@
----
-language: c
-script:
-  - $TRAVIS_BUILD_DIR/bin/dotfiles install $TRAVIS_BUILD_DIR/bundle
