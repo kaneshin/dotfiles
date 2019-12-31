@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 02-Dec-2019.
+# Last Change: 01-Jan-2020.
 
 # FXXK OS X
 # system-wide environment settings for zsh(1)
@@ -13,6 +13,10 @@ export LOCALROOT="$HOME/local"
 export LOCALSRC="$LOCALROOT/src"
 export LOCALBIN="$LOCALROOT/bin"
 export LOCALSDK="$LOCALROOT/sdk"
+
+SYSTEM_NAME=$(uname -s | tr '[:upper:]' '[:lower:]')
+HARDWARE_NAME=$(uname -m | tr '[:upper:]' '[:lower:]')
+
 
 if which brew > /dev/null 2>&1; then
   # setup for OS X
@@ -34,6 +38,18 @@ if [ -d "$LOCALSRC/github.com/kaneshin/dotfiles" ]; then
   export DOTFILES_ROOT="$LOCALSRC/github.com/kaneshin/dotfiles"
   if [[ ":${PATH}:" != *:"${DOTFILES_ROOT}/bin":* ]]; then
     export PATH="$DOTFILES_ROOT/bin:$PATH"
+  fi
+fi
+
+# setup vim
+if [ -d "$HOME/.vim" ]; then
+  export VIM_ROOT="$HOME/.vim"
+  if [ ! -f "$VIM_ROOT/autoload/plug.vim" ]; then
+    if which curl > /dev/null 2>&1; then
+      echo "Installing plug.vim in $VIM_ROOT/autoload"
+      curl -sfLo "$VIM_ROOT/autoload/plug.vim" --create-dirs \
+        'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+    fi
   fi
 fi
 
@@ -82,7 +98,7 @@ if [ -d "$HOME/.nodenv" ]; then
   fi
 fi
 
-# setup golang
+# setup go-lang
 export GOPATH="$LOCALROOT"
 export GOBIN="$LOCALBIN"
 if [[ ":${PATH}:" != *:"${GOBIN}":* ]]; then
@@ -91,19 +107,21 @@ fi
 export GO15VENDOREXPERIMENT=1
 export GO111MODULE=on
 
-# setup crenv
-if [ -d "$HOME/.crenv" ]; then
-  export CRENV_ROOT="$HOME/.crenv"
-  if [[ ":${PATH}:" != *:"${CRENV_ROOT}/bin":* ]]; then
-    export PATH="$CRENV_ROOT/bin:$PATH"
-    which crenv > /dev/null 2>&1 && eval "$(crenv init -)"
-  fi
-fi
-
 # setup ghq
 which ghq > /dev/null 2>&1 && export GHQ_ROOT=$LOCALSRC
 
 # setup gcloud
+if [ ! -d "$LOCALSDK/google-cloud-sdk" ]; then
+    if which curl > /dev/null 2>&1; then
+      local version='274.0.1'
+      local archive="$TMPDIR/cloud-sdk.tar.gz"
+      echo "Installing Cloud SDK version [$version] in $LOCALSDK"
+      curl -sfL \
+        "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-$version-$SYSTEM_NAME-$HARDWARE_NAME.tar.gz" \
+        | tar zxf - -C $LOCALSDK
+      echo "To finish the installation of your SDK version [$version], run:\n$ $LOCALSDK/google-cloud-sdk/install.sh"
+    fi
+fi
 if [ -d "$LOCALSDK/google-cloud-sdk" ]; then
   export CLOUDSDK_ROOT="$LOCALSDK/google-cloud-sdk"
   if [[ ":${PATH}:" != *:"${CLOUDSDK_ROOT}/bin":* ]]; then
