@@ -236,6 +236,8 @@ Plug 'kristijanhusak/vim-carbon-now-sh'
 Plug 'mattn/sonictemplate-vim'
 Plug 'thinca/vim-quickrun'
 Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'mattn/vim-lsp-settings'
 "" go
@@ -394,9 +396,26 @@ function s:OpenReadOnlyBuffer(type, name, body)
 endfunction
 
 " Plugin for go-lang
+function s:GoInstallBinaries()
+  echo 'go get golang.org/x/tools/gopls'
+  silent! let res = system('go get golang.org/x/tools/gopls')
+  if v:shell_error != 0
+    echohl ErrorMsg | echomsg res | echohl None
+  endif
+
+  echo 'go get golang.org/x/tools/cmd/goimports'
+  silent! let res = system('go get golang.org/x/tools/cmd/goimports')
+  if v:shell_error != 0
+    echohl ErrorMsg | echomsg res | echohl None
+  endif
+endfunction
+command GoInstallBinaries cal s:GoInstallBinaries()
+
 function s:GoList()
   return systemlist('{ cd $(go env GOROOT)/src && find . -type d } | sed -e "s#^\./##" | grep -v "^\(\.\|vendor\)"')
 endfunction
+command GoList cal s:GoList()
+
 function s:GoDoc(bang, args)
   let arg = join(split(a:args), '.')
   silent! let res = system('go doc -cmd -all '.arg.' 2>/dev/null')
