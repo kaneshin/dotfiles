@@ -3,36 +3,16 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 26-Dec-2019.
+" Last Change: 01-Jan-2020.
 
 syntax on
 filetype plugin on
 filetype indent on
 
-let g:go_version_warning = 0
-
-function! UtilIsDarwin()
-  return has('mac')
-endfunction
-
-function! UtilIsUnix()
-  return has('unix') && !UtilIsDarwin() && !UtilIsWindows()
-endfunction
-
-function! UtilIsWindows()
-  return has('win32') || has('win64')
-endfunction
-
-function! UtilSourceFile(filepath)
-  if filereadable(expand(a:filepath))
-    execute "silent! source " . a:filepath
-  endif
-endfunction
-
 " set $VIMHOME
 if !exists('$VIMHOME')
   let s:filepath = $HOME . '/.vim'
-  if UtilIsWindows()
+  if has('win32') || has('win64')
     let s:filepath = $HOME . '/vimfiles'
   endif
   let $VIMHOME = expand(s:filepath)
@@ -220,22 +200,6 @@ vnoremap f <esc>
 vnoremap <silent> > >gv
 vnoremap <silent> < <gv
 
-" brackets and else
-" inoremap () ()<Left>
-" cnoremap () ()<Left>
-" inoremap {} {}<Left>
-" cnoremap {} {}<Left>
-" inoremap [] []<Left>
-" cnoremap [] []<Left>
-" inoremap "" ""<Left>
-" cnoremap "" ""<Left>
-" inoremap '' ''<Left>
-" cnoremap '' ''<Left>
-" inoremap <> <><Left>
-" cnoremap <> <><Left>
-
-" inoremap {<cr> {<cr><cr>}<up>
-
 " modify typo
 inoremap {] {}<Left>
 cnoremap {] {}<Left>
@@ -248,102 +212,116 @@ nnoremap <silent> <c-n> :cnext<cr>
 nnoremap <silent> <c-m> :cprevious<cr>
 nnoremap <leader>a :cclose<cr>
 
-command! -nargs=1 -complete=filetype Tmp edit $VIMHOME/backup/tmp.<args>
-command! -nargs=1 -complete=filetype Temp edit $VIMHOME/backup/tmp.<args>
-
-" Leader
-" autocmd BufEnter * execute ':lcd '.expand('%:p:h')
-" nnoremap <silent> <leader>t :execute 'lcd '.expand('%:p:h')<cr>:!go test<cr>
-
-augroup MyVimOptions
+augroup QuickFixOptions
   autocmd!
-  " change directory if you open a file.
-  " autocmd BufEnter * execute ':lcd '.expand('%:p:h')
-
   autocmd QuickfixCmdPost vimgrep cw
-
-  " In the quickfix window, <CR> is used to jump to the error under the
-  " cursor, so undefine the mapping there.
   autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
-augroup END
-
-augroup MyGolang
-  autocmd!
-  autocmd FileType go :highlight goErr cterm=bold ctermfg=214
-  autocmd FileType go :match goErr /\<err\>/
 augroup END
 
 source $VIMRUNTIME/macros/matchit.vim
 
-" vundle {{{
-filetype off
-set rtp+=$VIMHOME/bundle/Vundle.vim
-call vundle#begin('$VIMHOME/bundle')
-
-" vundle is managed by itself
-Plugin 'VundleVim/Vundle.vim'
-
-" ctrlp {{{
-Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'mattn/ctrlp-gist'
-Plugin 'mattn/ctrlp-mark'
-Plugin 'mattn/ctrlp-launcher'
-Plugin 'mattn/ctrlp-register'
-Plugin 'kaneshin/ctrlp-sonictemplate'
-Plugin 'kaneshin/ctrlp-filetype'
-Plugin 'kaneshin/ctrlp-sudden-death'
-" /=ctrlp }}}
+" vim-plug {{{
+call plug#begin('~/.vim/plugged')
 
 " essentials
-Plugin 'vim-scripts/autodate.vim'
-Plugin 'mattn/webapi-vim'
+Plug 'vim-scripts/autodate.vim'
+Plug 'mattn/webapi-vim'
 
-" statusline
-Plugin 'Lokaltog/vim-powerline'
-Plugin 'tpope/vim-fugitive'
+" tools
+Plug 'vim-airline/vim-airline'
+Plug 'mattn/gist-vim'
+Plug 'kristijanhusak/vim-carbon-now-sh'
 
-" go
-Plugin 'prabirshrestha/async.vim'
-Plugin 'prabirshrestha/vim-lsp'
-Plugin 'mattn/vim-lsp-settings'
-Plugin 'mattn/vim-goimports'
+" devel
+Plug 'mattn/sonictemplate-vim'
+Plug 'thinca/vim-quickrun'
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'mattn/vim-lsp-settings'
+"" go
+Plug 'mattn/vim-goimports'
+"" syntax
+Plug 'tpope/vim-markdown'
+Plug 'hashivim/vim-terraform'
+Plug 'chase/vim-ansible-yaml'
+Plug 'leafgarland/typescript-vim'
+Plug 'cakebaker/scss-syntax.vim'
+Plug 'posva/vim-vue'
 
-" syntax
-Plugin 'vim-ruby/vim-ruby'
-Plugin 'JavaScript-syntax'
-Plugin 'tpope/vim-markdown'
-Plugin 'b4winckler/vim-objc'
-Plugin 'cakebaker/scss-syntax.vim'
-Plugin 'Keithbsmiley/swift.vim'
-Plugin 'leafgarland/typescript-vim'
-Plugin 'editorconfig/editorconfig-vim'
-Plugin 'hashivim/vim-terraform'
-Plugin 'posva/vim-vue'
-Plugin 'smartword'
-Plugin 'thinca/vim-ref'
-Plugin 'tpope/vim-abolish'
-Plugin 'chase/vim-ansible-yaml'
+" finder
+Plug 'ctrlpvim/ctrlp.vim'
+"" ctrlp plugins
+Plug 'mattn/ctrlp-register'
+Plug 'kaneshin/ctrlp-sonictemplate'
+Plug 'kaneshin/ctrlp-filetype'
 
-" misc
-Plugin 'mattn/gist-vim'
-Plugin 'mattn/sonictemplate-vim'
-Plugin 'thinca/vim-quickrun'
-Plugin 'airblade/vim-gitgutter'
-Plugin 'altercation/solarized'
-Plugin 'kristijanhusak/vim-carbon-now-sh'
+call plug#end()
+" }}}
 
-" ...
-call vundle#end()
-filetype plugin indent on
-" /=vundle }}}
+"""Plug 'mattn/gist-vim'
+let g:gist_token_file = expand('$HOME/.config/github/.gist-vim')
+let g:gist_detect_filetype = 1
+let g:gist_show_privates = 1
+let g:gist_post_private = 1
+if has('mac')
+  let g:gist_clip_command = 'pbcopy'
+elseif has('unix')
+  let g:gist_clip_command = 'xclip -selection clipboard'
+endif
 
-" vim-lsp {{{
+"""Plug 'kristijanhusak/vim-carbon-now-sh'
+let g:carbon_now_sh_options = {
+  \ 'ln': 'false',
+  \ 'fm': 'Source Code Pro'
+\}
+vnoremap <silent> <c-i> :CarbonNowSh<CR>
+
+"""Plug 'mattn/sonictemplate-vim'
+let g:sonictemplate_vim_template_dir = [
+      \expand('$VIMHOME/template'),
+      \expand('$HOME/.vim/template'),
+      \]
+
+"""Plug 'thinca/vim-quickrun'
+let g:quickrun_config = {
+      \ '_': {
+      \   'outputter' : 'buffer',
+      \   'outputter/buffer/split': '6'
+      \ },
+      \}
+
+"""Plug 'prabirshrestha/vim-lsp'
+if executable('gopls')
+  augroup LspGo
+    au!
+    autocmd User lsp_setup call lsp#register_server({
+          \ 'name': 'go-lang',
+          \ 'cmd': {server_info->['gopls']},
+          \ 'whitelist': ['go'],
+          \ 'workspace_config': {'gopls': {
+          \     'staticcheck': v:true,
+          \     'completeUnimported': v:true,
+          \     'caseSensitiveCompletion': v:true,
+          \     'usePlaceholders': v:true,
+          \     'completionDocumentation': v:true,
+          \     'watchFileChanges': v:true,
+          \     'hoverKind': 'SingleLine',
+          \   }},
+          \ })
+    autocmd FileType go setlocal omnifunc=lsp#complete
+    autocmd FileType go nmap <buffer> gd <plug>(lsp-definition)
+    autocmd FileType go nmap <buffer> ,n <plug>(lsp-next-error)
+    autocmd FileType go nmap <buffer> ,p <plug>(lsp-previous-error)
+  augroup END
+endif
 let g:lsp_diagnostics_enabled = 0
 let g:lsp_signs_enabled = 1
 let g:lsp_diagnostics_echo_cursor = 1
-" }}}
 
-" ctrlp {{{
+"""Plug 'mattn/vim-lsp-settings'
+"""Plug 'mattn/vim-goimports'
+
+"""Plug 'ctrlpvim/ctrlp.vim'
 " Set this to 0 to show the match window at the top of the screen
 let g:ctrlp_match_window_bottom = 1
 " Change the listing order of the files in the match window
@@ -359,7 +337,7 @@ let g:ctrlp_max_depth = 40
 let g:ctrlp_use_migemo = 0
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip
 let g:ctrlp_custom_ignore = {
-  \ 'dir':  '\v[\/](node_modules|target|dist)|(\.(swp|ico|git|svn))$',
+  \ 'dir':  '\v[\/](node_modules|target|dist)|(\.(swp|ico|git|hg|svn|github))$',
   \ 'file': '\v\.(exe|so|dll)$',
   \ 'link': '',
   \ }
@@ -368,91 +346,29 @@ if finddir('.cache/ctrlp', $VIMHOME) == ''
 endif
 let g:ctrlp_cache_dir = $VIMHOME.'/.cache/ctrlp'
 let g:ctrlp_extensions = [
+      \'tag',
+      \'quickfix',
+      \'dir',
+      \'undo',
+      \'line',
+      \'changes',
+      \'mixed'
       \]
-let g:ctrlp_filetype = {
-      \'user': [
-      \   'go',
-      \   'c',
-      \   'objc',
-      \   'javascript',
-      \   'ruby',
-      \   'perl',
-      \   'html',
-      \   'css',
-      \   'sh',
-      \   'vim',
-      \   'cpp',
-      \   'java',
-      \],
-      \}
 nnoremap <c-e>g :<c-u>CtrlPGoDoc<cr>
-nnoremap <c-e>l :<c-u>CtrlPLauncher<cr>
 nnoremap <c-e>t :<c-u>CtrlPSonictemplate<cr>
 inoremap <c-e>t <esc>:<c-u>CtrlPSonictemplate<cr>
 nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
 " /=ctrlp }}}
 
-" gist-vim {{{
-let g:gist_show_privates = 1
-if UtilIsDarwin()
-  let g:gist_clip_command = 'pbcopy'
-elseif UtilIsUnix()
-  let g:gist_clip_command = 'xclip -selection clipboard'
-endif
-" /=gist-vim }}}
-
-" sonictemplate {{{
-let g:sonictemplate_vim_template_dir = [
-      \expand('$VIMHOME/template'),
-      \expand('$HOME/.vim/template'),
-      \]
-" /=sonictemplate }}}
-
-" quickrun {{{
-" let g:loaded_quicklaunch = 1
-" 1. b:quickrun_config
-" 2. 'filetype'
-" 3. g:quickrun_config._type_
-" 4. g:quickrun#default_conig._type_
-" 5. g:quickrunconfig.
-" 6. g:quickrun#defaultonig.
-"   'outputter/buffer/split': 'rightbelow 10sp',
-let b:quickrun_config = {}
-let g:quickrun_config = {
-\ '_': {
-\   'outputter' : 'buffer',
-\   'runner': 'system',
-\ },
-\ 'ruby': {
-\   'command': 'ruby',
-\   'exec': ['%c %o %s %a'],
-\   'cmdopt': '',
-\   'tempfile': '%{tempname()}.rb',
-\ },
-\}
-" /=quickrun }}}
-
-" powerline {{{
-if has('gui_running')
-  let g:Powerline_symbols = 'fancy'
-else
-  let g:Powerline_symbols = 'compatible'
-endif
-" /=powerline }}}
-
 " set colorscheme
 silent! colorscheme concise
 
-" CarbonNowSh {{{
-let g:carbon_now_sh_options = {
-  \ 'ln': 'false',
-  \ 'fm': 'Source Code Pro'
-\}
-vnoremap <silent> <c-i> :CarbonNowSh<CR>
-" /=CarbonNowSh }}}
-
 " load local configuration
-call UtilSourceFile($HOME . "/.vimrc.local")
+let g:vimrc_local = $HOME."/.vimrc.local"
+if filereadable(expand(g:vimrc_local))
+  execute "silent! source ".g:vimrc_local
+endif
+
 
 """ ============
 """ Experimental
@@ -474,7 +390,7 @@ function s:GoDoc(target, args)
   silent! let res = system('go doc -cmd -all '.arg.' 2>/dev/null')
   if v:shell_error != 0
     let err = systemlist('go doc '.arg.' 1>/dev/null')
-    redraw | echohl ErrorMsg | echoerr err
+    echohl ErrorMsg | echomsg err | echohl None
     return
   endif
   call s:OpenBuf(a:target, arg, res)
@@ -482,8 +398,30 @@ function s:GoDoc(target, args)
   setlocal nomodifiable nomodified
   nnoremap <buffer> <silent> q :q<cr>
 endfunction
-command -bar -bang -nargs=1 GoDoc cal s:GoDoc('<bang>' == '' ? 'split!' : 'tabnew', <f-args>)
+command -nargs=1 -bang GoDoc cal s:GoDoc('<bang>' == '' ? 'split!' : 'tabnew', <f-args>)
+" function! s:CompleteArgs(arg_lead,cmdline,cursor_pos)
+"     return filter(copy(["-p", "-P", "-a", "-m", "-e", "-s", "-d", "+1", "-1", "-f", "-c", "-l", "-la", "-ls", "-b",
+"                 \ "--listall", "--liststar", "--list", "--multibuffer", "--private", "--public", "--anonymous", "--description", "--clipboard",
+"                 \ "--rawurl", "--delete", "--edit", "--star", "--unstar", "--fork", "--browser"
+"                 \ ]), 'stridx(v:val, a:arg_lead)==0')
+" endfunction
+" 
+" command! -nargs=? -range=% -bang -complete=customlist,s:CompleteArgs Gist :call gist#Gist(<count>, "<bang>", <line1>, <line2>, <f-args>)
 
 " CtrlPGoDoc
 " depending the s:GoDoc above
 command! CtrlPGoDoc cal ctrlp#init(ctrlp#godoc#id())
+
+augroup GoOptions
+  autocmd!
+  autocmd FileType go :highlight goErr cterm=bold ctermfg=214
+  autocmd FileType go :match goErr /\<err\>/
+augroup END
+
+
+" Temp
+command! -nargs=1 -complete=filetype Tmp edit $VIMHOME/backup/tmp.<args>
+command! -nargs=1 -complete=filetype Temp edit $VIMHOME/backup/tmp.<args>
+
+"Gist-vim
+"

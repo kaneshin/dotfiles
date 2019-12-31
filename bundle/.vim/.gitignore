@@ -1,4 +1,6 @@
 .cache/
+autoload/plug.vim
+plugged/
 backup/
 bundle/
 undo/
