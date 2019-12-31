@@ -3,9 +3,9 @@
 "
 " Vim color file
 "
-" File:         cosine.vim
+" File:         concise.vim
 " Maintainer:   Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change:  09-Nov-2012.
+" Last Change:  01-Jan-2020.
 " Note:
 " This theme is based on the molokai theme by Tomas Restrepo
 
@@ -17,7 +17,7 @@ if exists("syntax_on")
   syntax reset
 endif
 
-let g:colors_name="cosine"
+let g:colors_name="concise"
 
 hi Boolean        guifg=#AE81FF
 hi Character      guifg=#E6DB74
