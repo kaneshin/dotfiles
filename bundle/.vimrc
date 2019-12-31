@@ -136,10 +136,10 @@ set imsearch=0
 
 " edit and read .vimrc.init
 if filereadable(expand('$HOME/.vimrc'))
-  command! EditVimrcInit :tabe   $HOME/.vimrc
-  command! ReadVimrcInit :source $HOME/.vimrc
-  nnoremap <silent> ,ev :EditVimrcInit<cr>
-  nnoremap <silent> ,rv :ReadVimrcInit<cr>
+  command! EditVimrc :tabe   $HOME/.vimrc
+  command! ReadVimrc :source $HOME/.vimrc
+  nnoremap <silent> ,ev :EditVimrc<cr>
+  nnoremap <silent> ,rv :ReadVimrc<cr>
 endif
 
 nnoremap ; :
@@ -354,7 +354,6 @@ let g:ctrlp_extensions = [
       \'changes',
       \'mixed'
       \]
-nnoremap <c-e>g :<c-u>CtrlPGoDoc<cr>
 nnoremap <c-e>t :<c-u>CtrlPSonictemplate<cr>
 inoremap <c-e>t <esc>:<c-u>CtrlPSonictemplate<cr>
 nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
@@ -375,17 +374,30 @@ endif
 """ ============
 
 " open buffer
-function s:OpenBuf(target, name, body)
+function s:OpenReadOnly(target, name, body)
   execute a:target.' '.a:name
-  setlocal noswapfile buflisted buftype=nofile bufhidden=hide
-  setlocal nonumber nobinary nolist
+  setlocal buflisted modifiable modified noreadonly
   cal append(line('^'), split(a:body, '\n'))
   silent! $d
+  setlocal noswapfile nobuflisted buftype=nofile bufhidden=unload
+  setlocal nomodifiable nomodified readonly
+  setlocal nonumber nobinary nolist
   execute 'normal! 1G'
 endfunction
 
-" Plugin for godoc
-function s:GoDoc(target, args)
+function s:OpenReadOnlyTab(type, name, body)
+  cal s:OpenReadOnly('tabnew!', a:name, a:body)
+endfunction
+
+function s:OpenReadOnlyBuffer(type, name, body)
+  cal s:OpenReadOnly(a:type =~# '^\(v\|vert\)' ? 'vsplit!' : 'split!', a:name, a:body)
+endfunction
+
+" Plugin for go-lang
+function s:GoList()
+  return systemlist('{ cd $(go env GOROOT)/src && find . -type d } | sed -e "s#^\./##" | grep -v "^\(\.\|vendor\)"')
+endfunction
+function s:GoDoc(bang, args)
   let arg = join(split(a:args), '.')
   silent! let res = system('go doc -cmd -all '.arg.' 2>/dev/null')
   if v:shell_error != 0
@@ -393,35 +405,27 @@ function s:GoDoc(target, args)
     echohl ErrorMsg | echomsg err | echohl None
     return
   endif
-  call s:OpenBuf(a:target, arg, res)
+  if a:bang == '!'
+    call s:OpenReadOnlyTab('' , arg, res)
+  else
+    call s:OpenReadOnlyBuffer('' , arg, res)
+  endif
   setlocal ft=godoc
-  setlocal nomodifiable nomodified
   nnoremap <buffer> <silent> q :q<cr>
 endfunction
-command -nargs=1 -bang GoDoc cal s:GoDoc('<bang>' == '' ? 'split!' : 'tabnew', <f-args>)
-" function! s:CompleteArgs(arg_lead,cmdline,cursor_pos)
-"     return filter(copy(["-p", "-P", "-a", "-m", "-e", "-s", "-d", "+1", "-1", "-f", "-c", "-l", "-la", "-ls", "-b",
-"                 \ "--listall", "--liststar", "--list", "--multibuffer", "--private", "--public", "--anonymous", "--description", "--clipboard",
-"                 \ "--rawurl", "--delete", "--edit", "--star", "--unstar", "--fork", "--browser"
-"                 \ ]), 'stridx(v:val, a:arg_lead)==0')
-" endfunction
-" 
-" command! -nargs=? -range=% -bang -complete=customlist,s:CompleteArgs Gist :call gist#Gist(<count>, "<bang>", <line1>, <line2>, <f-args>)
+function! s:CompleteGoDoc(arg_lead, cmdline, cursor_pos)
+    return filter(copy(s:GoList()), 'stridx(v:val, a:arg_lead)==0')
+endfunction
+command -nargs=1 -bang -complete=customlist,s:CompleteGoDoc GoDoc cal s:GoDoc('<bang>', <f-args>)
 
 " CtrlPGoDoc
 " depending the s:GoDoc above
 command! CtrlPGoDoc cal ctrlp#init(ctrlp#godoc#id())
+nnoremap <c-e>g :<c-u>CtrlPGoDoc<cr>
 
 augroup GoOptions
   autocmd!
   autocmd FileType go :highlight goErr cterm=bold ctermfg=214
-  autocmd FileType go :match goErr /\<err\>/
+  autocmd FileType go :match goErr /\<err[0-9]*\>/
 augroup END
 
-
-" Temp
-command! -nargs=1 -complete=filetype Tmp edit $VIMHOME/backup/tmp.<args>
-command! -nargs=1 -complete=filetype Temp edit $VIMHOME/backup/tmp.<args>
-
-"Gist-vim
-"

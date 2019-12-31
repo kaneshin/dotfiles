@@ -33,7 +33,7 @@ endfunction
 let s:list = []
 function! ctrlp#godoc#enter()
   if len(s:list) == 0
-    let s:list = systemlist('go list ...')
+    let s:list = systemlist('{ cd $(go env GOROOT)/src && find . -type d } | sed -e "s#^\./##" | grep -v "^\(\.\|vendor\)"')
   endif
 endfunction
 
