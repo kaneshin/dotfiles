@@ -226,6 +226,7 @@ call plug#begin('~/.vim/plugged')
 " essentials
 Plug 'vim-scripts/autodate.vim'
 Plug 'mattn/webapi-vim'
+Plug 'kana/vim-smartword'
 
 " tools
 Plug 'vim-airline/vim-airline'
@@ -316,9 +317,10 @@ if executable('gopls')
     autocmd FileType go nmap <buffer> ,p <plug>(lsp-previous-error)
   augroup END
 endif
-let g:lsp_diagnostics_enabled = 0
+let g:lsp_diagnostics_enabled = 1
 let g:lsp_signs_enabled = 1
 let g:lsp_diagnostics_echo_cursor = 1
+let g:lsp_text_edit_enabled = 0
 
 """Plug 'mattn/vim-lsp-settings'
 """Plug 'mattn/vim-goimports'
