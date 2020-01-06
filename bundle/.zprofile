@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 01-Jan-2020.
+# Last Change: 06-Jan-2020.
 
 # FXXK OS X
 # system-wide environment settings for zsh(1)
@@ -108,7 +108,23 @@ export GO15VENDOREXPERIMENT=1
 export GO111MODULE=on
 
 # setup ghq
-which ghq > /dev/null 2>&1 && export GHQ_ROOT=$LOCALSRC
+if which ghq > /dev/null 2>&1; then
+  export GHQ_ROOT=$LOCALSRC
+fi
+
+# setup tmux
+if which tmux > /dev/null 2>&1; then
+  if [ -n "$TMUX" ]; then
+    if which reattach-to-user-namespace > /dev/null 2>&1; then
+      if [ "$TMUX_REATTACHED" != 'on' ]; then
+        echo Running reattach-to-user-namespace to enable copy and paste on macOS
+        export TMUX_REATTACHED='on'
+        reattach-to-user-namespace -l $SHELL
+        echo Exited reattach-to-user-namespace
+      fi
+    fi
+  fi
+fi
 
 # setup gcloud
 if [ ! -d "$LOCALSDK/google-cloud-sdk" ]; then
