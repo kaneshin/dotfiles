@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 01-Jan-2020.
+" Last Change: 05-Jan-2020.
 
 syntax on
 filetype plugin on
@@ -244,6 +244,7 @@ Plug 'mattn/vim-lsp-settings'
 "" go
 Plug 'mattn/vim-goimports'
 "" syntax
+Plug 'stephpy/vim-yaml'
 Plug 'tpope/vim-markdown'
 Plug 'hashivim/vim-terraform'
 Plug 'chase/vim-ansible-yaml'
