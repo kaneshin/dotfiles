@@ -1,7 +1,6 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 06-Jan-2020.
+# Last Change: 31-Jan-2020.
 
-# FXXK OS X
 # system-wide environment settings for zsh(1)
 if [ -x /usr/libexec/path_helper ]; then
   PATH=""
@@ -17,9 +16,8 @@ export LOCALSDK="$LOCALROOT/sdk"
 SYSTEM_NAME=$(uname -s | tr '[:upper:]' '[:lower:]')
 HARDWARE_NAME=$(uname -m | tr '[:upper:]' '[:lower:]')
 
-
 if which brew > /dev/null 2>&1; then
-  # setup for OS X
+  # setup for macOS
   GNUBIN_PATH="`brew --prefix coreutils`/libexec/gnubin"
   if [ -d "$GNUBIN_PATH" ]; then
     export PATH="$GNUBIN_PATH:$PATH"

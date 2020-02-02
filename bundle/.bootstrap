@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if which go > /dev/null 2>&1; then
+  go get github.com/fatih/gomodifytags
+fi
+if which goenv > /dev/null 2>&1; then
+  goenv rehash
+fi
