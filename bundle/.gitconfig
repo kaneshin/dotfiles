@@ -54,6 +54,11 @@
 	cam = commit --amend
 	wip = commit -m 'wip'
 	wipom = !git commit -m 'wip' && git push origin master
+	# switch (sw)
+	sw  = switch
+	swm = switch master
+	swd = switch develop
+	swc = switch --create
 	# checkout (ch)
 	ch  = checkout
 	chb = checkout -b

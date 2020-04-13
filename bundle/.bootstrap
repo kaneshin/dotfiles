@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 if which go > /dev/null 2>&1; then
-  go get github.com/fatih/gomodifytags
+  go get -v -u github.com/fatih/gomodifytags
+  go get -v -u github.com/itchyny/mmv/cmd/mmv
 fi
 if which goenv > /dev/null 2>&1; then
   goenv rehash
