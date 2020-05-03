@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 31-Jan-2020.
+# Last Change: 03-May-2020.
 
 # system-wide environment settings for zsh(1)
 if [ -x /usr/libexec/path_helper ]; then
@@ -79,13 +79,13 @@ if [ -d "$HOME/.pyenv" ]; then
 fi
 
 # setup goenv
-if [ -d "$HOME/.goenv" ]; then
-  export GOENV_ROOT="$HOME/.goenv"
-  if [[ ":${PATH}:" != *:"${GOENV_ROOT}/bin":* ]]; then
-    export PATH="$GOENV_ROOT/bin:$PATH"
-    which goenv > /dev/null 2>&1 && eval "$(goenv init -)"
-  fi
-fi
+# if [ -d "$HOME/.goenv" ]; then
+#   export GOENV_ROOT="$HOME/.goenv"
+#   if [[ ":${PATH}:" != *:"${GOENV_ROOT}/bin":* ]]; then
+#     export PATH="$GOENV_ROOT/bin:$PATH"
+#     which goenv > /dev/null 2>&1 && eval "$(goenv init -)"
+#   fi
+# fi
 
 # setup nodenv
 if [ -d "$HOME/.nodenv" ]; then
