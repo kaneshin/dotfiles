@@ -1,9 +1,38 @@
 #!/usr/bin/env bash
 
+OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+case "$(uname -m)" in
+  'x86_64')
+    ARCH="amd64"
+    ;;
+  *)
+    ARCH="386"
+    ;;
+esac
+if [ -z "$TMPDIR" ]; then
+  TMPDIR=/tmp
+fi
+
+if [ -n "$GOVERSION" ]; then
+  GOSDK=go$GOVERSION.$OS-$ARCH
+  if [ -z "$GOROOT" ]; then
+    GOROOT=$HOME/go
+  fi
+  GOROOT_PATH=${GOROOT%/*}
+  GOROOT_DIRNAME=${GOROOT##*/}
+  if [ ! -d "$GOROOT" ]; then
+    echo Installing $GOSDK
+    curl -sS https://dl.google.com/go/$GOSDK.tar.gz > $TMPDIR/$GOSDK.tar.gz
+    tar -C $GOROOT_PATH -xzf $TMPDIR/$GOSDK.tar.gz
+    if [ ! $GOROOT_DIRNAME = "go" ]; then
+      mv $GOROOT_PATH/go $GOROOT
+    fi
+  else
+    echo go is installed in $GOROOT_PATH
+  fi
+fi
+
 if which go > /dev/null 2>&1; then
   go get -v -u github.com/fatih/gomodifytags
   go get -v -u github.com/itchyny/mmv/cmd/mmv
-fi
-if which goenv > /dev/null 2>&1; then
-  goenv rehash
 fi

@@ -102,6 +102,11 @@ export GOBIN="$LOCALBIN"
 if [[ ":${PATH}:" != *:"${GOBIN}":* ]]; then
   export PATH="$GOBIN:$PATH"
 fi
+export GOROOT="$HOME/go"
+export GOROOTBIN="$GOROOT/bin"
+if [[ ":${PATH}:" != *:"${GOROOTBIN}":* ]]; then
+  export PATH="$GOROOTBIN:$PATH"
+fi
 export GO15VENDOREXPERIMENT=1
 export GO111MODULE=on
 

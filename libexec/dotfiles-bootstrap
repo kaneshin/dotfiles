@@ -73,9 +73,9 @@ jobs_await() {
       name=$(basename $i)
       org=$(cd $(dirname $i);pwd)/$name
       if [ -n $DEBUG ]; then
-        bash -x $org
-      else
         bash $org
+      else
+        bash -x $org
       fi
     done
   done
