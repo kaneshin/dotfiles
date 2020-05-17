@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 05-Jan-2020.
+" Last Change: 17-May-2020.
 
 syntax on
 filetype plugin on
@@ -241,6 +241,7 @@ Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'mattn/vim-lsp-settings'
+Plug 'mattn/emmet-vim'
 "" go
 Plug 'mattn/vim-goimports'
 "" syntax
