@@ -36,3 +36,8 @@ if which go > /dev/null 2>&1; then
   go get -v -u github.com/fatih/gomodifytags
   go get -v -u github.com/itchyny/mmv/cmd/mmv
 fi
+
+if which brew > /dev/null 2>&1; then
+  echo Installing https://github.com/tj/n
+  brew install n # install https://github.com/tj/n
+fi

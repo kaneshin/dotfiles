@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 03-May-2020.
+# Last Change: 17-May-2020.
 
 # system-wide environment settings for zsh(1)
 if [ -x /usr/libexec/path_helper ]; then
@@ -88,13 +88,13 @@ fi
 # fi
 
 # setup nodenv
-if [ -d "$HOME/.nodenv" ]; then
-  export NODENV_ROOT="$HOME/.nodenv"
-  if [[ ":${PATH}:" != *:"${NODENV_ROOT}/bin":* ]]; then
-    export PATH="$NODENV_ROOT/bin:$PATH"
-    which nodenv > /dev/null 2>&1 && eval "$(nodenv init -)"
-  fi
-fi
+# if [ -d "$HOME/.nodenv" ]; then
+#   export NODENV_ROOT="$HOME/.nodenv"
+#   if [[ ":${PATH}:" != *:"${NODENV_ROOT}/bin":* ]]; then
+#     export PATH="$NODENV_ROOT/bin:$PATH"
+#     which nodenv > /dev/null 2>&1 && eval "$(nodenv init -)"
+#   fi
+# fi
 
 # setup go-lang
 export GOPATH="$LOCALROOT"
