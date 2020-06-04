@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 09-Feb-2017.
+# Last Change: 04-Jun-2020.
 
 # size of history
 function share_history {

@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 17-May-2020.
+" Last Change: 01-Jun-2020.
 
 syntax on
 filetype plugin on
@@ -252,6 +252,8 @@ Plug 'chase/vim-ansible-yaml'
 Plug 'leafgarland/typescript-vim'
 Plug 'cakebaker/scss-syntax.vim'
 Plug 'posva/vim-vue'
+Plug 'digitaltoad/vim-pug'
+Plug 'mxw/vim-jsx'
 
 " finder
 Plug 'ctrlpvim/ctrlp.vim'
