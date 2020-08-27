@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 01-Jun-2020.
+" Last Change: 27-Jun-2020.
 
 syntax on
 filetype plugin on
@@ -250,6 +250,7 @@ Plug 'tpope/vim-markdown'
 Plug 'hashivim/vim-terraform'
 Plug 'chase/vim-ansible-yaml'
 Plug 'leafgarland/typescript-vim'
+Plug 'peitalin/vim-jsx-typescript'
 Plug 'cakebaker/scss-syntax.vim'
 Plug 'posva/vim-vue'
 Plug 'digitaltoad/vim-pug'

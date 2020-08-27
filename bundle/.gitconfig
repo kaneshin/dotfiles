@@ -53,17 +53,12 @@
 	cm  = commit -m
 	cam = commit --amend
 	wip = commit -m 'wip'
-	wipom = !git commit -m 'wip' && git push origin master
 	# switch (sw)
 	sw  = switch
-	swm = switch master
-	swd = switch develop
 	swc = switch --create
 	# checkout (ch)
 	ch  = checkout
 	chb = checkout -b
-	chm = checkout master
-	chd = checkout develop
 	# branch (b, br)
 	b   = branch
 	br  = branch
@@ -76,13 +71,7 @@
 	# pull/fetch
 	drag = pull --rebase
 	ft   = fetch
-	# push
-	po  = push origin
-	pom = push origin master
-	pod = push origin develop
 	# rebase (rb)
-	rbm = rebase master
-	rbd = rebase develop
 	rbc = rebase --continue
 	rba = rebase --abort
 	# revert (rv)
@@ -114,7 +103,6 @@
 	diffr  = "!f() { git diff "$1"^.."$1"; }; f"
 	d  = diff
 	di  = diff
-	dm = diff master
 	dw = diff --color-words
 	d1 = diff HEAD~
 	d2 = diff HEAD~2
