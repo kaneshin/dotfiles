@@ -78,9 +78,7 @@
 	rv  = revert
 	rvh = revert HEAD
 	# reset (rs)
-	rs   = reset
-	rsh  = reset --hard
-	rss  = reset --soft
+	undo = reset HEAD~
 	rssh = reset --soft HEAD
 	rshh = reset --hard HEAD
 	# log (l)
