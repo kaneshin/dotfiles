@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 27-Jun-2020.
+" Last Change: 19-Oct-2020.
 
 syntax on
 filetype plugin on
@@ -242,8 +242,13 @@ Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'mattn/vim-lsp-settings'
 Plug 'mattn/emmet-vim'
+Plug 'ryanolsonx/vim-lsp-typescript'
 "" go
 Plug 'mattn/vim-goimports'
+
+" post install (yarn install | npm install) then load plugin only for editing supported files
+Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
+
 "" syntax
 Plug 'stephpy/vim-yaml'
 Plug 'tpope/vim-markdown'
@@ -322,6 +327,21 @@ if executable('gopls')
     autocmd FileType go nmap <buffer> ,p <plug>(lsp-previous-error)
   augroup END
 endif
+if executable('typescript-language-server')
+  augroup LspTS
+    au!
+    autocmd User lsp_setup call lsp#register_server({
+          \ 'name': 'typescript-language-server',
+          \ 'cmd': {server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
+          \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'tsconfig.json'))},
+          \ 'whitelist': ['typescript', 'typescript.tsx'],
+          \ })
+    " autocmd FileType js setlocal omnifunc=lsp#complete
+    " autocmd FileType jsx setlocal omnifunc=lsp#complete
+    " autocmd FileType ts setlocal omnifunc=lsp#complete
+    " autocmd FileType tsx setlocal omnifunc=lsp#complete
+  augroup END
+endif
 let g:lsp_diagnostics_enabled = 1
 let g:lsp_signs_enabled = 1
 let g:lsp_diagnostics_echo_cursor = 1
@@ -329,6 +349,10 @@ let g:lsp_text_edit_enabled = 0
 
 """Plug 'mattn/vim-lsp-settings'
 """Plug 'mattn/vim-goimports'
+
+"""Plug 'prettier/vim-prettier'
+let g:prettier#autoformat = 1
+let g:prettier#autoformat_require_pragma = 0
 
 """Plug 'ctrlpvim/ctrlp.vim'
 " Set this to 0 to show the match window at the top of the screen
