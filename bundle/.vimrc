@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 19-Oct-2020.
+" Last Change: 31-Oct-2020.
 
 syntax on
 filetype plugin on
@@ -223,7 +223,6 @@ source $VIMRUNTIME/macros/matchit.vim
 " vim-plug {{{
 call plug#begin('~/.vim/plugged')
 
-" essentials
 Plug 'vim-scripts/autodate.vim'
 Plug 'mattn/webapi-vim'
 Plug 'kana/vim-smartword'
@@ -243,10 +242,11 @@ Plug 'prabirshrestha/vim-lsp'
 Plug 'mattn/vim-lsp-settings'
 Plug 'mattn/emmet-vim'
 Plug 'ryanolsonx/vim-lsp-typescript'
+
 "" go
 Plug 'mattn/vim-goimports'
 
-" post install (yarn install | npm install) then load plugin only for editing supported files
+"" prettier
 Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 
 "" syntax
@@ -263,6 +263,7 @@ Plug 'mxw/vim-jsx'
 
 " finder
 Plug 'ctrlpvim/ctrlp.vim'
+
 "" ctrlp plugins
 Plug 'mattn/ctrlp-register'
 Plug 'kaneshin/ctrlp-sonictemplate'
@@ -271,7 +272,7 @@ Plug 'kaneshin/ctrlp-filetype'
 call plug#end()
 " }}}
 
-"""Plug 'mattn/gist-vim'
+""" Plug 'mattn/gist-vim'
 let g:gist_token_file = expand('$HOME/.config/github/.gist-vim')
 let g:gist_detect_filetype = 1
 let g:gist_show_privates = 1
@@ -282,20 +283,20 @@ elseif has('unix')
   let g:gist_clip_command = 'xclip -selection clipboard'
 endif
 
-"""Plug 'kristijanhusak/vim-carbon-now-sh'
+""" Plug 'kristijanhusak/vim-carbon-now-sh'
 let g:carbon_now_sh_options = {
   \ 'ln': 'false',
   \ 'fm': 'Source Code Pro'
 \}
 vnoremap <silent> <c-i> :CarbonNowSh<CR>
 
-"""Plug 'mattn/sonictemplate-vim'
+""" Plug 'mattn/sonictemplate-vim'
 let g:sonictemplate_vim_template_dir = [
       \expand('$VIMHOME/template'),
       \expand('$HOME/.vim/template'),
       \]
 
-"""Plug 'thinca/vim-quickrun'
+""" Plug 'thinca/vim-quickrun'
 let g:quickrun_config = {
       \ '_': {
       \   'outputter' : 'buffer',
@@ -303,7 +304,12 @@ let g:quickrun_config = {
       \ },
       \}
 
-"""Plug 'prabirshrestha/vim-lsp'
+""" Plug 'prabirshrestha/vim-lsp'
+let g:lsp_diagnostics_enabled = 1
+let g:lsp_signs_enabled = 1
+let g:lsp_diagnostics_echo_cursor = 1
+let g:lsp_text_edit_enabled = 0
+
 if executable('gopls')
   augroup LspGo
     au!
@@ -327,6 +333,7 @@ if executable('gopls')
     autocmd FileType go nmap <buffer> ,p <plug>(lsp-previous-error)
   augroup END
 endif
+
 if executable('typescript-language-server')
   augroup LspTS
     au!
@@ -342,19 +349,12 @@ if executable('typescript-language-server')
     " autocmd FileType tsx setlocal omnifunc=lsp#complete
   augroup END
 endif
-let g:lsp_diagnostics_enabled = 1
-let g:lsp_signs_enabled = 1
-let g:lsp_diagnostics_echo_cursor = 1
-let g:lsp_text_edit_enabled = 0
 
-"""Plug 'mattn/vim-lsp-settings'
-"""Plug 'mattn/vim-goimports'
-
-"""Plug 'prettier/vim-prettier'
+""" Plug 'prettier/vim-prettier'
 let g:prettier#autoformat = 1
 let g:prettier#autoformat_require_pragma = 0
 
-"""Plug 'ctrlpvim/ctrlp.vim'
+""" Plug 'ctrlpvim/ctrlp.vim'
 " Set this to 0 to show the match window at the top of the screen
 let g:ctrlp_match_window_bottom = 1
 " Change the listing order of the files in the match window
@@ -390,7 +390,6 @@ let g:ctrlp_extensions = [
 nnoremap <c-e>t :<c-u>CtrlPSonictemplate<cr>
 inoremap <c-e>t <esc>:<c-u>CtrlPSonictemplate<cr>
 nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
-" /=ctrlp }}}
 
 " set colorscheme
 silent! colorscheme concise
