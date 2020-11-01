@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 31-Oct-2020.
+" Last Change: 01-Nov-2020.
 
 syntax on
 filetype plugin on
@@ -260,6 +260,7 @@ Plug 'cakebaker/scss-syntax.vim'
 Plug 'posva/vim-vue'
 Plug 'digitaltoad/vim-pug'
 Plug 'mxw/vim-jsx'
+Plug 'rust-lang/rust.vim'
 
 " finder
 Plug 'ctrlpvim/ctrlp.vim'
@@ -343,10 +344,20 @@ if executable('typescript-language-server')
           \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'tsconfig.json'))},
           \ 'whitelist': ['typescript', 'typescript.tsx'],
           \ })
-    " autocmd FileType js setlocal omnifunc=lsp#complete
-    " autocmd FileType jsx setlocal omnifunc=lsp#complete
-    " autocmd FileType ts setlocal omnifunc=lsp#complete
-    " autocmd FileType tsx setlocal omnifunc=lsp#complete
+  augroup END
+endif
+
+if executable('rls')
+  augroup LspRust
+    au!
+    autocmd User lsp_setup call lsp#register_server({
+          \ 'name': 'rls',
+          \ 'cmd': {server_info->['rustup', 'run', 'stable', 'rls']},
+          \ 'workspace_config': {'rust': {
+          \     'clippy_preference': 'on'
+          \ }},
+          \ 'whitelist': ['rust'],
+          \ })
   augroup END
 endif
 
