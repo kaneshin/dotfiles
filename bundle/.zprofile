@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 17-May-2020.
+# Last Change: 01-Nov-2020.
 
 # system-wide environment settings for zsh(1)
 if [ -x /usr/libexec/path_helper ]; then
@@ -53,9 +53,12 @@ fi
 
 # setup rust
 if [ -d "$HOME/.cargo" ]; then
-  export CARGO_ROOT="$HOME/.cargo"
-  if [[ ":${PATH}:" != *:"${CARGO_ROOT}/bin":* ]]; then
-    export PATH="$CARGO_ROOT/bin:$PATH"
+  export CARGO_HOME="$HOME/.cargo"
+  if [[ ":${PATH}:" != *:"${CARGO_HOME}/bin":* ]]; then
+    export PATH="$CARGO_HOME/bin:$PATH"
+  fi
+  if [ -d "$HOME/.rustup" ]; then
+    export RUSTUP_HOME="$HOME/.rustup"
   fi
 fi
 
