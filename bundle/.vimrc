@@ -402,6 +402,9 @@ nnoremap <c-e>t :<c-u>CtrlPSonictemplate<cr>
 inoremap <c-e>t <esc>:<c-u>CtrlPSonictemplate<cr>
 nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
 
+""" Plug 'rust-lang/rust.vim'
+let g:rustfmt_autosave = 1
+
 " set colorscheme
 silent! colorscheme concise
 
