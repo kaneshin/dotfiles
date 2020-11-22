@@ -10,8 +10,11 @@ fi
 # local directory
 export LOCALROOT="$HOME/local"
 export LOCALSRC="$LOCALROOT/src"
+[ ! -d "$LOCALSRC" ] && mkdir -p $LOCALSRC
 export LOCALBIN="$LOCALROOT/bin"
+[ ! -d "$LOCALBIN" ] && mkdir -p $LOCALBIN
 export LOCALSDK="$LOCALROOT/sdk"
+[ ! -d "$LOCALSDK" ] && mkdir -p $LOCALSDK
 
 SYSTEM_NAME=$(uname -s | tr '[:upper:]' '[:lower:]')
 HARDWARE_NAME=$(uname -m | tr '[:upper:]' '[:lower:]')
@@ -81,24 +84,6 @@ if [ -d "$HOME/.pyenv" ]; then
   fi
 fi
 
-# setup goenv
-# if [ -d "$HOME/.goenv" ]; then
-#   export GOENV_ROOT="$HOME/.goenv"
-#   if [[ ":${PATH}:" != *:"${GOENV_ROOT}/bin":* ]]; then
-#     export PATH="$GOENV_ROOT/bin:$PATH"
-#     which goenv > /dev/null 2>&1 && eval "$(goenv init -)"
-#   fi
-# fi
-
-# setup nodenv
-# if [ -d "$HOME/.nodenv" ]; then
-#   export NODENV_ROOT="$HOME/.nodenv"
-#   if [[ ":${PATH}:" != *:"${NODENV_ROOT}/bin":* ]]; then
-#     export PATH="$NODENV_ROOT/bin:$PATH"
-#     which nodenv > /dev/null 2>&1 && eval "$(nodenv init -)"
-#   fi
-# fi
-
 # setup go-lang
 export GOPATH="$LOCALROOT"
 export GOBIN="$LOCALBIN"
@@ -133,17 +118,6 @@ if which tmux > /dev/null 2>&1; then
 fi
 
 # setup gcloud
-if [ ! -d "$LOCALSDK/google-cloud-sdk" ]; then
-    if which curl > /dev/null 2>&1; then
-      local version='274.0.1'
-      local archive="$TMPDIR/cloud-sdk.tar.gz"
-      echo "Installing Cloud SDK version [$version] in $LOCALSDK"
-      curl -sfL \
-        "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-$version-$SYSTEM_NAME-$HARDWARE_NAME.tar.gz" \
-        | tar zxf - -C $LOCALSDK
-      echo "To finish the installation of your SDK version [$version], run:\n$ $LOCALSDK/google-cloud-sdk/install.sh"
-    fi
-fi
 if [ -d "$LOCALSDK/google-cloud-sdk" ]; then
   export CLOUDSDK_ROOT="$LOCALSDK/google-cloud-sdk"
   if [[ ":${PATH}:" != *:"${CLOUDSDK_ROOT}/bin":* ]]; then
