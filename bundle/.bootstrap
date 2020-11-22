@@ -6,11 +6,7 @@ case "$(uname -m)" in
     ARCH="amd64"
     ;;
   'arm64')
-    if [ -eq $OS "darwin" ]; then
-      ARCH="amd64"
-    else
-      ARCH="arm64"
-    fi
+    ARCH="arm64"
     ;;
   *)
     ARCH="386"
@@ -22,10 +18,13 @@ if [ -z "$TMPDIR" ]; then
 fi
 
 if [ -n "$GOVERSION" ]; then
-  GOSDK=go$GOVERSION.$OS-$ARCH
+  arch=$ARCH
+  [ "$OS" = "darwin" ] && arch="amd64" # for rosetta2
+  GOSDK=go$GOVERSION.$OS-$arch
   if [ -z "$GOROOT" ]; then
-    GOROOT=$HOME/go
+      GOROOT=$HOME/go
   fi
+  echo $GOSDK
   GOROOT_PATH=${GOROOT%/*}
   GOROOT_DIRNAME=${GOROOT##*/}
   if [ ! -d "$GOROOT" ]; then
@@ -45,6 +44,7 @@ if which go > /dev/null 2>&1; then
   go get -v -u github.com/fatih/gomodifytags
   go get -v -u github.com/itchyny/mmv/cmd/mmv
   go get -v -u github.com/mattn/gof
+  go get -v -u github.com/mattn/cho
 fi
 
 if which brew > /dev/null 2>&1; then
