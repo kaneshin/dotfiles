@@ -5,10 +5,18 @@ case "$(uname -m)" in
   'x86_64')
     ARCH="amd64"
     ;;
+  'arm64')
+    if [ -eq $OS "darwin" ]; then
+      ARCH="amd64"
+    else
+      ARCH="arm64"
+    fi
+    ;;
   *)
     ARCH="386"
     ;;
 esac
+
 if [ -z "$TMPDIR" ]; then
   TMPDIR=/tmp
 fi
@@ -33,6 +41,7 @@ if [ -n "$GOVERSION" ]; then
 fi
 
 if which go > /dev/null 2>&1; then
+  go get -v -u github.com/x-motemen/ghq
   go get -v -u github.com/fatih/gomodifytags
   go get -v -u github.com/itchyny/mmv/cmd/mmv
   go get -v -u github.com/mattn/gof
