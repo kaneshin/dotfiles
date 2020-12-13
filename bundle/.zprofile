@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 01-Nov-2020.
+# Last Change: 13-Dec-2020.
 
 # system-wide environment settings for zsh(1)
 if [ -x /usr/libexec/path_helper ]; then
@@ -19,6 +19,7 @@ export LOCALSDK="$LOCALROOT/sdk"
 SYSTEM_NAME=$(uname -s | tr '[:upper:]' '[:lower:]')
 HARDWARE_NAME=$(uname -m | tr '[:upper:]' '[:lower:]')
 
+# setup homebrew
 if which brew > /dev/null 2>&1; then
   # setup for macOS
   GNUBIN_PATH="`brew --prefix coreutils`/libexec/gnubin"
@@ -26,6 +27,12 @@ if which brew > /dev/null 2>&1; then
     export PATH="$GNUBIN_PATH:$PATH"
     export MANPATH="`brew --prefix coreutils`/libexec/gnuman:$MANPATH"
   fi
+fi
+
+# setup macports
+if which port > /dev/null 2>&1; then
+  export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
+  export DISPLAY=:0
 fi
 
 # setup local dir
