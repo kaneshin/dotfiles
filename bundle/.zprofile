@@ -37,7 +37,6 @@ fi
 
 # setup local dir
 if [[ ":${PATH}:" != *:"${LOCALBIN}":* ]]; then
-  # export PATH="/usr/local/bin:$PATH"
   export PATH="$LOCALBIN:$PATH"
 fi
 
