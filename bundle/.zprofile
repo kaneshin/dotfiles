@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 13-Dec-2020.
+# Last Change: 14-Dec-2020.
 
 # system-wide environment settings for zsh(1)
 if [ -x /usr/libexec/path_helper ]; then
@@ -30,7 +30,7 @@ if which brew > /dev/null 2>&1; then
 fi
 
 # setup macports
-if which port > /dev/null 2>&1; then
+if [ -d "/opt/local/bin" ]; then
   export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
   export DISPLAY=:0
 fi
