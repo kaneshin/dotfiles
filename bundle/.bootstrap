@@ -68,4 +68,6 @@ if which npm > /dev/null 2>&1; then
     || npm i -g yarn
   which gitmoji-cli > /dev/null 2>&1 \
     || npm i -g gitmoji-cli
+  which npm-check-updates > /dev/null 2>&1 \
+    || npm i -g npm-check-updates
 fi
