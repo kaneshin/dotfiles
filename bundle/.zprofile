@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 14-Dec-2020.
+# Last Change: 28-Dec-2020.
 
 # system-wide environment settings for zsh(1)
 if [ -x /usr/libexec/path_helper ]; then
@@ -8,7 +8,7 @@ if [ -x /usr/libexec/path_helper ]; then
 fi
 
 # local directory
-export LOCALROOT="$HOME/local"
+export LOCALROOT="${HOME%/}"
 export LOCALSRC="$LOCALROOT/src"
 [ ! -d "$LOCALSRC" ] && mkdir -p $LOCALSRC
 export LOCALBIN="$LOCALROOT/bin"
