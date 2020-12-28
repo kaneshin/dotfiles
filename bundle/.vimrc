@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 01-Nov-2020.
+" Last Change: 27-Dec-2020.
 
 syntax on
 filetype plugin on
@@ -69,7 +69,7 @@ set fileencodings=utf-8,euc-jp,cp932,shiftjis,iso-2022-jp,latin1
 set encoding=utf-8
 set fileformats=unix,dos,mac
 set fileformat=unix
-"
+
 " display: title
 set title
 set titlelen=90

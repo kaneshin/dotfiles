@@ -52,17 +52,6 @@ if which go > /dev/null 2>&1; then
     || go get -v -u github.com/mattn/cho
 fi
 
-# install tj/n
-if ! which n > /dev/null 2>&1; then
-  curl -sL https://raw.githubusercontent.com/tj/n/master/bin/n -o "$LOCALBIN/n"
-  chmod a+x "$LOCALBIN/n"
-  # make cache folder (if missing) and take ownership
-  # sudo mkdir -p /usr/local/n
-  # sudo chown -R $(whoami) /usr/local/n
-  # take ownership of node install destination folders"
-  # sudo chown -R $(whoami) /usr/local/bin /usr/local/lib /usr/local/include /usr/local/share
-fi
-
 if which npm > /dev/null 2>&1; then
   which yarn > /dev/null 2>&1 \
     || npm i -g yarn
