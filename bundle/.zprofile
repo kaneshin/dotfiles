@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 28-Dec-2020.
+# Last Change: 01-Jan-2021.
 
 # system-wide environment settings for zsh(1)
 if [ -x /usr/libexec/path_helper ]; then
@@ -45,18 +45,6 @@ if [ -d "$LOCALSRC/github.com/kaneshin/dotfiles" ]; then
   export DOTFILES_ROOT="$LOCALSRC/github.com/kaneshin/dotfiles"
   if [[ ":${PATH}:" != *:"${DOTFILES_ROOT}/bin":* ]]; then
     export PATH="$DOTFILES_ROOT/bin:$PATH"
-  fi
-fi
-
-# setup vim
-if [ -d "$HOME/.vim" ]; then
-  export VIM_ROOT="$HOME/.vim"
-  if [ ! -f "$VIM_ROOT/autoload/plug.vim" ]; then
-    if which curl > /dev/null 2>&1; then
-      echo "Installing plug.vim in $VIM_ROOT/autoload"
-      curl -sfLo "$VIM_ROOT/autoload/plug.vim" --create-dirs \
-        'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-    fi
   fi
 fi
 
