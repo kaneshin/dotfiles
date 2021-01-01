@@ -8,13 +8,15 @@ if [ -x /usr/libexec/path_helper ]; then
 fi
 
 # local directory
-export LOCALROOT="${HOME%/}"
-export LOCALSRC="$LOCALROOT/src"
-[ ! -d "$LOCALSRC" ] && mkdir -p $LOCALSRC
-export LOCALBIN="$LOCALROOT/bin"
-[ ! -d "$LOCALBIN" ] && mkdir -p $LOCALBIN
-export LOCALSDK="$LOCALROOT/sdk"
-[ ! -d "$LOCALSDK" ] && mkdir -p $LOCALSDK
+export LOCAL_ROOT="${HOME%/}"
+export LOCAL_SRC="$LOCAL_ROOT/src"
+[ ! -d "$LOCAL_SRC" ] && mkdir -p $LOCAL_SRC
+export LOCAL_BIN="$LOCAL_ROOT/bin"
+[ ! -d "$LOCAL_BIN" ] && mkdir -p $LOCAL_BIN
+export LOCAL_SDK="$LOCAL_ROOT/sdk"
+[ ! -d "$LOCAL_SDK" ] && mkdir -p $LOCAL_SDK
+export WORKSPACE_ROOT="$HOME/workspace"
+[ ! -d "$WORKSPACE_ROOT" ] && mkdir -p $WORKSPACE_ROOT
 
 SYSTEM_NAME=$(uname -s | tr '[:upper:]' '[:lower:]')
 HARDWARE_NAME=$(uname -m | tr '[:upper:]' '[:lower:]')
@@ -36,51 +38,21 @@ if [ -d "/opt/local/bin" ]; then
 fi
 
 # setup local dir
-if [[ ":${PATH}:" != *:"${LOCALBIN}":* ]]; then
-  export PATH="$LOCALBIN:$PATH"
+if [[ ":${PATH}:" != *:"${LOCAL_BIN}":* ]]; then
+  export PATH="$LOCAL_BIN:$PATH"
 fi
 
 # setup dotfiles
-if [ -d "$LOCALSRC/github.com/kaneshin/dotfiles" ]; then
-  export DOTFILES_ROOT="$LOCALSRC/github.com/kaneshin/dotfiles"
+if [ -d "$LOCAL_SRC/github.com/kaneshin/dotfiles" ]; then
+  export DOTFILES_ROOT="$LOCAL_SRC/github.com/kaneshin/dotfiles"
   if [[ ":${PATH}:" != *:"${DOTFILES_ROOT}/bin":* ]]; then
     export PATH="$DOTFILES_ROOT/bin:$PATH"
   fi
 fi
 
-# setup rust
-if [ -d "$HOME/.cargo" ]; then
-  export CARGO_HOME="$HOME/.cargo"
-  if [[ ":${PATH}:" != *:"${CARGO_HOME}/bin":* ]]; then
-    export PATH="$CARGO_HOME/bin:$PATH"
-  fi
-  if [ -d "$HOME/.rustup" ]; then
-    export RUSTUP_HOME="$HOME/.rustup"
-  fi
-fi
-
-# setup rbenv
-if [ -d "$HOME/.rbenv" ]; then
-  export RBENV_ROOT="$HOME/.rbenv"
-  if [[ ":${PATH}:" != *:"${RBENV_ROOT}/bin":* ]]; then
-    export PATH="$RBENV_ROOT/bin:$PATH"
-    which rbenv > /dev/null 2>&1 && eval "$(rbenv init -)"
-  fi
-fi
-
-# setup pyenv
-if [ -d "$HOME/.pyenv" ]; then
-  export PYTHON_CONFIGURE_OPTS="--enable-shared"
-  export PYENV_ROOT="$HOME/.pyenv"
-  if [[ ":${PATH}:" != *:"${PYENV_ROOT}/bin":* ]]; then
-    export PATH="$PYENV_ROOT/bin:$PATH"
-    which pyenv > /dev/null 2>&1 && eval "$(pyenv init -)"
-  fi
-fi
-
 # setup go-lang
-export GOPATH="$LOCALROOT"
-export GOBIN="$LOCALBIN"
+export GOPATH="$LOCAL_ROOT"
+export GOBIN="$LOCAL_BIN"
 if [[ ":${PATH}:" != *:"${GOBIN}":* ]]; then
   export PATH="$GOBIN:$PATH"
 fi
@@ -94,42 +66,7 @@ export GO111MODULE=on
 
 # setup ghq
 if which ghq > /dev/null 2>&1; then
-  export GHQ_ROOT=$LOCALSRC
-fi
-
-# setup tmux
-if which tmux > /dev/null 2>&1; then
-  if [ -n "$TMUX" ]; then
-    if which reattach-to-user-namespace > /dev/null 2>&1; then
-      if [ "$TMUX_REATTACHED" != 'on' ]; then
-        echo Running reattach-to-user-namespace to enable copy and paste on macOS
-        export TMUX_REATTACHED='on'
-        reattach-to-user-namespace -l $SHELL
-        echo Exited reattach-to-user-namespace
-      fi
-    fi
-  fi
-fi
-
-# setup gcloud
-if [ -d "$LOCALSDK/google-cloud-sdk" ]; then
-  export CLOUDSDK_ROOT="$LOCALSDK/google-cloud-sdk"
-  if [[ ":${PATH}:" != *:"${CLOUDSDK_ROOT}/bin":* ]]; then
-    export PATH="$CLOUDSDK_ROOT/bin:$PATH"
-  fi
-  # The next line updates PATH for the Google Cloud SDK.
-  if [ -f "$CLOUDSDK_ROOT/path.zsh.inc" ]; then . "$CLOUDSDK_ROOT/path.zsh.inc"; fi
-  # The next line enables shell command completion for gcloud.
-  if [ -f "$CLOUDSDK_ROOT/completion.zsh.inc" ]; then . "$CLOUDSDK_ROOT/completion.zsh.inc"; fi
-fi
-if which gcloud > /dev/null 2>&1; then
-  local gcloud=$(which gcloud)
-  # verify symlink
-  if [ -n "$(readlink $gcloud)" ]; then
-    gcloud=$(cd $(dirname $gcloud); cd $(dirname "$(readlink $gcloud)"); pwd)/gcloud
-  fi
-  # verify absolute path
-  export CLOUDSDK_ROOT=$(cd $(dirname $gcloud)/..; pwd)
+  export GHQ_ROOT=$LOCAL_SRC
 fi
 
 # local

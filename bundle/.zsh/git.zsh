@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 05-May-2016.
+# Last Change: 01-Jan-2021.
 
 unset GITUTIL_STATUS
 function switch_gitutil_status() {
@@ -26,10 +26,6 @@ function _git_branch_name() {
 function git_short_status() {
   $GITUTIL_STATUS && _git_short_status
 }
-
-# function git_root_dir_name() {
-#   basename $(cd `git rev-parse --show-toplevel`;pwd)
-# }
 
 function git_info() {
   name=`_git_branch_name`
