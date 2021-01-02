@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 01-Jan-2021.
+# Last Change: 02-Jan-2021.
 
 # system-wide environment settings for zsh(1)
 if [ -x /usr/libexec/path_helper ]; then
@@ -23,11 +23,10 @@ HARDWARE_NAME=$(uname -m | tr '[:upper:]' '[:lower:]')
 
 # setup homebrew
 if which brew > /dev/null 2>&1; then
-  # setup for macOS
-  GNUBIN_PATH="`brew --prefix coreutils`/libexec/gnubin"
-  if [ -d "$GNUBIN_PATH" ]; then
-    export PATH="$GNUBIN_PATH:$PATH"
-    export MANPATH="`brew --prefix coreutils`/libexec/gnuman:$MANPATH"
+  if brew --prefix coreutils > /dev/null 2>&1; then
+    LIBEXEC_PATH="`brew --prefix coreutils`/libexec"
+    export PATH="$LIBEXEC_PATH/gnubin:$PATH"
+    export MANPATH="$LIBEXEC_PATH/gnuman:$MANPATH"
   fi
 fi
 
@@ -35,6 +34,11 @@ fi
 if [ -d "/opt/local/bin" ]; then
   export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
   export DISPLAY=:0
+  GNUBIN_PATH="/opt/local/libexec/gnubin"
+  if [ -d "$GNUBIN_PATH" ]; then
+    export PATH="$GNUBIN_PATH:$PATH"
+    export MANPATH="$GNUBIN_PATH/man:$MANPATH"
+  fi
 fi
 
 # setup local dir
