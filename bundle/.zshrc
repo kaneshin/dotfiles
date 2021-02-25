@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 01-Jan-2021.
+# Last Change: 25-Feb-2021.
 
 # use key map like emacs
 bindkey -e
@@ -127,6 +127,9 @@ PS2="%_> "
 
 # PROMPT for correct
 SPROMPT="zsh: Did you mean: %{[4m[31m%}%r%{[14m[0m%} [nyae]? "
+
+# local
+[ -f ~/.shrc.local ] && source ~/.shrc.local
 
 # vim:set ts=8 sts=2 sw=2 tw=0:
 # vim:set ft=sh:
