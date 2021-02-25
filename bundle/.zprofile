@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 02-Jan-2021.
+# Last Change: 25-Feb-2021.
 
 # system-wide environment settings for zsh(1)
 if [ -x /usr/libexec/path_helper ]; then
@@ -65,6 +65,7 @@ export GOROOTBIN="$GOROOT/bin"
 if [[ ":${PATH}:" != *:"${GOROOTBIN}":* ]]; then
   export PATH="$GOROOTBIN:$PATH"
 fi
+export GOPROXY="https://proxy.golang.org,direct"
 export GO15VENDOREXPERIMENT=1
 export GO111MODULE=on
 
