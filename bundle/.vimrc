@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 27-Dec-2020.
+" Last Change: 16-Mar-2021.
 
 syntax on
 filetype plugin on
@@ -485,10 +485,4 @@ command -nargs=1 -bang -complete=customlist,s:CompleteGoDoc GoDoc cal s:GoDoc('<
 " depending the s:GoDoc above
 command! CtrlPGoDoc cal ctrlp#init(ctrlp#godoc#id())
 nnoremap <c-e>g :<c-u>CtrlPGoDoc<cr>
-
-augroup GoOptions
-  autocmd!
-  autocmd FileType go :highlight goErr cterm=bold ctermfg=214
-  autocmd FileType go :match goErr /\<err[0-9]*\>/
-augroup END
 
