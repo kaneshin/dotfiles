@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 25-Feb-2021.
+# Last Change: 27-May-2021.
 
 # system-wide environment settings for zsh(1)
 if [ -x /usr/libexec/path_helper ]; then
@@ -73,6 +73,16 @@ export GO111MODULE=on
 if which ghq > /dev/null 2>&1; then
   export GHQ_ROOT=$LOCAL_SRC
 fi
+
+# setup fzf
+if [ -d "$HOME/.fzf" ]; then
+  export FZF_ROOT="$HOME/.fzf"
+  export FZF_BIN="$FZF_ROOT/bin"
+  if [[ ":${PATH}:" != *:"${FZF_BIN}":* ]]; then
+    export PATH="$FZF_BIN:$PATH"
+  fi
+fi
+
 
 # local
 [ -f ~/.profile.local ] && source ~/.profile.local
