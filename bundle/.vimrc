@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 16-Mar-2021.
+" Last Change: 29-Mar-2021.
 
 syntax on
 filetype plugin on
@@ -307,9 +307,13 @@ let g:quickrun_config = {
 
 """ Plug 'prabirshrestha/vim-lsp'
 let g:lsp_diagnostics_enabled = 1
-let g:lsp_signs_enabled = 1
 let g:lsp_diagnostics_echo_cursor = 1
-let g:lsp_text_edit_enabled = 0
+let g:lsp_diagnostics_float_cursor = 1
+let g:asyncomplete_popup_delay = 200
+let g:lsp_text_edit_enabled = 1
+let g:lsp_preview_float = 1
+let g:lsp_settings_filetype_go = ['gopls', 'golangci-lint-langserver']
+let g:lsp_signs_enabled = 1
 
 if executable('gopls')
   augroup LspGo
@@ -332,6 +336,9 @@ if executable('gopls')
     autocmd FileType go nmap <buffer> gd <plug>(lsp-definition)
     autocmd FileType go nmap <buffer> ,n <plug>(lsp-next-error)
     autocmd FileType go nmap <buffer> ,p <plug>(lsp-previous-error)
+    autocmd FileType go nmap <buffer> <Leader>d <plug>(lsp-type-definition)
+    autocmd FileType go nmap <buffer> <Leader>r <plug>(lsp-references)
+    autocmd FileType go nmap <buffer> <Leader>i <plug>(lsp-implementation)
   augroup END
 endif
 

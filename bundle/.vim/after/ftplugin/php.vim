@@ -1,7 +1,7 @@
 " PHP filetype plugin
 " Language:     PHP
 " Maintainer:   Shintaro Kaneko
-" Last Change:  22-Dec-2013.
+" Last Change:  24-May-2021.
 
 scriptencoding utf-8
 
@@ -24,6 +24,5 @@ setlocal shiftwidth=4
 setlocal softtabstop=4
 setlocal tabstop=4
 setlocal smarttab
-setlocal noet
 
 let &cpo = s:save_cpo
