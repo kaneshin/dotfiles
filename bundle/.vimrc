@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 29-Mar-2021.
+" Last Change: 05-Jun-2021.
 
 syntax on
 filetype plugin on
@@ -254,8 +254,6 @@ Plug 'stephpy/vim-yaml'
 Plug 'tpope/vim-markdown'
 Plug 'hashivim/vim-terraform'
 Plug 'chase/vim-ansible-yaml'
-Plug 'leafgarland/typescript-vim'
-Plug 'peitalin/vim-jsx-typescript'
 Plug 'cakebaker/scss-syntax.vim'
 Plug 'posva/vim-vue'
 Plug 'digitaltoad/vim-pug'
@@ -269,6 +267,13 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'mattn/ctrlp-register'
 Plug 'kaneshin/ctrlp-sonictemplate'
 Plug 'kaneshin/ctrlp-filetype'
+
+"" (Java|Type)Script and React
+Plug 'pangloss/vim-javascript'
+Plug 'leafgarland/typescript-vim'
+Plug 'peitalin/vim-jsx-typescript'
+Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
+Plug 'jparise/vim-graphql'
 
 call plug#end()
 " }}}

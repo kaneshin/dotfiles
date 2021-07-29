@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 27-May-2021.
+# Last Change: 30-Jul-2021.
 
 # system-wide environment settings for zsh(1)
 if [ -x /usr/libexec/path_helper ]; then
@@ -54,7 +54,7 @@ if [ -d "$LOCAL_SRC/github.com/kaneshin/dotfiles" ]; then
   fi
 fi
 
-# setup go-lang
+# setup go
 export GOPATH="$LOCAL_ROOT"
 export GOBIN="$LOCAL_BIN"
 if [[ ":${PATH}:" != *:"${GOBIN}":* ]]; then
@@ -68,6 +68,14 @@ fi
 export GOPROXY="https://proxy.golang.org,direct"
 export GO15VENDOREXPERIMENT=1
 export GO111MODULE=on
+
+# setup rust
+if [ -d "$HOME/.cargo" ]; then
+  export CARGO_HOME="$HOME/.cargo"
+  if [[ ":${PATH}:" != *:"${CARGO_HOME}/bin":* ]]; then
+    export PATH="$CARGO_HOME/bin:$PATH"
+  fi
+fi
 
 # setup ghq
 if which ghq > /dev/null 2>&1; then
