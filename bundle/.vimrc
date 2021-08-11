@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 08-Aug-2021.
+" Last Change: 11-Aug-2021.
 
 syntax on
 filetype plugin on
@@ -226,13 +226,9 @@ call plug#begin('~/.vim/plugged')
 Plug 'vim-scripts/autodate.vim'
 Plug 'mattn/webapi-vim'
 Plug 'kana/vim-smartword'
-
-" tools
 Plug 'vim-airline/vim-airline'
 Plug 'mattn/gist-vim'
 Plug 'kristijanhusak/vim-carbon-now-sh'
-
-" devel
 Plug 'mattn/sonictemplate-vim'
 Plug 'thinca/vim-quickrun'
 Plug 'prabirshrestha/async.vim'
@@ -240,10 +236,13 @@ Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'mattn/vim-lsp-settings'
-Plug 'mattn/emmet-vim'
 
-"" go
 Plug 'mattn/vim-goimports'
+Plug 'rust-lang/rust.vim'
+Plug 'pangloss/vim-javascript'
+Plug 'leafgarland/typescript-vim'
+Plug 'peitalin/vim-jsx-typescript'
+Plug 'jparise/vim-graphql'
 
 "" prettier
 Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
@@ -257,7 +256,6 @@ Plug 'cakebaker/scss-syntax.vim'
 Plug 'posva/vim-vue'
 Plug 'digitaltoad/vim-pug'
 Plug 'mxw/vim-jsx'
-Plug 'rust-lang/rust.vim'
 
 " finder
 Plug 'ctrlpvim/ctrlp.vim'
@@ -266,13 +264,6 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'mattn/ctrlp-register'
 Plug 'kaneshin/ctrlp-sonictemplate'
 Plug 'kaneshin/ctrlp-filetype'
-
-"" (Java|Type)Script and React
-Plug 'pangloss/vim-javascript'
-Plug 'leafgarland/typescript-vim'
-Plug 'peitalin/vim-jsx-typescript'
-Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
-Plug 'jparise/vim-graphql'
 
 call plug#end()
 " }}}
@@ -319,11 +310,12 @@ let g:lsp_preview_float = 1
 let g:lsp_settings_filetype_go = ['gopls', 'golangci-lint-langserver']
 let g:lsp_signs_enabled = 1
 
+""" LSP
 if executable('gopls')
   augroup LspGo
     au!
     autocmd User lsp_setup call lsp#register_server({
-          \ 'name': 'go-lang',
+          \ 'name': 'gopls',
           \ 'cmd': {server_info->['gopls']},
           \ 'whitelist': ['go'],
           \ 'workspace_config': {'gopls': {
@@ -336,25 +328,6 @@ if executable('gopls')
           \     'hoverKind': 'SingleLine',
           \   }},
           \ })
-    autocmd FileType go setlocal omnifunc=lsp#complete
-    autocmd FileType go nmap <buffer> gd <plug>(lsp-definition)
-    autocmd FileType go nmap <buffer> ,n <plug>(lsp-next-error)
-    autocmd FileType go nmap <buffer> ,p <plug>(lsp-previous-error)
-    autocmd FileType go nmap <buffer> <Leader>d <plug>(lsp-type-definition)
-    autocmd FileType go nmap <buffer> <Leader>r <plug>(lsp-references)
-    autocmd FileType go nmap <buffer> <Leader>i <plug>(lsp-implementation)
-  augroup END
-endif
-
-if executable('typescript-language-server')
-  augroup LspTS
-    au!
-    autocmd User lsp_setup call lsp#register_server({
-          \ 'name': 'typescript-language-server',
-          \ 'cmd': {server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
-          \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'tsconfig.json'))},
-          \ 'whitelist': ['typescript', 'typescript.tsx'],
-          \ })
   augroup END
 endif
 
@@ -364,13 +337,36 @@ if executable('rls')
     autocmd User lsp_setup call lsp#register_server({
           \ 'name': 'rls',
           \ 'cmd': {server_info->['rustup', 'run', 'stable', 'rls']},
-          \ 'workspace_config': {'rust': {
-          \     'clippy_preference': 'on'
-          \ }},
+          \ 'workspace_config': {'rust': {'clippy_preference': 'on'}},
           \ 'whitelist': ['rust'],
           \ })
   augroup END
 endif
+
+function! s:on_lsp_buffer_enabled() abort
+  setlocal omnifunc=lsp#complete
+  setlocal signcolumn=yes
+  if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+  nmap <buffer> gd <plug>(lsp-definition)
+  nmap <buffer> gs <plug>(lsp-document-symbol-search)
+  nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
+  nmap <buffer> gr <plug>(lsp-references)
+  nmap <buffer> gi <plug>(lsp-implementation)
+  nmap <buffer> gt <plug>(lsp-type-definition)
+  nmap <buffer> <leader>rn <plug>(lsp-rename)
+  nmap <buffer> [g <plug>(lsp-previous-diagnostic)
+  nmap <buffer> ]g <plug>(lsp-next-diagnostic)
+  nmap <buffer> K <plug>(lsp-hover)
+  inoremap <buffer> <expr><c-f> lsp#scroll(+4)
+  inoremap <buffer> <expr><c-d> lsp#scroll(-4)
+  let g:lsp_format_sync_timeout = 1000
+  autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
+endfunction
+
+augroup lsp_install
+  au!
+  autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
 
 """ Plug 'prettier/vim-prettier'
 let g:prettier#autoformat = 1
@@ -413,7 +409,7 @@ nnoremap <c-e>t :<c-u>CtrlPSonictemplate<cr>
 inoremap <c-e>t <esc>:<c-u>CtrlPSonictemplate<cr>
 nnoremap <c-e>f :<c-u>CtrlPFiletype<cr>
 
-""" Plug 'rust-lang/rust.vim'
+""" Rust
 let g:rustfmt_autosave = 1
 
 " set colorscheme
@@ -492,8 +488,8 @@ function! s:CompleteGoDoc(arg_lead, cmdline, cursor_pos)
 endfunction
 command -nargs=1 -bang -complete=customlist,s:CompleteGoDoc GoDoc cal s:GoDoc('<bang>', <f-args>)
 
-" CtrlPGoDoc
-" depending the s:GoDoc above
-command! CtrlPGoDoc cal ctrlp#init(ctrlp#godoc#id())
-nnoremap <c-e>g :<c-u>CtrlPGoDoc<cr>
-
+command! Terminal call popup_create(term_start(
+      \ [&shell],
+      \ #{ hidden: 1, term_finish: 'close'}),
+      \ #{ border: [], minwidth: winwidth(0)/2, minheight: &lines/2 })
+nnoremap <silent> <leader>t :Terminal<cr>
