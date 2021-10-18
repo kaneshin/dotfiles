@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 30-Jul-2021.
+# Last Change: 18-Oct-2021.
 
 # system-wide environment settings for zsh(1)
 if [ -x /usr/libexec/path_helper ]; then
@@ -22,6 +22,10 @@ SYSTEM_NAME=$(uname -s | tr '[:upper:]' '[:lower:]')
 HARDWARE_NAME=$(uname -m | tr '[:upper:]' '[:lower:]')
 
 # setup homebrew
+if [ -f "/opt/homebrew/bin/brew" ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
 if which brew > /dev/null 2>&1; then
   if brew --prefix coreutils > /dev/null 2>&1; then
     LIBEXEC_PATH="`brew --prefix coreutils`/libexec"
