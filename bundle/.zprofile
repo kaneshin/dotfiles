@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 21-Oct-2022.
+# Last Change: 28-Jan-2024.
 
 # system-wide environment settings for zsh(1)
 if [ -x /usr/libexec/path_helper ]; then
@@ -72,6 +72,13 @@ fi
 export GOPROXY="https://proxy.golang.org,direct"
 export GO15VENDOREXPERIMENT=1
 export GO111MODULE=on
+
+# setup python
+export PYENV_ROOT="$HOME/.pyenv"
+if [ -d "$PYENV_ROOT/bin" ]; then
+  export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init -)"
+fi
 
 # setup rust
 if [ -d "$HOME/.cargo" ]; then
