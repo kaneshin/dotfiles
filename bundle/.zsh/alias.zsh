@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 29-Apr-2017.
+# Last Change: 09-Jul-2025.
 
 # alias
 ## ls command
@@ -34,6 +34,11 @@ alias now='date +"%T"'
 alias nowtime=now
 alias nowdate='date +"%d-%m-%Y"'
 # alias peco='peco --initial-filter=Fuzzy'
+
+# claude alias
+if [ -x ~/.claude/local/claude ]; then
+  alias claude='~/.claude/local/claude'
+fi
 
 # vim:set ts=8 sts=2 sw=2 tw=0:
 # vim:set ft=sh:
