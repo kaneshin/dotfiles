@@ -39,6 +39,9 @@ alias nowdate='date +"%d-%m-%Y"'
 if [ -x ~/.claude/local/claude ]; then
   alias claude='~/.claude/local/claude'
 fi
+if which claude > /dev/null 2>&1; then
+  alias claude-yolo='claude --dangerously-skip-permissions'
+fi
 
 # vim:set ts=8 sts=2 sw=2 tw=0:
 # vim:set ft=sh:
