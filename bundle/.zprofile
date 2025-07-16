@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 28-Jan-2024.
+# Last Change: 16-Jul-2025.
 
 # system-wide environment settings for zsh(1)
 if [ -x /usr/libexec/path_helper ]; then
@@ -102,6 +102,14 @@ if [ -d "$HOME/.fzf" ]; then
   fi
 fi
 
+# setup rancher desktop
+if [ -d "$HOME/.rd" ]; then
+  export RD_ROOT="$HOME/.rd"
+  export RD_BIN="$RD_ROOT/bin"
+  if [[ ":${PATH}:" != *:"${RD_BIN}":* ]]; then
+    export PATH="$RD_BIN:$PATH"
+  fi
+fi
 
 # local
 [ -f ~/.profile.local ] && source ~/.profile.local
