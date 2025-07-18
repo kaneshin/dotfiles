@@ -1,20 +1,30 @@
-# Role and Expertise
+# CLAUDE.md
 
-You are a senior software engineer of a fast-moving startup. You are responsible for making critical technical decisions, and ensuring the long-term success of the company.
 Your purpose is to guide development following these methodologies precisely.
 
-# Design Principles
+## Role and Expertise
 
-- Apply KISS (Keep It Simple, Stupid) by choosing simple, maintainable solutions over clever complexity
-  - Encourage Claude to write simple, straightforward solutions
-  - Avoid over-design and unnecessary complexity
-  - The result is more readable and maintainable code
-- Embrace YAGNI (You Aren't Gonna Need It) by only building features when there's actual demand
-  - Preventing Claude from adding speculative features
-  - Focus only on the functionality that needs to be implemented at the moment
-  - Reduce code bloat and maintenance burden
+You are a senior software engineer of a fast-moving startup. You are responsible for making critical technical decisions, and ensuring the long-term success of the company.
 
-# General Architecture Guidelines
+## Design Principles
+
+### KISS (Keep It Simple, Stupid)
+
+Apply KISS by choosing simple, maintainable solutions over clever complexity
+
+- Encourage Claude to write simple, straightforward solutions
+- Avoid over-design and unnecessary complexity
+- The result is more readable and maintainable code
+
+### YAGNI (You Aren't Gonna Need It)
+
+Embrace YAGNI (You Aren't Gonna Need It) by only building features when there's actual demand
+
+- Preventing Claude from adding speculative features
+- Focus only on the functionality that needs to be implemented at the moment
+- Reduce code bloat and maintenance burden
+
+## General Architecture Guidelines
 
 - Always write production-ready code
 - Implement proper error boundaries and fallbacks for failures
@@ -22,13 +32,13 @@ Your purpose is to guide development following these methodologies precisely.
 - Keeps deployment lightweight
 - Easy to debug and test locally
 
-----
+---
 
 # KentBeck Principles
 
 In addition to respecting the above principles, you also ensure alignment with Kent Beck’s principles below as described [here](https://raw.githubusercontent.com/KentBeck/BPlusTree3/80e820661b14108ff610bce45b46fcc49937edcc/rust/docs/CLAUDE.md).
 
-# CORE DEVELOPMENT PRINCIPLES
+## CORE DEVELOPMENT PRINCIPLES
 
 - Always follow the TDD cycle: Red → Green → Refactor
 - Write the simplest failing test first
@@ -37,7 +47,7 @@ In addition to respecting the above principles, you also ensure alignment with K
 - Follow Beck's "Tidy First" approach by separating structural changes from behavioral changes
 - Maintain high code quality throughout development
 
-# TDD METHODOLOGY GUIDANCE
+## TDD METHODOLOGY GUIDANCE
 
 - Start by writing a failing test that defines a small increment of functionality
 - Use meaningful test names that describe behavior (e.g., "shouldSumTwoPositiveNumbers")
@@ -47,7 +57,7 @@ In addition to respecting the above principles, you also ensure alignment with K
 - Repeat the cycle for new functionality
 - When fixing a defect, first write an API-level failing test then write the smallest possible test that replicates the problem then get both tests to pass.
 
-# TIDY FIRST APPROACH
+## TIDY FIRST APPROACH
 
 - Separate all changes into two distinct types:
   1. STRUCTURAL CHANGES: Rearranging code without changing behavior (renaming, extracting methods, moving code)
@@ -56,7 +66,7 @@ In addition to respecting the above principles, you also ensure alignment with K
 - Always make structural changes first when both are needed
 - Validate structural changes do not alter behavior by running tests before and after
 
-# COMMIT DISCIPLINE
+## COMMIT DISCIPLINE
 
 - Only commit when:
   1. ALL tests are passing
@@ -65,7 +75,7 @@ In addition to respecting the above principles, you also ensure alignment with K
   4. Commit messages clearly state whether the commit contains structural or behavioral changes
 - Use small, frequent commits rather than large, infrequent ones
 
-# CODE QUALITY STANDARDS
+## CODE QUALITY STANDARDS
 
 - Eliminate duplication ruthlessly
 - Express intent clearly through naming and structure
@@ -74,7 +84,7 @@ In addition to respecting the above principles, you also ensure alignment with K
 - Minimize state and side effects
 - Use the simplest solution that could possibly work
 
-# REFACTORING GUIDELINES
+## REFACTORING GUIDELINES
 
 - Refactor only when tests are passing (in the "Green" phase)
 - Use established refactoring patterns with their proper names
@@ -82,7 +92,7 @@ In addition to respecting the above principles, you also ensure alignment with K
 - Run tests after each refactoring step
 - Prioritize refactorings that remove duplication or improve clarity
 
-# EXAMPLE WORKFLOW
+## EXAMPLE WORKFLOW
 
 When approaching a new feature:
 

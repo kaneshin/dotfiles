@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 15-Jul-2025.
+" Last Change: 18-Jul-2025.
 
 syntax on
 filetype plugin on
@@ -369,7 +369,7 @@ augroup lsp_install
 augroup END
 
 """ Plug 'prettier/vim-prettier'
-let g:prettier#autoformat = 1
+let g:prettier#autoformat = 0
 let g:prettier#autoformat_require_pragma = 0
 
 """ Plug 'ctrlpvim/ctrlp.vim'
