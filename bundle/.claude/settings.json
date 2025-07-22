@@ -3,7 +3,19 @@
   "includeCoAuthoredBy": false,
   "permissions": {
     "defaultMode": "acceptEdits",
-    "disableBypassPermissionsMode": "disable"
+    "disableBypassPermissionsMode": "disable",
+    "allow": [
+      "WebFetch(domain:github.com)"
+    ],
+    "deny": [
+      "Bash(git push:*)",
+      "Bash(rm -rf /)",
+      "Bash(rm -rf ~)",
+      "Bash(rm -rf ~/)",
+      "Bash(sudo rm -rf /)",
+      "Bash(sudo rm -rf ~)",
+      "Bash(sudo rm -rf ~/)"
+    ]
   },
   "env": {}
 }
