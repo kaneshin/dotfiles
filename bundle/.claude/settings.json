@@ -20,6 +20,7 @@
       "Bash(grep:*)",
       "Bash(sed:*)",
       "Bash(awk:*)",
+      "Bash(iconv:*)",
       "Bash(sort:*)",
       "Bash(uniq:*)",
       "Bash(wc:*)",
