@@ -1,9 +1,8 @@
 {
   "cleanupPeriodDays": 30,
+  "env": {},
   "includeCoAuthoredBy": false,
   "permissions": {
-    "defaultMode": "acceptEdits",
-    "disableBypassPermissionsMode": "disable",
     "allow": [
       "Bash(git:*)",
       "Bash(ls:*)",
@@ -64,7 +63,9 @@
       "Bash(sudo rm -rf /)",
       "Bash(sudo rm -rf ~)",
       "Bash(sudo rm -rf ~/)"
-    ]
+    ],
+    "defaultMode": "acceptEdits",
+    "disableBypassPermissionsMode": "disable"
   },
-  "env": {}
+  "alwaysThinkingEnabled": false
 }

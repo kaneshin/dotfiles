@@ -118,6 +118,16 @@
 	chpk = cherry-pick
 	ignore = "!gi() { curl -L -s https://www.gitignore.io/api/$@ ;}; gi"
 	root = rev-parse --show-toplevel
+	# worktree (wt)
+	wt = worktree
+	wta = worktree add
+	wtl = worktree list
+	wtmv = worktree move
+	wtp = worktree prune
+	wtr = worktree remove
+	wtlk = worktree lock
+	wtulk = worktree unlock
+	wtrp = worktree repair
 	# codereview
 	change = codereview change
 	gofmt = codereview gofmt
