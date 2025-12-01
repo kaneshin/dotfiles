@@ -121,7 +121,7 @@
 	# worktree (wt)
 	wt = worktree
 	wta = worktree add
-	wtl = worktree list
+	wtls = worktree list
 	wtmv = worktree move
 	wtp = worktree prune
 	wtr = worktree remove
