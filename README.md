@@ -28,6 +28,24 @@ export DOTFILES_ROOT="$HOME/.dotfiles"
 $DOTFILES_ROOT/bin/dotfiles install $DOTFILES_ROOT/bundle
 ```
 
+## Claude Code Plugin Installation
+
+This repository includes a Claude Code plugin with MCP servers (Context7, deepwiki, serena) and custom commands.
+
+### Install the plugin
+
+```shell
+claude -p "/plugin marketplace add kaneshin/dotfiles"
+```
+
+### Verify installation
+
+After installation, you can verify the plugin is installed by checking your Claude Code settings or running:
+
+```shell
+claude mcp list
+```
+
 ## License
 
 [The MIT License (MIT)](http://kaneshin.mit-license.org/)

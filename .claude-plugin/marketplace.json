@@ -1,0 +1,13 @@
+{
+  "name": "kaneshin-dotfiles-marketplace",
+  "owner": {
+    "name": "Shintaro Kaneko"
+  },
+  "plugins": [
+    {
+      "name": "kaneshin-claude-code-plugin",
+      "source": "./claude-code-plugin",
+      "description": "Plugin for kaneshin"
+    }
+  ]
+}
