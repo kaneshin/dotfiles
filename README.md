@@ -35,7 +35,8 @@ This repository includes a Claude Code plugin with MCP servers (Context7, deepwi
 ### Install the plugin
 
 ```shell
-claude -p "/plugin marketplace add kaneshin/dotfiles"
+claude plugin marketplace add kaneshin/dotfiles
+claude plugin install kaneshin-claude-code-plugin
 ```
 
 ### Verify installation
