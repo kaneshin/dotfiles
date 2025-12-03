@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 21-Oct-2022.
+# Last Change: 03-Dec-2025.
 
 # use key map like emacs
 bindkey -e
@@ -127,9 +127,6 @@ PS2="%_> "
 
 # PROMPT for correct
 SPROMPT="zsh: Did you mean: %{[4m[31m%}%r%{[14m[0m%} [nyae]? "
-
-PWD=$(pwd)
-tmux rename-window ${PWD##*/}
 
 # local
 [ -f ~/.shrc.local ] && source ~/.shrc.local
