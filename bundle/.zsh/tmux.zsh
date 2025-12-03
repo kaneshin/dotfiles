@@ -14,6 +14,7 @@ if [ -n "$TMUX" ]; then
   }
 
   add-zsh-hook chpwd tmux_rename_window
+  add-zsh-hook precmd tmux_rename_window
   tmux_rename_window
 fi
 

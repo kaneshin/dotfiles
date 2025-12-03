@@ -94,6 +94,9 @@ zstyle ':completion:*:descriptions' format '%BCompleting%b %U%d%u'
 # color settings
 autoload -U colors: colors
 
+# zsh setting
+autoload -Uz add-zsh-hook
+
 # auto change directory
 setopt auto_cd
 
