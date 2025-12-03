@@ -123,8 +123,8 @@
 	wta = worktree add
 	wtls = worktree list
 	wtmv = worktree move
-	wtp = worktree prune
-	wtr = worktree remove
+	wtpr = worktree prune
+	wtrm = worktree remove
 	wtlk = worktree lock
 	wtulk = worktree unlock
 	wtrp = worktree repair
