@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 16-Jul-2025.
+# Last Change: 10-Dec-2025.
 
 # system-wide environment settings for zsh(1)
 if [ -x /usr/libexec/path_helper ]; then
@@ -110,6 +110,16 @@ if [ -d "$HOME/.rd" ]; then
     export PATH="$RD_BIN:$PATH"
   fi
 fi
+
+# setup pnpm
+if which pnpm > /dev/null 2>&1; then
+  export PNPM_HOME="$HOME/.pnpm"
+  [ ! -d "$PNPM_HOME" ] && mkdir -p $PNPM_HOME
+  if [[ ":${PATH}:" != *:"${PNPM_HOME}":* ]]; then
+    export PATH="$PNPM_HOME:$PATH"
+  fi
+fi
+
 
 # local
 [ -f ~/.profile.local ] && source ~/.profile.local
