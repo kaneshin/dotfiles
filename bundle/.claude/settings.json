@@ -74,6 +74,5 @@
     "code-review@claude-code-plugins": true,
     "feature-dev@claude-code-plugins": true,
     "security-guidance@claude-code-plugins": true
-  },
-  "alwaysThinkingEnabled": true
+  }
 }
