@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 10-Dec-2025.
+# Last Change: 24-Dec-2025.
 
 # use key map like emacs
 bindkey -e
