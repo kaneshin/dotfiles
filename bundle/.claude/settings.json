@@ -73,6 +73,7 @@
     "agent-sdk-dev@claude-code-plugins": true,
     "code-review@claude-code-plugins": true,
     "feature-dev@claude-code-plugins": true,
-    "security-guidance@claude-code-plugins": true
+    "security-guidance@claude-code-plugins": true,
+    "typescript-lsp@claude-plugins-official": true
   }
 }
