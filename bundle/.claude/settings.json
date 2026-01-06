@@ -68,7 +68,6 @@
     "disableBypassPermissionsMode": "disable"
   },
   "enabledPlugins": {
-    "kaneshin-claude-code-plugin@kaneshin-dotfiles-marketplace": true,
     "frontend-design@claude-code-plugins": true,
     "agent-sdk-dev@claude-code-plugins": true,
     "code-review@claude-code-plugins": true,
@@ -77,6 +76,7 @@
     "typescript-lsp@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true,
     "explanatory-output-style@claude-plugins-official": true,
-    "playwright@claude-plugins-official": true
+    "playwright@claude-plugins-official": true,
+    "kaneshin-claude-code-plugin@kaneshin-dotfiles-marketplace": true
   }
 }
