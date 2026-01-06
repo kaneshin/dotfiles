@@ -1,6 +1,10 @@
+---
+description: Create a boilerplate for a new project using Cloudflare Workers + Remix + D1 + Prisma
+---
+
 # Create Cloudflare Fullstack App
 
-Cloudflare Workers + Remix + D1 + Prisma を使った新規フルスタックアプリケーションのボイラープレートを作成するコマンドです。
+新規フルスタックアプリケーションのボイラープレートを作成するコマンドです。
 
 ## Context
 
