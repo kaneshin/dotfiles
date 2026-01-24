@@ -32,6 +32,25 @@ Embrace YAGNI (You Aren't Gonna Need It) by only building features when there's 
 - Keeps deployment lightweight
 - Easy to debug and test locally
 
+## Development Workflow
+
+### Standard Development Workflow
+
+1. **Explore**: Ask Claude to read relevant files/specs WITHOUT coding
+2. **Plan**: Request implementation plan (`/plan` or EnterPlanMode)
+   - Use "think" / "think hard" for complex problems
+3. **Code**: Implement with TDD (Red → Green → Refactor)
+4. **Commit**: Use `/commit` command with clear messages
+5. **Document**: Update docs/specs/ as needed
+
+### UI Development Workflow
+
+1. Provide design mock (screenshot or Figma link)
+2. Implement in Remix route
+3. Use Playwright to screenshot: `browser_snapshot` or `browser_take_screenshot`
+4. Compare and iterate 2-3 times
+5. Commit when satisfied
+
 ---
 
 # KentBeck Principles

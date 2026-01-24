@@ -39,6 +39,7 @@
       "Bash(patch:*)",
       "Bash(npm:*)",
       "Bash(yarn:*)",
+      "Bash(pnpm:*)",
       "Bash(pip:*)",
       "Bash(pip3:*)",
       "Bash(brew:*)",
@@ -83,6 +84,7 @@
     "security-guidance@claude-plugins-official": true,
     "serena@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
-    "ralph-loop@claude-plugins-official": true
+    "ralph-loop@claude-plugins-official": true,
+    "github@claude-plugins-official": true
   }
 }
