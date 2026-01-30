@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 09-Jul-2025.
+# Last Change: 30-Jan-2026.
 
 # alias
 ## ls command
@@ -33,15 +33,6 @@ alias path='echo -e ${PATH//:/\\n}'
 alias now='date +"%T"'
 alias nowtime=now
 alias nowdate='date +"%d-%m-%Y"'
-# alias peco='peco --initial-filter=Fuzzy'
-
-# claude alias
-if [ -x ~/.claude/local/claude ]; then
-  alias claude='~/.claude/local/claude'
-fi
-if which claude > /dev/null 2>&1; then
-  alias claude-yolo='claude --dangerously-skip-permissions'
-fi
 
 # vim:set ts=8 sts=2 sw=2 tw=0:
 # vim:set ft=sh:
