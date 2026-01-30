@@ -56,6 +56,7 @@
       "Bash(set:*)",
       "Bash(timeout:*)",
       "Bash(echo:*)",
+      "Bash(tree:*)",
       "mcp__plugin_serena_serena__onboarding",
       "mcp__plugin_serena_serena__check_onboarding_performed",
       "mcp__plugin_serena_serena__get_current_config",
