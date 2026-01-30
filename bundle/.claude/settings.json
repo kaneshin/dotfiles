@@ -1,9 +1,10 @@
 {
   "cleanupPeriodDays": 30,
   "env": {},
-  "includeCoAuthoredBy": false,
+  "includeCoAuthoredBy": true,
   "permissions": {
     "allow": [
+      "Bash(claude:*)",
       "Bash(git:*)",
       "Bash(ls:*)",
       "Bash(cat:*)",
@@ -42,6 +43,7 @@
       "Bash(pnpm:*)",
       "Bash(pip:*)",
       "Bash(pip3:*)",
+      "Bash(uvx:*)",
       "Bash(brew:*)",
       "Bash(gem:*)",
       "Bash(bundler:*)",
@@ -52,12 +54,21 @@
       "Bash(zsh:*)",
       "Bash(source:*)",
       "Bash(set:*)",
+      "Bash(timeout:*)",
       "Bash(echo:*)",
+      "mcp__plugin_serena_serena__onboarding",
+      "mcp__plugin_serena_serena__check_onboarding_performed",
+      "mcp__plugin_serena_serena__get_current_config",
+      "mcp__plugin_serena_serena__activate_project",
+      "mcp__plugin_serena_serena__list_dir",
+      "mcp__plugin_serena_serena__find_file",
+      "mcp__plugin_serena_serena__read_file",
+      "mcp__plugin_serena_serena__list_memories",
+      "mcp__plugin_serena_serena__write_memory",
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:github.com)"
     ],
     "deny": [
-      "Bash(git push:*)",
       "Bash(rm -rf /)",
       "Bash(rm -rf ~)",
       "Bash(rm -rf ~/)",
@@ -77,14 +88,13 @@
     "explanatory-output-style@claude-plugins-official": true,
     "feature-dev@claude-plugins-official": true,
     "frontend-design@claude-plugins-official": true,
+    "github@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
-    "kaneshin-claude-code-plugin@kaneshin-dotfiles-marketplace": false,
     "playwright@claude-plugins-official": true,
     "plugin-dev@claude-plugins-official": true,
+    "ralph-loop@claude-plugins-official": true,
     "security-guidance@claude-plugins-official": true,
     "serena@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true,
-    "ralph-loop@claude-plugins-official": true,
-    "github@claude-plugins-official": true
+    "typescript-lsp@claude-plugins-official": true
   }
 }
