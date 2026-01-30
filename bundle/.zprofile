@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 10-Dec-2025.
+# Last Change: 30-Jan-2026.
 
 # system-wide environment settings for zsh(1)
 if [ -x /usr/libexec/path_helper ]; then
@@ -11,7 +11,7 @@ fi
 export LOCAL_ROOT="${HOME%/}"
 export LOCAL_SRC="$LOCAL_ROOT/src"
 [ ! -d "$LOCAL_SRC" ] && mkdir -p $LOCAL_SRC
-export LOCAL_BIN="$LOCAL_ROOT/bin"
+export LOCAL_BIN="$LOCAL_ROOT/.local/bin"
 [ ! -d "$LOCAL_BIN" ] && mkdir -p $LOCAL_BIN
 export LOCAL_SDK="$LOCAL_ROOT/sdk"
 [ ! -d "$LOCAL_SDK" ] && mkdir -p $LOCAL_SDK
@@ -70,8 +70,6 @@ if [[ ":${PATH}:" != *:"${GOROOTBIN}":* ]]; then
   export PATH="$GOROOTBIN:$PATH"
 fi
 export GOPROXY="https://proxy.golang.org,direct"
-export GO15VENDOREXPERIMENT=1
-export GO111MODULE=on
 
 # setup python
 export PYENV_ROOT="$HOME/.pyenv"
@@ -119,7 +117,6 @@ if which pnpm > /dev/null 2>&1; then
     export PATH="$PNPM_HOME:$PATH"
   fi
 fi
-
 
 # local
 [ -f ~/.profile.local ] && source ~/.profile.local
