@@ -1,0 +1,27 @@
+# Color Theme
+# theme = Monokai Remastered
+theme = Terminal Basic Dark
+background = #000000
+foreground = #ffffff
+selection-background = #3f638a
+selection-foreground = #ffffff
+
+# Font
+font-family = Monaco
+font-family-bold = Monaco
+font-family-italic = Monaco
+font-family-bold-italic = Monaco
+font-family = Noto Sans JP
+font-family = BIZ UDGothic
+font-size = 14
+font-thicken = true
+
+# Cursor
+cursor-color = #9d9d9d
+cursor-text = #1d1e1d
+cursor-opacity = 1.0
+cursor-style = block
+cursor-style-blink = false
+
+# Terminal
+term = "xterm-256color"
