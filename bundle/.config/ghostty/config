@@ -25,3 +25,13 @@ cursor-style-blink = false
 
 # Terminal
 term = "xterm-256color"
+
+# Keybindings
+keybind = super+alt+ctrl+p=goto_split:previous
+keybind = super+alt+ctrl+n=goto_split:next
+
+keybind = super+alt+ctrl+k=goto_split:up
+keybind = super+alt+ctrl+j=goto_split:down
+keybind = super+alt+ctrl+l=goto_split:right
+keybind = super+alt+ctrl+h=goto_split:left
+
