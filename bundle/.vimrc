@@ -3,7 +3,7 @@
 "
 " File:        .vimrc
 " Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-" Last Change: 18-Jul-2025.
+" Last Change: 01-Feb-2026.
 
 syntax on
 filetype plugin on
@@ -227,7 +227,6 @@ Plug 'vim-scripts/autodate.vim'
 Plug 'mattn/webapi-vim'
 Plug 'kana/vim-smartword'
 Plug 'vim-airline/vim-airline'
-Plug 'mattn/gist-vim'
 Plug 'kristijanhusak/vim-carbon-now-sh'
 Plug 'mattn/sonictemplate-vim'
 Plug 'thinca/vim-quickrun'
@@ -267,17 +266,6 @@ Plug 'kaneshin/ctrlp-filetype'
 
 call plug#end()
 " }}}
-
-""" Plug 'mattn/gist-vim'
-let g:gist_token_file = expand('$HOME/.config/github/.gist-vim')
-let g:gist_detect_filetype = 1
-let g:gist_show_privates = 1
-let g:gist_post_private = 1
-if has('mac')
-  let g:gist_clip_command = 'pbcopy'
-elseif has('unix')
-  let g:gist_clip_command = 'xclip -selection clipboard'
-endif
 
 """ Plug 'kristijanhusak/vim-carbon-now-sh'
 let g:carbon_now_sh_options = {
