@@ -79,35 +79,39 @@ jobs_await() {
       name=$(basename $i)
       org=$(cd $(dirname $i);pwd)/$name
 
-      # Special case: .config directory - symlink subdirectories individually
+      # Special case: .config directory - symlink files individually
       if [ "$name" = ".config" ] && [ -d "$org" ]; then
-        for subdir in "$org"/*; do
-          [ ! -d "$subdir" ] && continue
-          subname=$(basename "$subdir")
+        # Find all files recursively within .config
+        while IFS= read -r -d '' file; do
+          # Calculate relative path from .config directory
+          relpath="${file#$org/}"
 
           if [ -n "$DRY_RUN" ]; then
-            subdest="/tmp/sandbox/.config"
+            filedest="/tmp/sandbox/.config/$relpath"
           else
-            subdest="$HOME/.config"
+            filedest="$HOME/.config/$relpath"
           fi
-          subdest="$subdest/$subname"
 
           # Skip if exists (unless --force)
           if [ ! -n "$FORCE" ]; then
-            [ -f "$subdest" ] && continue
-            [ -d "$subdest" ] && continue
+            [ -f "$filedest" ] && continue
+            [ -L "$filedest" ] && continue
           else
-            [ -d "$subdest" ] && rm -f "$subdest"
+            [ -f "$filedest" ] && rm -f "$filedest"
+            [ -L "$filedest" ] && rm -f "$filedest"
           fi
 
-          # Create parent directory and symlink
-          [ ! -d "$(dirname $subdest)" ] && mkdir -p $(dirname $subdest)
-          ln -sf "$subdir" "$subdest"
+          # Create parent directory structure
+          [ ! -d "$(dirname $filedest)" ] && mkdir -p $(dirname $filedest)
+
+          # Symlink the file
+          ln -sf "$file" "$filedest"
 
           if [ -n "$VERBOSE" ]; then
-            echo "$subdest -> $subdir"
+            echo "$filedest -> $file"
           fi
-        done
+        done < <(find "$org" -type f -print0)
+
         continue  # Skip normal processing for .config
       fi
 
