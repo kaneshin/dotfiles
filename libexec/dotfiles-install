@@ -78,6 +78,40 @@ jobs_await() {
     for i in ${files[@]}; do
       name=$(basename $i)
       org=$(cd $(dirname $i);pwd)/$name
+
+      # Special case: .config directory - symlink subdirectories individually
+      if [ "$name" = ".config" ] && [ -d "$org" ]; then
+        for subdir in "$org"/*; do
+          [ ! -d "$subdir" ] && continue
+          subname=$(basename "$subdir")
+
+          if [ -n "$DRY_RUN" ]; then
+            subdest="/tmp/sandbox/.config"
+          else
+            subdest="$HOME/.config"
+          fi
+          subdest="$subdest/$subname"
+
+          # Skip if exists (unless --force)
+          if [ ! -n "$FORCE" ]; then
+            [ -f "$subdest" ] && continue
+            [ -d "$subdest" ] && continue
+          else
+            [ -d "$subdest" ] && rm -f "$subdest"
+          fi
+
+          # Create parent directory and symlink
+          [ ! -d "$(dirname $subdest)" ] && mkdir -p $(dirname $subdest)
+          ln -sf "$subdir" "$subdest"
+
+          if [ -n "$VERBOSE" ]; then
+            echo "$subdest -> $subdir"
+          fi
+        done
+        continue  # Skip normal processing for .config
+      fi
+
+      # Normal processing for all other files/directories
       if [ -n "$DRY_RUN" ]; then
         dest=/tmp/sandbox
       else
