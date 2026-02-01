@@ -44,6 +44,41 @@ jobs_await() {
   done
 }
 
+install_config_directory() {
+  local source_path="$1"
+
+  # Find all files recursively within .config
+  while IFS= read -r -d '' file; do
+    # Calculate relative path from .config directory
+    relative_path="${file#$source_path/}"
+
+    if [ -n "$DRY_RUN" ]; then
+      dest_file="/tmp/sandbox/.config/$relative_path"
+    else
+      dest_file="$HOME/.config/$relative_path"
+    fi
+
+    # Skip if exists (unless --force)
+    if [ ! -n "$FORCE" ]; then
+      [ -f "$dest_file" ] && continue
+      [ -L "$dest_file" ] && continue
+    else
+      [ -f "$dest_file" ] && rm -f "$dest_file"
+      [ -L "$dest_file" ] && rm -f "$dest_file"
+    fi
+
+    # Create parent directory structure
+    [ ! -d "$(dirname $dest_file)" ] && mkdir -p $(dirname $dest_file)
+
+    # Symlink the file
+    ln -sf "$file" "$dest_file"
+
+    if [ -n "$VERBOSE" ]; then
+      echo "$dest_file -> $file"
+    fi
+  done < <(find "$source_path" -type f -print0)
+}
+
 {
   unset VERBOSE
   unset DRY_RUN
@@ -75,43 +110,13 @@ jobs_await() {
     fi
     [ "$files" = "" ] && continue;
 
-    for i in ${files[@]}; do
-      name=$(basename $i)
-      org=$(cd $(dirname $i);pwd)/$name
+    for dotfile in ${files[@]}; do
+      name=$(basename $dotfile)
+      source_path=$(cd $(dirname $dotfile);pwd)/$name
 
       # Special case: .config directory - symlink files individually
-      if [ "$name" = ".config" ] && [ -d "$org" ]; then
-        # Find all files recursively within .config
-        while IFS= read -r -d '' file; do
-          # Calculate relative path from .config directory
-          relpath="${file#$org/}"
-
-          if [ -n "$DRY_RUN" ]; then
-            filedest="/tmp/sandbox/.config/$relpath"
-          else
-            filedest="$HOME/.config/$relpath"
-          fi
-
-          # Skip if exists (unless --force)
-          if [ ! -n "$FORCE" ]; then
-            [ -f "$filedest" ] && continue
-            [ -L "$filedest" ] && continue
-          else
-            [ -f "$filedest" ] && rm -f "$filedest"
-            [ -L "$filedest" ] && rm -f "$filedest"
-          fi
-
-          # Create parent directory structure
-          [ ! -d "$(dirname $filedest)" ] && mkdir -p $(dirname $filedest)
-
-          # Symlink the file
-          ln -sf "$file" "$filedest"
-
-          if [ -n "$VERBOSE" ]; then
-            echo "$filedest -> $file"
-          fi
-        done < <(find "$org" -type f -print0)
-
+      if [ "$name" = ".config" ] && [ -d "$source_path" ]; then
+        install_config_directory "$source_path"
         continue  # Skip normal processing for .config
       fi
 
@@ -129,9 +134,9 @@ jobs_await() {
         [ -d "$dest" ] && rm -f "$dest"
       fi
       [ ! -d "$(dirname $dest)" ] && mkdir -p $(dirname $dest)
-      ln -sf "$org" "$dest"
+      ln -sf "$source_path" "$dest"
       if [ -n "$VERBOSE" ]; then
-        echo "$dest -> $org"
+        echo "$dest -> $source_path"
       fi
     done
   done
