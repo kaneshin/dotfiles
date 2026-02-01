@@ -1,5 +1,0 @@
-
-## {{_expr_:strftime('%m/%d')}}
-### {{_input_:project}}
-
-{{_cursor_}}

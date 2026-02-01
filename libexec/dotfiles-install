@@ -33,49 +33,58 @@ parse_options() {
 jobs_await() {
   local pid="$1"
   local spinners=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
-  while true; do
-    for spinner in ${spinners[@]}; do
-      printf "  $spinner  \r" > /dev/stderr
+
+  while jobs -rp | grep -q "$pid"; do
+    for spinner in "${spinners[@]}"; do
+      printf "  %s  \r" "$spinner" >&2
       sleep 0.05
     done
-    if ! jobs -rp | grep "$pid" > /dev/null; then
-      break
-    fi
   done
 }
 
-install_config_directory() {
+get_dest_base() {
+  if [ -n "$DRY_RUN" ]; then
+    echo "/tmp/sandbox"
+  else
+    echo "$HOME"
+  fi
+}
+
+should_skip_existing() {
+  local dest="$1"
+  [ -z "$FORCE" ] && { [ -f "$dest" ] || [ -L "$dest" ] || [ -d "$dest" ]; }
+}
+
+remove_existing() {
+  local dest="$1"
+  [ -f "$dest" ] || [ -L "$dest" ] || [ -d "$dest" ] && rm -f "$dest"
+}
+
+create_symlink() {
+  local source="$1"
+  local dest="$2"
+
+  if should_skip_existing "$dest"; then
+    return
+  fi
+
+  [ -n "$FORCE" ] && remove_existing "$dest"
+
+  mkdir -p "$(dirname "$dest")"
+  ln -sf "$source" "$dest"
+
+  [ -n "$VERBOSE" ] && echo "$dest -> $source"
+}
+
+install_directory_files() {
   local source_path="$1"
+  local dest_base="$2"
 
-  # Find all files recursively within .config
   while IFS= read -r -d '' file; do
-    # Calculate relative path from .config directory
-    relative_path="${file#$source_path/}"
+    local relative_path="${file#$source_path/}"
+    local dest_file="$dest_base/$relative_path"
 
-    if [ -n "$DRY_RUN" ]; then
-      dest_file="/tmp/sandbox/.config/$relative_path"
-    else
-      dest_file="$HOME/.config/$relative_path"
-    fi
-
-    # Skip if exists (unless --force)
-    if [ ! -n "$FORCE" ]; then
-      [ -f "$dest_file" ] && continue
-      [ -L "$dest_file" ] && continue
-    else
-      [ -f "$dest_file" ] && rm -f "$dest_file"
-      [ -L "$dest_file" ] && rm -f "$dest_file"
-    fi
-
-    # Create parent directory structure
-    [ ! -d "$(dirname $dest_file)" ] && mkdir -p $(dirname $dest_file)
-
-    # Symlink the file
-    ln -sf "$file" "$dest_file"
-
-    if [ -n "$VERBOSE" ]; then
-      echo "$dest_file -> $file"
-    fi
+    create_symlink "$file" "$dest_file"
   done < <(find "$source_path" -type f -print0)
 }
 
@@ -100,43 +109,30 @@ install_config_directory() {
   done
 
   for target in "${ARGUMENTS[@]}"; do
-    unset files
-    if [ -f $target ]; then
-      files=($target)
-    elif [ -d $target ]; then
-      declare -a files=$(find $target -maxdepth 1 -name ".*" \
-        -not -name .git \
-        | sed -e 's|//|/|')
+    files=()
+
+    if [ -f "$target" ]; then
+      files=("$target")
+    elif [ -d "$target" ]; then
+      while IFS= read -r file; do
+        files+=("$file")
+      done < <(find "$target" -maxdepth 1 -name ".*" -not -name .git | sed -e 's|//|/|')
     fi
-    [ "$files" = "" ] && continue;
 
-    for dotfile in ${files[@]}; do
-      name=$(basename $dotfile)
-      source_path=$(cd $(dirname $dotfile);pwd)/$name
+    [ ${#files[@]} -eq 0 ] && continue
 
-      # Special case: .config directory - symlink files individually
-      if [ "$name" = ".config" ] && [ -d "$source_path" ]; then
-        install_config_directory "$source_path"
-        continue  # Skip normal processing for .config
-      fi
+    for dotfile in "${files[@]}"; do
+      name="$(basename "$dotfile")"
+      source_path="$(cd "$(dirname "$dotfile")" && pwd)/$name"
 
-      # Normal processing for all other files/directories
-      if [ -n "$DRY_RUN" ]; then
-        dest=/tmp/sandbox
+      # For ALL directories in bundle/, use file-level symlinks
+      if [ -d "$source_path" ]; then
+        dest_base="$(get_dest_base)/$name"
+        install_directory_files "$source_path" "$dest_base"
       else
-        dest=$HOME
-      fi
-      dest="$dest/$name"
-      if [ ! -n "$FORCE" ]; then
-        [ -f "$dest" ] && continue
-        [ -d "$dest" ] && continue
-      else
-        [ -d "$dest" ] && rm -f "$dest"
-      fi
-      [ ! -d "$(dirname $dest)" ] && mkdir -p $(dirname $dest)
-      ln -sf "$source_path" "$dest"
-      if [ -n "$VERBOSE" ]; then
-        echo "$dest -> $source_path"
+        # For regular files (not directories), symlink directly
+        dest="$(get_dest_base)/$name"
+        create_symlink "$source_path" "$dest"
       fi
     done
   done
