@@ -149,12 +149,13 @@ run_installation() {
 
       # Resolve absolute path with error checking
       dotfile_dir="$(dirname "$dotfile")"
+      original_dir="$(pwd)"
       if ! cd "$dotfile_dir" 2>/dev/null; then
         echo "Error: Cannot access directory $dotfile_dir" >&2
         exit 1
       fi
       source_path="$(pwd)/$name"
-      cd - >/dev/null
+      cd "$original_dir"
 
       # For ALL directories in bundle/, use file-level symlinks
       if [ -d "$source_path" ]; then
