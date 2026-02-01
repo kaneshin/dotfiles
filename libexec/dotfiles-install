@@ -5,7 +5,9 @@
 
 # Bomb out if we hit an error, ever
 set -e
-[ -n "$DOTFILES_DEBUG" ] && set -x
+if [ -n "$DOTFILES_DEBUG" ]; then
+  set -x
+fi
 
 parse_options() {
   OPTIONS=()
@@ -75,7 +77,9 @@ should_skip_existing() {
 
 remove_existing() {
   local dest="$1"
-  [ -f "$dest" ] || [ -L "$dest" ] || [ -d "$dest" ] && rm -f "$dest"
+  if [ -f "$dest" ] || [ -L "$dest" ] || [ -d "$dest" ]; then
+    rm -f "$dest"
+  fi
 }
 
 create_symlink() {
@@ -89,7 +93,9 @@ create_symlink() {
   fi
 
   echo "      create_symlink: Not skipping, proceeding..."
-  [ -n "$FORCE" ] && remove_existing "$dest"
+  if [ -n "$FORCE" ]; then
+    remove_existing "$dest"
+  fi
 
   echo "      create_symlink: Creating parent directory..."
   mkdir -p "$(dirname "$dest")"
@@ -98,7 +104,9 @@ create_symlink() {
   ln -sf "$source" "$dest"
 
   echo "      create_symlink: Symlink created successfully"
-  [ -n "$VERBOSE" ] && echo "$dest -> $source"
+  if [ -n "$VERBOSE" ]; then
+    echo "$dest -> $source"
+  fi
 }
 
 install_directory_files() {
