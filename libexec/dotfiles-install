@@ -85,7 +85,7 @@ install_directory_files() {
     local dest_file="$dest_base/$relative_path"
 
     create_symlink "$file" "$dest_file"
-  done < <(find "$source_path" -type f -print0)
+  done < <(find "$source_path" \( -type f -o -type l \) -print0)
 }
 
 {
