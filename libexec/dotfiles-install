@@ -118,7 +118,10 @@ run_installation() {
     esac
   done
 
+  echo "Processing ${#ARGUMENTS[@]} target(s)..."
+
   for target in "${ARGUMENTS[@]}"; do
+    echo "Target: $target"
     files=()
 
     if [ -f "$target" ]; then
@@ -166,7 +169,9 @@ if [ -t 1 ]; then
   jobs_await $pid
   wait $pid
 else
+  echo "Running dotfiles installation (CI mode)..."
   run_installation "$@"
+  echo "Installation completed successfully"
 fi
 
 exit 0
