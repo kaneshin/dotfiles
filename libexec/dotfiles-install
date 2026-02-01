@@ -34,12 +34,22 @@ jobs_await() {
   local pid="$1"
   local spinners=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
 
-  while jobs -rp | grep -q "$pid"; do
-    for spinner in "${spinners[@]}"; do
-      printf "  %s  \r" "$spinner" >&2
-      sleep 0.05
+  # Check if running in interactive terminal
+  if [ -t 1 ]; then
+    # Interactive mode: show spinner
+    while kill -0 "$pid" 2>/dev/null; do
+      for spinner in "${spinners[@]}"; do
+        printf "  %s  \r" "$spinner" >&2
+        sleep 0.05
+        kill -0 "$pid" 2>/dev/null || break 2
+      done
     done
-  done
+  else
+    # Non-interactive mode (CI): simple wait without spinner
+    while kill -0 "$pid" 2>/dev/null; do
+      sleep 0.1
+    done
+  fi
 }
 
 get_dest_base() {
