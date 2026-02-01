@@ -98,7 +98,7 @@ install_directory_files() {
   done < <(find "$source_path" \( -type f -o -type l \) -print0)
 }
 
-{
+run_installation() {
   unset VERBOSE
   unset DRY_RUN
   unset FORCE
@@ -146,10 +146,17 @@ install_directory_files() {
       fi
     done
   done
-} &
-pid=$!
-jobs_await $pid
-wait $pid
+}
+
+# Run with spinner in interactive mode, directly in CI
+if [ -t 1 ]; then
+  run_installation "$@" &
+  pid=$!
+  jobs_await $pid
+  wait $pid
+else
+  run_installation "$@"
+fi
 
 exit 0
 
