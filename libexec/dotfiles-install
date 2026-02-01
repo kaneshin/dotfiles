@@ -145,27 +145,36 @@ run_installation() {
     fi
 
     for dotfile in "${files[@]}"; do
+      echo "  Processing: $dotfile"
       name="$(basename "$dotfile")"
+      echo "    Basename: $name"
 
       # Resolve absolute path with error checking
       dotfile_dir="$(dirname "$dotfile")"
+      echo "    Directory: $dotfile_dir"
       original_dir="$(pwd)"
       if ! cd "$dotfile_dir" 2>/dev/null; then
         echo "Error: Cannot access directory $dotfile_dir" >&2
         exit 1
       fi
       source_path="$(pwd)/$name"
+      echo "    Source path: $source_path"
       cd "$original_dir"
 
       # For ALL directories in bundle/, use file-level symlinks
       if [ -d "$source_path" ]; then
+        echo "    Type: directory"
         dest_base="$(get_dest_base)/$name"
+        echo "    Installing files from directory to: $dest_base"
         install_directory_files "$source_path" "$dest_base"
       else
+        echo "    Type: file"
         # For regular files (not directories), symlink directly
         dest="$(get_dest_base)/$name"
+        echo "    Creating symlink: $dest -> $source_path"
         create_symlink "$source_path" "$dest"
       fi
+      echo "    Done with $name"
     done
   done
 }
