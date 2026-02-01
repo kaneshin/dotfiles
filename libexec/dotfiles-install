@@ -126,16 +126,23 @@ run_installation() {
 
     if [ -f "$target" ]; then
       files=("$target")
+      echo "  Single file target"
     elif [ -d "$target" ]; then
+      echo "  Directory target, searching for dotfiles..."
       while IFS= read -r file; do
         files+=("$file")
+        echo "    Found: $file"
       done < <(find "$target" -maxdepth 1 -name ".*" -not -name .git | sed -e 's|//|/|')
+      echo "  Total files found: ${#files[@]}"
+    else
+      echo "Error: Target $target is neither a file nor a directory" >&2
+      exit 1
     fi
 
-    [ ${#files[@]} -eq 0 ] && {
+    if [ ${#files[@]} -eq 0 ]; then
       echo "Warning: No dotfiles found in $target" >&2
       continue
-    }
+    fi
 
     for dotfile in "${files[@]}"; do
       name="$(basename "$dotfile")"
