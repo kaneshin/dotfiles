@@ -129,11 +129,22 @@ run_installation() {
       done < <(find "$target" -maxdepth 1 -name ".*" -not -name .git | sed -e 's|//|/|')
     fi
 
-    [ ${#files[@]} -eq 0 ] && continue
+    [ ${#files[@]} -eq 0 ] && {
+      echo "Warning: No dotfiles found in $target" >&2
+      continue
+    }
 
     for dotfile in "${files[@]}"; do
       name="$(basename "$dotfile")"
-      source_path="$(cd "$(dirname "$dotfile")" && pwd)/$name"
+
+      # Resolve absolute path with error checking
+      dotfile_dir="$(dirname "$dotfile")"
+      if ! cd "$dotfile_dir" 2>/dev/null; then
+        echo "Error: Cannot access directory $dotfile_dir" >&2
+        exit 1
+      fi
+      source_path="$(pwd)/$name"
+      cd - >/dev/null
 
       # For ALL directories in bundle/, use file-level symlinks
       if [ -d "$source_path" ]; then
