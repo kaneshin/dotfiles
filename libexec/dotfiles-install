@@ -62,7 +62,15 @@ get_dest_base() {
 
 should_skip_existing() {
   local dest="$1"
-  [ -z "$FORCE" ] && { [ -f "$dest" ] || [ -L "$dest" ] || [ -d "$dest" ]; }
+  echo "        should_skip_existing: Checking $dest (FORCE=${FORCE:-unset})"
+  if [ -z "$FORCE" ]; then
+    if [ -f "$dest" ] || [ -L "$dest" ] || [ -d "$dest" ]; then
+      echo "        should_skip_existing: File exists, skipping"
+      return 0
+    fi
+  fi
+  echo "        should_skip_existing: Not skipping"
+  return 1
 }
 
 remove_existing() {
@@ -74,15 +82,22 @@ create_symlink() {
   local source="$1"
   local dest="$2"
 
+  echo "      create_symlink: Checking if should skip $dest..."
   if should_skip_existing "$dest"; then
+    echo "      create_symlink: Skipping (already exists)"
     return
   fi
 
+  echo "      create_symlink: Not skipping, proceeding..."
   [ -n "$FORCE" ] && remove_existing "$dest"
 
+  echo "      create_symlink: Creating parent directory..."
   mkdir -p "$(dirname "$dest")"
+
+  echo "      create_symlink: Creating symlink..."
   ln -sf "$source" "$dest"
 
+  echo "      create_symlink: Symlink created successfully"
   [ -n "$VERBOSE" ] && echo "$dest -> $source"
 }
 
