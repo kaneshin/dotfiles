@@ -64,14 +64,11 @@ get_dest_base() {
 
 should_skip_existing() {
   local dest="$1"
-  echo "        should_skip_existing: Checking $dest (FORCE=${FORCE:-unset})"
   if [ -z "$FORCE" ]; then
     if [ -f "$dest" ] || [ -L "$dest" ] || [ -d "$dest" ]; then
-      echo "        should_skip_existing: File exists, skipping"
       return 0
     fi
   fi
-  echo "        should_skip_existing: Not skipping"
   return 1
 }
 
@@ -86,24 +83,17 @@ create_symlink() {
   local source="$1"
   local dest="$2"
 
-  echo "      create_symlink: Checking if should skip $dest..."
   if should_skip_existing "$dest"; then
-    echo "      create_symlink: Skipping (already exists)"
     return
   fi
 
-  echo "      create_symlink: Not skipping, proceeding..."
   if [ -n "$FORCE" ]; then
     remove_existing "$dest"
   fi
 
-  echo "      create_symlink: Creating parent directory..."
   mkdir -p "$(dirname "$dest")"
-
-  echo "      create_symlink: Creating symlink..."
   ln -sf "$source" "$dest"
 
-  echo "      create_symlink: Symlink created successfully"
   if [ -n "$VERBOSE" ]; then
     echo "$dest -> $source"
   fi
@@ -141,63 +131,43 @@ run_installation() {
     esac
   done
 
-  echo "Processing ${#ARGUMENTS[@]} target(s)..."
-
   for target in "${ARGUMENTS[@]}"; do
-    echo "Target: $target"
     files=()
 
     if [ -f "$target" ]; then
       files=("$target")
-      echo "  Single file target"
     elif [ -d "$target" ]; then
-      echo "  Directory target, searching for dotfiles..."
       while IFS= read -r file; do
         files+=("$file")
-        echo "    Found: $file"
       done < <(find "$target" -maxdepth 1 -name ".*" -not -name .git | sed -e 's|//|/|')
-      echo "  Total files found: ${#files[@]}"
-    else
-      echo "Error: Target $target is neither a file nor a directory" >&2
-      exit 1
     fi
 
     if [ ${#files[@]} -eq 0 ]; then
-      echo "Warning: No dotfiles found in $target" >&2
       continue
     fi
 
     for dotfile in "${files[@]}"; do
-      echo "  Processing: $dotfile"
       name="$(basename "$dotfile")"
-      echo "    Basename: $name"
 
       # Resolve absolute path with error checking
       dotfile_dir="$(dirname "$dotfile")"
-      echo "    Directory: $dotfile_dir"
       original_dir="$(pwd)"
       if ! cd "$dotfile_dir" 2>/dev/null; then
         echo "Error: Cannot access directory $dotfile_dir" >&2
         exit 1
       fi
       source_path="$(pwd)/$name"
-      echo "    Source path: $source_path"
       cd "$original_dir"
 
       # For ALL directories in bundle/, use file-level symlinks
       if [ -d "$source_path" ]; then
-        echo "    Type: directory"
         dest_base="$(get_dest_base)/$name"
-        echo "    Installing files from directory to: $dest_base"
         install_directory_files "$source_path" "$dest_base"
       else
-        echo "    Type: file"
         # For regular files (not directories), symlink directly
         dest="$(get_dest_base)/$name"
-        echo "    Creating symlink: $dest -> $source_path"
         create_symlink "$source_path" "$dest"
       fi
-      echo "    Done with $name"
     done
   done
 }
@@ -209,9 +179,7 @@ if [ -t 1 ]; then
   jobs_await $pid
   wait $pid
 else
-  echo "Running dotfiles installation (CI mode)..."
   run_installation "$@"
-  echo "Installation completed successfully"
 fi
 
 exit 0
