@@ -36,3 +36,9 @@ keybind = super+alt+ctrl+l=goto_split:right
 keybind = super+alt+ctrl+h=goto_split:left
 
 keybind = ctrl+shift+r=prompt_surface_title
+
+# macos
+macos-window-buttons = hidden
+macos-titlebar-style = tabs
+macos-titlebar-proxy-icon = hidden
+macos-icon = retro
