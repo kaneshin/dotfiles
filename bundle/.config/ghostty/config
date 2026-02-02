@@ -35,3 +35,4 @@ keybind = super+alt+ctrl+j=goto_split:down
 keybind = super+alt+ctrl+l=goto_split:right
 keybind = super+alt+ctrl+h=goto_split:left
 
+keybind = ctrl+shift+r=prompt_surface_title
