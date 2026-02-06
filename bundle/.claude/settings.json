@@ -1,6 +1,4 @@
 {
-  "cleanupPeriodDays": 30,
-  "env": {},
   "includeCoAuthoredBy": true,
   "permissions": {
     "allow": [
@@ -81,6 +79,19 @@
     "defaultMode": "acceptEdits",
     "disableBypassPermissionsMode": "disable"
   },
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/notification.sh"
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh",
@@ -103,5 +114,7 @@
     "security-guidance@claude-plugins-official": true,
     "serena@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true
-  }
+  },
+  "cleanupPeriodDays": 30,
+  "env": {}
 }
