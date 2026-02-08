@@ -14,3 +14,4 @@ fi
 SOUND="Blow"
 
 osascript -e "display notification \"${MESSAGE}\" with title \"${TITLE}\" subtitle \"${SUB_TITLE}\" sound name \"${SOUND}\""
+
