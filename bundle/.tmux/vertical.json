@@ -1,0 +1,13 @@
+{
+  "panes": [
+    {
+      "id": "pane1",
+      "commands": ["claude"]
+    },
+    {
+      "id": "pane2",
+      "split": "vertical",
+      "commands": ["pwd", "ls -al"]
+    }
+  ]
+}

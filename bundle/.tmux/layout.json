@@ -1,0 +1,19 @@
+{
+  "panes": [
+    {
+      "id": "pane1",
+      "commands": ["claude"]
+    },
+    {
+      "id": "pane2",
+      "split": "vertical",
+      "commands": ["pwd", "ls -al"]
+    },
+    {
+      "id": "pane3",
+      "split": "horizontal",
+      "size": "20%",
+      "commands": ["pwd"]
+    }
+  ]
+}
