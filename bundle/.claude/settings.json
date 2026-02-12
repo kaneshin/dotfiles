@@ -41,6 +41,7 @@
       "Bash(npm:*)",
       "Bash(yarn:*)",
       "Bash(pnpm:*)",
+      "Bash(tsc:*)",
       "Bash(pip:*)",
       "Bash(pip3:*)",
       "Bash(uvx:*)",
@@ -67,7 +68,9 @@
       "mcp__plugin_serena_serena__read_file",
       "mcp__plugin_serena_serena__list_memories",
       "mcp__plugin_serena_serena__write_memory",
+      "WebFetch(domain:developers.cloudflare.com)",
       "WebFetch(domain:github.com)",
+      "WebFetch(domain:api.github.com)",
       "WebFetch(domain:docs.anthropic.com)"
     ],
     "deny": [
