@@ -14,129 +14,328 @@
 
 set -euo pipefail
 
-# --- Validation ---
+# =============================================================================
+# Testability Layer - Override these functions for testing
+# =============================================================================
 
-if ! command -v jq &>/dev/null; then
-  echo "Error: jq is required but not installed." >&2
-  exit 1
-fi
+# Wrapper for tmux commands - can be mocked in tests
+_tmux() {
+  tmux "$@"
+}
 
-if [ -z "${TMUX:-}" ]; then
-  echo "Error: Not inside a tmux session." >&2
-  exit 1
-fi
+# Wrapper for jq commands - can be mocked in tests
+_jq() {
+  jq "$@"
+}
 
-resolve_json_file() {
-  if [ $# -ge 1 ]; then
-    if [ ! -f "$1" ]; then
-      echo "Error: File not found: $1" >&2
-      exit 1
-    fi
-    echo "$1"
-    return
+# Wrapper for realpath - can be mocked in tests
+_realpath() {
+  realpath "$@"
+}
+
+# Wrapper for user input - can be mocked in tests
+_read_choice() {
+  local choice
+  read -rp "Select: " choice < /dev/tty
+  echo "$choice"
+}
+
+# =============================================================================
+# Validation Functions
+# =============================================================================
+
+check_dependencies() {
+  if ! command -v jq &>/dev/null; then
+    echo "Error: jq is required but not installed." >&2
+    return 1
   fi
+  return 0
+}
 
-  # Discover JSON files from known directories
-  local files=()
-  local paths=()
+check_tmux_session() {
+  if [ -z "${TMUX:-}" ]; then
+    echo "Error: Not inside a tmux session." >&2
+    return 1
+  fi
+  return 0
+}
 
-  for dir in "$HOME/.tmux" "./.tmux"; do
+validate_split_direction() {
+  local split="$1"
+  local pane_index="$2"
+
+  case "$split" in
+    vertical|horizontal) return 0 ;;
+    *)
+      echo "Error: Invalid split for panes[$pane_index]: $split (expected 'vertical' or 'horizontal')" >&2
+      return 1
+      ;;
+  esac
+}
+
+validate_pane_count() {
+  local pane_count="$1"
+  local json_file="$2"
+
+  if [ "$pane_count" -eq 0 ]; then
+    echo "Error: No panes defined in $json_file" >&2
+    return 1
+  fi
+  return 0
+}
+
+# =============================================================================
+# File Discovery Functions
+# =============================================================================
+
+# Discover JSON files from standard directories
+# Output: newline-separated list of "display_path|resolved_path" pairs
+discover_json_files() {
+  local search_dirs=("$HOME/.tmux" "./.tmux")
+  local seen_paths=()
+
+  for dir in "${search_dirs[@]}"; do
     for f in "$dir"/*.json; do
       [ -f "$f" ] || continue
+
       local resolved
-      resolved=$(realpath "$f")
-      local dup=0
-      if [ ${#paths[@]} -gt 0 ]; then
-        local k
-        for k in "${paths[@]}"; do
-          if [ "$k" = "$resolved" ]; then
-            dup=1
-            break
-          fi
-        done
-      fi
-      if [ "$dup" -eq 0 ]; then
-        files+=("$f")
-        paths+=("$resolved")
+      resolved=$(_realpath "$f")
+
+      # Check for duplicates
+      local is_duplicate=0
+      for seen in "${seen_paths[@]+"${seen_paths[@]}"}"; do
+        if [ "$seen" = "$resolved" ]; then
+          is_duplicate=1
+          break
+        fi
+      done
+
+      if [ "$is_duplicate" -eq 0 ]; then
+        seen_paths+=("$resolved")
+        echo "$f|$resolved"
       fi
     done
   done
+}
 
-  if [ ${#files[@]} -eq 0 ]; then
+# Display file selection menu and get user choice
+# Args: array of "display_path|resolved_path" pairs
+# Output: selected resolved path, or empty on cancel
+select_json_file_interactive() {
+  local -a file_entries=("$@")
+
+  if [ ${#file_entries[@]} -eq 0 ]; then
     echo "Error: No JSON files found in ~/.tmux/ or ./.tmux/" >&2
-    exit 1
+    return 1
   fi
 
   echo "" >&2
   echo "Available layout files:" >&2
-  for i in "${!files[@]}"; do
-    printf "  %d) %s\n" "$((i + 1))" "${files[$i]}" >&2
+  for i in "${!file_entries[@]}"; do
+    local display_path="${file_entries[$i]%%|*}"
+    printf "  %d) %s\n" "$((i + 1))" "$display_path" >&2
   done
   printf "  q) Cancel\n" >&2
   echo "" >&2
 
   local choice
-  read -rp "Select: " choice < /dev/tty
+  choice=$(_read_choice)
 
   if [ "$choice" = "q" ]; then
-    exit 0
+    return 0
   fi
 
-  if ! [[ "$choice" =~ ^[0-9]+$ ]] || [ "$choice" -lt 1 ] || [ "$choice" -gt ${#files[@]} ]; then
+  if ! [[ "$choice" =~ ^[0-9]+$ ]] || [ "$choice" -lt 1 ] || [ "$choice" -gt ${#file_entries[@]} ]; then
     echo "Error: Invalid selection: $choice" >&2
-    exit 1
+    return 1
   fi
 
-  echo "${paths[$((choice - 1))]}"
+  local selected="${file_entries[$((choice - 1))]}"
+  echo "${selected#*|}"
 }
 
-JSON_FILE=$(resolve_json_file "$@")
-PANE_COUNT=$(jq '.panes | length' "$JSON_FILE")
-
-if [ "$PANE_COUNT" -eq 0 ]; then
-  echo "Error: No panes defined in $JSON_FILE" >&2
-  exit 1
-fi
-
-# --- Pass 1: Create panes ---
-
-PANE_IDS=()
-
-for ((i = 0; i < PANE_COUNT; i++)); do
-  if [ "$i" -eq 0 ]; then
-    # First pane is the current pane
-    PANE_IDS+=($(tmux display-message -p '#{pane_id}'))
-    continue
+# Resolve JSON file from argument or interactive selection
+# Args: optional path argument
+# Output: resolved file path
+resolve_json_file() {
+  if [ $# -ge 1 ]; then
+    if [ ! -f "$1" ]; then
+      echo "Error: File not found: $1" >&2
+      return 1
+    fi
+    echo "$1"
+    return 0
   fi
 
-  SPLIT=$(jq -r ".panes[$i].split // \"vertical\"" "$JSON_FILE")
-  SIZE=$(jq -r ".panes[$i].size // empty" "$JSON_FILE")
+  local -a entries=()
+  while IFS= read -r line; do
+    [ -n "$line" ] && entries+=("$line")
+  done < <(discover_json_files)
 
-  # Split from the previously created pane to build a chained layout.
-  CMD=(tmux split-window -t "${PANE_IDS[$((i - 1))]}" -P -F '#{pane_id}')
+  select_json_file_interactive "${entries[@]}"
+}
 
-  if [ "$SPLIT" = "vertical" ]; then
-    CMD+=(-h)
-  elif [ "$SPLIT" = "horizontal" ]; then
-    CMD+=(-v)
+# =============================================================================
+# Pane Management Functions
+# =============================================================================
+
+# Get the current pane ID
+get_current_pane_id() {
+  _tmux display-message -p '#{pane_id}'
+}
+
+# Create a new pane by splitting
+# Args: target_pane split_direction [size]
+# Output: new pane ID
+create_pane() {
+  local target_pane="$1"
+  local split_direction="$2"
+  local size="${3:-}"
+
+  local -a cmd=(split-window -t "$target_pane" -P -F '#{pane_id}')
+
+  if [ "$split_direction" = "vertical" ]; then
+    cmd+=(-h)
   else
-    echo "Error: Invalid split for panes[$i]: $SPLIT (expected 'vertical' or 'horizontal')" >&2
-    exit 1
+    cmd+=(-v)
   fi
 
-  if [ -n "$SIZE" ]; then
-    CMD+=(-l "$SIZE")
+  if [ -n "$size" ]; then
+    cmd+=(-l "$size")
   fi
 
-  PANE_IDS+=($("${CMD[@]}"))
-done
+  _tmux "${cmd[@]}"
+}
 
-# --- Pass 2: Send commands ---
+# Send a command to a pane
+# Args: pane_id command
+send_command_to_pane() {
+  local pane_id="$1"
+  local command="$2"
+  _tmux send-keys -t "$pane_id" "$command" C-m
+}
 
-for ((i = 0; i < PANE_COUNT; i++)); do
-  CMD_COUNT=$(jq ".panes[$i].commands // [] | length" "$JSON_FILE")
-  for ((j = 0; j < CMD_COUNT; j++)); do
-    CMD=$(jq -r ".panes[$i].commands[$j]" "$JSON_FILE")
-    tmux send-keys -t "${PANE_IDS[$i]}" "$CMD" C-m
+# =============================================================================
+# JSON Parsing Functions
+# =============================================================================
+
+get_pane_count() {
+  local json_file="$1"
+  _jq '.panes | length' "$json_file"
+}
+
+get_pane_split() {
+  local json_file="$1"
+  local index="$2"
+  _jq -r ".panes[$index].split // \"vertical\"" "$json_file"
+}
+
+get_pane_size() {
+  local json_file="$1"
+  local index="$2"
+  _jq -r ".panes[$index].size // empty" "$json_file"
+}
+
+get_pane_command_count() {
+  local json_file="$1"
+  local index="$2"
+  _jq ".panes[$index].commands // [] | length" "$json_file"
+}
+
+get_pane_command() {
+  local json_file="$1"
+  local pane_index="$2"
+  local cmd_index="$3"
+  _jq -r ".panes[$pane_index].commands[$cmd_index]" "$json_file"
+}
+
+# =============================================================================
+# Layout Application Functions
+# =============================================================================
+
+# Create all panes from JSON definition
+# Args: json_file
+# Output: newline-separated list of pane IDs
+create_panes_from_json() {
+  local json_file="$1"
+  local pane_count
+  pane_count=$(get_pane_count "$json_file")
+
+  local -a pane_ids=()
+
+  for ((i = 0; i < pane_count; i++)); do
+    if [ "$i" -eq 0 ]; then
+      pane_ids+=("$(get_current_pane_id)")
+      continue
+    fi
+
+    local split size
+    split=$(get_pane_split "$json_file" "$i")
+    size=$(get_pane_size "$json_file" "$i")
+
+    validate_split_direction "$split" "$i" || return 1
+
+    local new_pane_id
+    new_pane_id=$(create_pane "${pane_ids[$((i - 1))]}" "$split" "$size")
+    pane_ids+=("$new_pane_id")
   done
-done
+
+  printf '%s\n' "${pane_ids[@]}"
+}
+
+# Execute commands for all panes
+# Args: json_file pane_ids...
+execute_pane_commands() {
+  local json_file="$1"
+  shift
+  local -a pane_ids=("$@")
+
+  local pane_count=${#pane_ids[@]}
+
+  for ((i = 0; i < pane_count; i++)); do
+    local cmd_count
+    cmd_count=$(get_pane_command_count "$json_file" "$i")
+
+    for ((j = 0; j < cmd_count; j++)); do
+      local cmd
+      cmd=$(get_pane_command "$json_file" "$i" "$j")
+      send_command_to_pane "${pane_ids[$i]}" "$cmd"
+    done
+  done
+}
+
+# =============================================================================
+# Main Entry Point
+# =============================================================================
+
+main() {
+  check_dependencies || exit 1
+  check_tmux_session || exit 1
+
+  local json_file
+  json_file=$(resolve_json_file "$@") || exit 1
+
+  if [ -z "$json_file" ]; then
+    exit 0  # User cancelled
+  fi
+
+  local pane_count
+  pane_count=$(get_pane_count "$json_file")
+  validate_pane_count "$pane_count" "$json_file" || exit 1
+
+  # Pass 1: Create panes
+  local -a pane_ids=()
+  while IFS= read -r pane_id; do
+    [ -n "$pane_id" ] && pane_ids+=("$pane_id")
+  done < <(create_panes_from_json "$json_file")
+
+  [ ${#pane_ids[@]} -eq 0 ] && exit 1
+
+  # Pass 2: Execute commands
+  execute_pane_commands "$json_file" "${pane_ids[@]}"
+}
+
+# Only run main if script is executed directly (not sourced)
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  main "$@"
+fi
