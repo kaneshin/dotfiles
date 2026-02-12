@@ -21,7 +21,7 @@ if ! command -v jq &>/dev/null; then
   exit 1
 fi
 
-if [ -z "$TMUX" ]; then
+if [ -z "${TMUX:-}" ]; then
   echo "Error: Not inside a tmux session." >&2
   exit 1
 fi
@@ -112,12 +112,16 @@ for ((i = 0; i < PANE_COUNT; i++)); do
   SPLIT=$(jq -r ".panes[$i].split // \"vertical\"" "$JSON_FILE")
   SIZE=$(jq -r ".panes[$i].size // empty" "$JSON_FILE")
 
-  CMD=(tmux split-window -t "${PANE_IDS[0]}" -P -F '#{pane_id}')
+  # Split from the previously created pane to build a chained layout.
+  CMD=(tmux split-window -t "${PANE_IDS[$((i - 1))]}" -P -F '#{pane_id}')
 
   if [ "$SPLIT" = "vertical" ]; then
     CMD+=(-h)
-  else
+  elif [ "$SPLIT" = "horizontal" ]; then
     CMD+=(-v)
+  else
+    echo "Error: Invalid split for panes[$i]: $SPLIT (expected 'vertical' or 'horizontal')" >&2
+    exit 1
   fi
 
   if [ -n "$SIZE" ]; then
