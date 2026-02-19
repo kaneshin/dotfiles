@@ -38,14 +38,15 @@
       "Bash(curl:*)",
       "Bash(jq:*)",
       "Bash(patch:*)",
+      "Bash(node:*)",
       "Bash(npm:*)",
+      "Bash(npx:*)",
       "Bash(yarn:*)",
       "Bash(pnpm:*)",
       "Bash(tsc:*)",
       "Bash(pip:*)",
       "Bash(pip3:*)",
       "Bash(uvx:*)",
-      "Bash(brew:*)",
       "Bash(gem:*)",
       "Bash(bundler:*)",
       "Bash(cargo:*)",
@@ -68,18 +69,31 @@
       "mcp__plugin_serena_serena__read_file",
       "mcp__plugin_serena_serena__list_memories",
       "mcp__plugin_serena_serena__write_memory",
+      "mcp__plugin_playwright_playwright__browser_close",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "mcp__plugin_playwright_playwright__browser_click",
       "WebFetch(domain:developers.cloudflare.com)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:api.github.com)",
-      "WebFetch(domain:docs.anthropic.com)"
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:docs.claude.com)"
+    ],
+    "ask": [
+      "Bash(brew:*)",
+      "Bash(wget:*)"
     ],
     "deny": [
+      "Bash(git reset:*)",
+      "Bash(git rebase:*)",
       "Bash(rm -rf /)",
+      "Bash(rm -rf /*)",
       "Bash(rm -rf ~)",
       "Bash(rm -rf ~/)",
-      "Bash(sudo rm -rf /)",
-      "Bash(sudo rm -rf ~)",
-      "Bash(sudo rm -rf ~/)"
+      "Bash(sudo:*)",
+      "Read(**/.dev.vars)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/secrets/**)"
     ],
     "defaultMode": "acceptEdits",
     "disableBypassPermissionsMode": "disable"
@@ -102,27 +116,6 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/send-keys.sh"
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/prompt.sh"
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "ExitPlanMode",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/plan-review.sh"
           }
         ]
       }
