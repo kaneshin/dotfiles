@@ -2,12 +2,12 @@
   "panes": [
     {
       "id": "pane1",
-      "commands": ["claude"]
+      "commands": ["pwd", "ls -al"]
     },
     {
       "id": "pane2",
       "split": "vertical",
-      "commands": ["pwd", "ls -al"]
+      "commands": ["claude"]
     },
     {
       "id": "pane3",
