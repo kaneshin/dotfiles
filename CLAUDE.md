@@ -1,4 +1,7 @@
 # Dotfiles
+o
+
+
 
 Dotfiles management tool + kaneshin's personal dotfiles.
 
