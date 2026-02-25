@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Your purpose is to guide development following these methodologies precisely.
+Global instructions applied to all projects. Your purpose is to guide development following these methodologies precisely.
 
 ## Role and Expertise
 
@@ -46,27 +46,18 @@ Embrace YAGNI (You Aren't Gonna Need It) by only building features when there's 
 ### UI Development Workflow
 
 1. Provide design mock (screenshot or Figma link)
-2. Implement in Remix route
+2. Implement the component/page in the appropriate framework route
 3. Use Playwright to screenshot: `browser_snapshot` or `browser_take_screenshot`
 4. Compare and iterate 2-3 times
 5. Commit when satisfied
 
 ---
 
-# KentBeck Principles
+# TDD & Commit Discipline
 
-In addition to respecting the above principles, you also ensure alignment with Kent Beck’s principles below as described [here](https://raw.githubusercontent.com/KentBeck/BPlusTree3/80e820661b14108ff610bce45b46fcc49937edcc/rust/docs/CLAUDE.md).
+Follow Kent Beck’s principles as described [here](https://raw.githubusercontent.com/KentBeck/BPlusTree3/80e820661b14108ff610bce45b46fcc49937edcc/rust/docs/CLAUDE.md).
 
-## CORE DEVELOPMENT PRINCIPLES
-
-- Always follow the TDD cycle: Red → Green → Refactor
-- Write the simplest failing test first
-- Implement the minimum code needed to make tests pass
-- Refactor only after tests are passing
-- Follow Beck's "Tidy First" approach by separating structural changes from behavioral changes
-- Maintain high code quality throughout development
-
-## TDD METHODOLOGY GUIDANCE
+## TDD Methodology
 
 - Start by writing a failing test that defines a small increment of functionality
 - Use meaningful test names that describe behavior (e.g., "shouldSumTwoPositiveNumbers")
@@ -74,9 +65,11 @@ In addition to respecting the above principles, you also ensure alignment with K
 - Write just enough code to make the test pass - no more
 - Once tests pass, consider if refactoring is needed
 - Repeat the cycle for new functionality
-- When fixing a defect, first write an API-level failing test then write the smallest possible test that replicates the problem then get both tests to pass.
+- When fixing a defect, first write an API-level failing test then write the smallest possible test that replicates the problem then get both tests to pass
 
-## TIDY FIRST APPROACH
+Always write one test at a time, make it run, then improve structure. Always run all the tests (except long-running tests) each time.
+
+## Tidy First Approach
 
 - Separate all changes into two distinct types:
   1. STRUCTURAL CHANGES: Rearranging code without changing behavior (renaming, extracting methods, moving code)
@@ -85,7 +78,7 @@ In addition to respecting the above principles, you also ensure alignment with K
 - Always make structural changes first when both are needed
 - Validate structural changes do not alter behavior by running tests before and after
 
-## COMMIT DISCIPLINE
+## Commit Discipline
 
 - Only commit when:
   1. ALL tests are passing
@@ -94,35 +87,10 @@ In addition to respecting the above principles, you also ensure alignment with K
   4. Commit messages clearly state whether the commit contains structural or behavioral changes
 - Use small, frequent commits rather than large, infrequent ones
 
-## CODE QUALITY STANDARDS
-
-- Eliminate duplication ruthlessly
-- Express intent clearly through naming and structure
-- Make dependencies explicit
-- Keep methods small and focused on a single responsibility
-- Minimize state and side effects
-- Use the simplest solution that could possibly work
-
-## REFACTORING GUIDELINES
+## Refactoring Guidelines
 
 - Refactor only when tests are passing (in the "Green" phase)
 - Use established refactoring patterns with their proper names
 - Make one refactoring change at a time
 - Run tests after each refactoring step
 - Prioritize refactorings that remove duplication or improve clarity
-
-## EXAMPLE WORKFLOW
-
-When approaching a new feature:
-
-1. Write a simple failing test for a small part of the feature
-2. Implement the bare minimum to make it pass
-3. Run tests to confirm they pass (Green)
-4. Make any necessary structural changes (Tidy First), running tests after each change
-5. Commit structural changes separately
-6. Add another test for the next small increment of functionality
-7. Repeat until the feature is complete, committing behavioral changes separately from structural ones
-
-Follow this process precisely, always prioritizing clean, well-tested code over quick implementation.
-
-Always write one test at a time, make it run, then improve structure. Always run all the tests (except long-running tests) each time.
