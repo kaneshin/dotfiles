@@ -9,7 +9,6 @@
       "Bash(bundle:*)",
       "Bash(cargo:*)",
       "Bash(cat:*)",
-      "Bash(cd:*)",
       "Bash(chmod:*)",
       "Bash(chown:*)",
       "Bash(claude:*)",
@@ -58,39 +57,13 @@
       "Bash(which:*)",
       "Bash(yarn:*)",
       "Bash(zsh:*)",
-      "mcp__plugin_serena_serena__onboarding",
-      "mcp__plugin_serena_serena__check_onboarding_performed",
-      "mcp__plugin_serena_serena__get_current_config",
-      "mcp__plugin_serena_serena__activate_project",
-      "mcp__plugin_serena_serena__list_dir",
-      "mcp__plugin_serena_serena__find_file",
-      "mcp__plugin_serena_serena__read_file",
-      "mcp__plugin_serena_serena__list_memories",
-      "mcp__plugin_serena_serena__write_memory",
-      "mcp__plugin_playwright_playwright__browser_close",
-      "mcp__plugin_playwright_playwright__browser_take_screenshot",
-      "mcp__plugin_playwright_playwright__browser_click",
       "WebFetch(domain:developers.cloudflare.com)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:api.github.com)",
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:docs.claude.com)"
     ],
-    "ask": [
-      "Bash(brew:*)",
-      "Bash(bundle install:*)",
-      "Bash(curl:*)",
-      "Bash(gem install:*)",
-      "Bash(npm install:*)",
-      "Bash(pnpm install:*)",
-      "Bash(pip install:*)",
-      "Bash(pip3 install:*)",
-      "Bash(rm:*)",
-      "Bash(wget:*)"
-    ],
     "deny": [
-      "Bash(git reset:*)",
-      "Bash(git rebase:*)",
       "Bash(rm -rf /)",
       "Bash(rm -rf /*)",
       "Bash(rm -rf ~)",
@@ -119,6 +92,22 @@
       "Read(**/id_rsa)",
       "Read(**/id_dsa)",
       "Read(**/.ssh/id_*)"
+    ],
+    "ask": [
+      "Bash(brew:*)",
+      "Bash(bundle install:*)",
+      "Bash(cd:*)",
+      "Bash(curl:*)",
+      "Bash(gem install:*)",
+      "Bash(git reset:*)",
+      "Bash(git rebase:*)",
+      "Bash(npm install:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pip install:*)",
+      "Bash(pip3 install:*)",
+      "Bash(yarn install:*)",
+      "Bash(rm:*)",
+      "Bash(wget:*)"
     ],
     "defaultMode": "acceptEdits",
     "disableBypassPermissionsMode": "disable"
@@ -167,6 +156,7 @@
     "ralph-loop@claude-plugins-official": true,
     "security-guidance@claude-plugins-official": true,
     "serena@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true
+    "typescript-lsp@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true
   }
 }
