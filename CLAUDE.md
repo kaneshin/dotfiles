@@ -18,6 +18,8 @@ Dotfiles management tool + kaneshin's personal dotfiles.
 
 ## Gotchas
 
+- All shell scripts must be Bash 3.2 compatible (macOS `/bin/bash`) — no associative arrays, no `&>>`, no `|&`.
 - `bundle/.claude/CLAUDE.md` is symlinked to `~/.claude/CLAUDE.md` — it is a **global** file affecting all projects. Do not add project-specific content there.
+- `bundle/.claude/` contains Claude Code settings, hooks, and commands — edits here affect all Claude Code usage after `dotfiles install bundle`.
 - Installation creates file-level symlinks for directories (not directory-level symlinks), so individual files inside e.g. `.vim/` are symlinked, not the `.vim/` directory itself.
 - `DOTFILES_ROOT` env var defaults to `~/.dotfiles` if unset.
