@@ -101,10 +101,13 @@
       "Bash(gem install:*)",
       "Bash(git reset:*)",
       "Bash(git rebase:*)",
+      "Bash(npm add:*)",
       "Bash(npm install:*)",
+      "Bash(pnpm add:*)",
       "Bash(pnpm install:*)",
       "Bash(pip install:*)",
       "Bash(pip3 install:*)",
+      "Bash(yarn add:*)",
       "Bash(yarn install:*)",
       "Bash(rm:*)",
       "Bash(wget:*)"
