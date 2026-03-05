@@ -1,3 +1,7 @@
+# The configuration can be reloaded at runtime by pressing 
+# - ctrl+shift+, (Linux)
+# - cmd+shift+, (macOS).
+
 # Color Theme
 # theme = Monokai Remastered
 theme = Terminal Basic Dark
@@ -11,6 +15,7 @@ font-family = Monaco
 font-family-bold = Monaco
 font-family-italic = Monaco
 font-family-bold-italic = Monaco
+font-family = Osaka
 font-family = Noto Sans JP
 font-family = BIZ UDGothic
 font-size = 14
