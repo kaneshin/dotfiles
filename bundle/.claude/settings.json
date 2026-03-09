@@ -1,14 +1,16 @@
 {
+  "model": "opus",
   "cleanupPeriodDays": 30,
   "env": {},
   "includeCoAuthoredBy": true,
   "permissions": {
     "allow": [
       "Bash(awk:*)",
-      "Bash(bash:*)",
+      "Bash(brew:*)",
       "Bash(bundle:*)",
       "Bash(cargo:*)",
       "Bash(cat:*)",
+      "Bash(cd:*)",
       "Bash(chmod:*)",
       "Bash(chown:*)",
       "Bash(claude:*)",
@@ -39,6 +41,7 @@
       "Bash(pip:*)",
       "Bash(pnpm:*)",
       "Bash(pwd:*)",
+      "Bash(rm:*)",
       "Bash(sed:*)",
       "Bash(set:*)",
       "Bash(sort:*)",
@@ -56,25 +59,72 @@
       "Bash(whereis:*)",
       "Bash(which:*)",
       "Bash(yarn:*)",
-      "Bash(zsh:*)",
-      "WebFetch(domain:developers.cloudflare.com)",
-      "WebFetch(domain:github.com)",
-      "WebFetch(domain:api.github.com)",
-      "WebFetch(domain:docs.anthropic.com)",
-      "WebFetch(domain:docs.claude.com)"
+      "Edit(**)",
+      "Read(**)",
+      "WebFetch(domain:**)",
+      "WebSearch",
+      "Write(**)"
     ],
     "deny": [
+      "Bash(rm -rf ../*)",
       "Bash(rm -rf /)",
       "Bash(rm -rf /*)",
       "Bash(rm -rf ~)",
       "Bash(rm -rf ~/)",
+      "Bash(rm -rf ~/*)",
       "Bash(sudo:*)",
+      "Bash(bash:*)",
+      "Bash(sh:*)",
+      "Bash(zsh:*)",
+      "Bash(chmod -R 777:*)",
+      "Bash(chmod 777:*)",
+      "Bash(chown -R:*)",
+      "Bash(> /dev/sda:*)",
+      "Bash(dd:*)",
+      "Bash(format:*)",
+      "Bash(mkfs:*)",
+      "Bash(apt-get install:*)",
+      "Bash(brew install:*)",
+      "Bash(yum install:*)",
+      "Bash(npm install -g:*)",
       "Bash(npm run deploy:*)",
       "Bash(pnpm run deploy:*)",
       "Bash(wrangler deploy:*)",
       "Bash(wrangler pages:*)",
       "Bash(npx wrangler deploy:*)",
       "Bash(npx wrangler pages:*)",
+      "Bash(git checkout:*)",
+      "Bash(git clean:*)",
+      "Bash(git config:*)",
+      "Bash(git rebase:*)",
+      "Bash(git reset:*)",
+      "Bash(gh api --method DELETE:*)",
+      "Bash(gh auth logout:*)",
+      "Bash(gh auth refresh:*)",
+      "Bash(gh gist create:*)",
+      "Bash(gh gist delete:*)",
+      "Bash(gh gpg-key add:*)",
+      "Bash(gh gpg-key delete:*)",
+      "Bash(gh release create:*)",
+      "Bash(gh release delete:*)",
+      "Bash(gh release upload:*)",
+      "Bash(gh repo archive:*)",
+      "Bash(gh repo clone:*)",
+      "Bash(gh repo create:*)",
+      "Bash(gh repo delete:*)",
+      "Bash(gh repo deploy-key:*)",
+      "Bash(gh repo edit:*)",
+      "Bash(gh repo fork:*)",
+      "Bash(gh repo rename:*)",
+      "Bash(gh repo sync:*)",
+      "Bash(gh repo unarchive:*)",
+      "Bash(gh secret delete:*)",
+      "Bash(gh secret set:*)",
+      "Bash(gh ssh-key add:*)",
+      "Bash(gh ssh-key delete:*)",
+      "Bash(gh workflow disable:*)",
+      "Bash(gh workflow enable:*)",
+      "Bash(gh workflow run:*)",
       "Read(**/.dev.vars)",
       "Read(**/.env)",
       "Read(**/.env.*)",
@@ -94,28 +144,21 @@
       "Read(**/.ssh/id_*)"
     ],
     "ask": [
-      "Bash(brew:*)",
       "Bash(bundle install:*)",
-      "Bash(cd:*)",
-      "Bash(curl:*)",
       "Bash(gem install:*)",
-      "Bash(git reset:*)",
-      "Bash(git rebase:*)",
       "Bash(npm add:*)",
       "Bash(npm install:*)",
-      "Bash(pnpm add:*)",
-      "Bash(pnpm install:*)",
       "Bash(pip install:*)",
       "Bash(pip3 install:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm install:*)",
       "Bash(yarn add:*)",
       "Bash(yarn install:*)",
-      "Bash(rm:*)",
+      "Bash(curl:*)",
       "Bash(wget:*)"
     ],
-    "defaultMode": "acceptEdits",
-    "disableBypassPermissionsMode": "disable"
+    "defaultMode": "acceptEdits"
   },
-  "model": "opus",
   "hooks": {
     "Notification": [
       {
@@ -133,6 +176,17 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/send-keys.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/permissions.sh"
           }
         ]
       }
