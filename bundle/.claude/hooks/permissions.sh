@@ -12,11 +12,20 @@ COMMANDS="${COMMANDS//&&/$NL}"
 COMMANDS="${COMMANDS//\|\|/$NL}"
 COMMANDS="${COMMANDS//\|/$NL}"
 
+settings=$(cat "$HOME/.claude/settings.json")
+if [ -n "$CLAUDE_PROJECT_DIR" ]; then
+  if [ -f "$CLAUDE_PROJECT_DIR/.claude/settings.json" ]; then
+    settings=$(echo "$settings"; cat "$CLAUDE_PROJECT_DIR/.claude/settings.json")
+  fi
+  if [ -f "$CLAUDE_PROJECT_DIR/.claude/settings.local.json" ]; then
+    settings=$(echo "$settings"; cat "$CLAUDE_PROJECT_DIR/.claude/settings.local.json")
+  fi
+fi
+
 extract_patterns() {
   local list=$(cat)
   echo "$list" | jq -r '.[] | select(startswith("Bash(")) | gsub("^Bash\\("; "") | gsub("\\)$"; "")'
 }
-settings=$(cat "$HOME/.claude/settings.json")
 
 # Deny
 deny_patterns=$(echo "$settings" | jq -r '.permissions.deny // []' | extract_patterns)

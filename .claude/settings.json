@@ -1,0 +1,9 @@
+{
+  "hooks": {},
+  "permissions": {
+    "allow": [
+      "Bash(./bin/dotfiles:*)"
+    ],
+    "deny": []
+  }
+}
