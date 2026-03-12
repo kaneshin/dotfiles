@@ -1,5 +1,4 @@
 {
-  "model": "opus",
   "cleanupPeriodDays": 30,
   "env": {},
   "includeCoAuthoredBy": true,
@@ -178,6 +177,17 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/permissions.sh"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "prompt_input_exit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/copy-session-id.sh"
           }
         ]
       }

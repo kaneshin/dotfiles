@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 30-Jan-2026.
+# Last Change: 12-Mar-2026.
 
 # system-wide environment settings for zsh(1)
 if [ -x /usr/libexec/path_helper ]; then
@@ -58,7 +58,9 @@ if [ -d "$LOCAL_SRC/github.com/kaneshin/dotfiles" ]; then
   fi
 fi
 
-# setup go
+### Programming Language ###
+
+## setup go
 export GOPATH="$LOCAL_ROOT"
 export GOBIN="$LOCAL_BIN"
 if [[ ":${PATH}:" != *:"${GOBIN}":* ]]; then
@@ -71,50 +73,80 @@ if [[ ":${PATH}:" != *:"${GOROOTBIN}":* ]]; then
 fi
 export GOPROXY="https://proxy.golang.org,direct"
 
-# setup python
-export PYENV_ROOT="$HOME/.pyenv"
-if [ -d "$PYENV_ROOT/bin" ]; then
-  export PATH="$PYENV_ROOT/bin:$PATH"
-  eval "$(pyenv init -)"
+## setup python
+if [ -d "$HOME/.pyenv" ]; then
+  export PYENV_ROOT="$HOME/.pyenv"
+  export PYENV_BIN="$PYENV_ROOT/bin"
+  if [ -d "$PYENV_BIN" ]; then
+    if [[ ":${PATH}:" != *:"${PYENV_BIN}":* ]]; then
+      export PATH="$PYENV_BIN:$PATH"
+      eval "$(pyenv init -)"
+    fi
+  fi
 fi
 
-# setup rust
+## setup rust
 if [ -d "$HOME/.cargo" ]; then
   export CARGO_HOME="$HOME/.cargo"
-  if [[ ":${PATH}:" != *:"${CARGO_HOME}/bin":* ]]; then
-    export PATH="$CARGO_HOME/bin:$PATH"
+  export CARGO_BIN="$CARGO_HOME/bin"
+  if [[ ":${PATH}:" != *:"${CARGO_BIN}":* ]]; then
+    export PATH="$CARGO_BIN:$PATH"
   fi
 fi
 
-# setup ghq
-if which ghq > /dev/null 2>&1; then
-  export GHQ_ROOT=$LOCAL_SRC
-fi
-
-# setup fzf
-if [ -d "$HOME/.fzf" ]; then
-  export FZF_ROOT="$HOME/.fzf"
-  export FZF_BIN="$FZF_ROOT/bin"
-  if [[ ":${PATH}:" != *:"${FZF_BIN}":* ]]; then
-    export PATH="$FZF_BIN:$PATH"
-  fi
-fi
-
-# setup rancher desktop
-if [ -d "$HOME/.rd" ]; then
-  export RD_ROOT="$HOME/.rd"
-  export RD_BIN="$RD_ROOT/bin"
-  if [[ ":${PATH}:" != *:"${RD_BIN}":* ]]; then
-    export PATH="$RD_BIN:$PATH"
-  fi
-fi
-
-# setup pnpm
+## setup pnpm
 if which pnpm > /dev/null 2>&1; then
   export PNPM_HOME="$HOME/.pnpm"
   [ ! -d "$PNPM_HOME" ] && mkdir -p $PNPM_HOME
   if [[ ":${PATH}:" != *:"${PNPM_HOME}":* ]]; then
     export PATH="$PNPM_HOME:$PATH"
+  fi
+fi
+
+### Dev Tools ###
+
+function brewport_install() {
+  if which brew > /dev/null 2>&1; then
+    brew install "$@"
+  elif which port > /dev/null 2>&1; then
+    port install "$@"
+  fi
+}
+
+## setup jq
+if ! which jq > /dev/null 2>&1; then
+  brewport_install jq
+fi
+
+## setup ghq
+if ! which ghq > /dev/null 2>&1; then
+  brewport_install ghq
+fi
+if which ghq > /dev/null 2>&1; then
+  export GHQ_ROOT=$LOCAL_SRC
+fi
+
+## setup fd
+if ! which fd > /dev/null 2>&1; then
+  brewport_install fd
+fi
+
+## setup fzf
+if ! which fzf > /dev/null 2>&1; then
+  brewport_install fzf
+fi
+
+## setup mmv
+if ! which mmv > /dev/null 2>&1; then
+  brewport_install itchyny/tap/mmv
+fi
+
+## setup rancher desktop
+if [ -d "$HOME/.rd" ]; then
+  export RD_ROOT="$HOME/.rd"
+  export RD_BIN="$RD_ROOT/bin"
+  if [[ ":${PATH}:" != *:"${RD_BIN}":* ]]; then
+    export PATH="$RD_BIN:$PATH"
   fi
 fi
 
