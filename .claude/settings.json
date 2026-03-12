@@ -2,8 +2,13 @@
   "hooks": {},
   "permissions": {
     "allow": [
-      "Bash(./bin/dotfiles:*)"
+      "Bash(./bin/*)",
+      "Bash(./tests/*)"
     ],
-    "deny": []
-  }
+    "deny": [
+      "Bash(./libexec/*)",
+      "Bash(./scripts/*)"
+    ]
+  },
+  "plansDirectory": "./docs/plans"
 }
