@@ -10,5 +10,5 @@
       "Bash(./scripts/*)"
     ]
   },
-  "plansDirectory": "./docs/plans"
+  "plansDirectory": "./.claude/plans"
 }
