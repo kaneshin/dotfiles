@@ -1,5 +1,7 @@
 # dotfiles
 
+A dotfiles management CLI tool and kaneshin's personal dotfiles.
+
 ## Installation
 
 Clone the dotfiles repository to your desired location.
@@ -14,6 +16,22 @@ Define the environment variable `DOTFILES_ROOT` to point to the path where dotfi
 export DOTFILES_ROOT="$HOME/.dotfiles"
 export PATH="$DOTFILES_ROOT/bin:$PATH"
 ```
+
+## Usage
+
+The `dotfiles` command provides three subcommands:
+
+```
+dotfiles help
+dotfiles version
+dotfiles install <path>
+```
+
+Run `dotfiles help` or `dotfiles help install` for details on available flags.
+
+Directories in the bundle are not symlinked as directories — individual files inside them are symlinked at their relative paths under `$HOME`.
+
+> **Note:** Bundles can contain shell startup files (`.zshrc`, `.bash_profile`), git hooks (`.githooks/`), and tool configurations (`.claude/`, `.config/`) that execute automatically or change global tool behavior. Only install bundles you trust and review their contents first.
 
 ## Install Your Own Dotfiles
 

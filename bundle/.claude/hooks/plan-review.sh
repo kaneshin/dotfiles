@@ -9,14 +9,14 @@ fi
 cd "$CLAUDE_PROJECT_DIR"
 
 INPUT=$(cat)
-SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty')
 PERMISSION_MODE=$(echo "$INPUT" | jq -r '.permission_mode // empty')
-HOOK_EVENT_NAME=$(echo "$INPUT" | jq -r '.hook_event_name // empty')
-TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty')
-
 if [ "$PERMISSION_MODE" != "plan" ]; then
   exit 0
 fi
+
+SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty')
+HOOK_EVENT_NAME=$(echo "$INPUT" | jq -r '.hook_event_name // empty')
+TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty')
 
 # Logging
 LOG_DIR="$HOME/.claude/logs"
@@ -27,6 +27,8 @@ echo "=== $(date '+%Y-%m-%d %H:%M:%S') $HOOK_EVENT_NAME ($TOOL_NAME) hook execut
 # plan-review file to store something
 PLAN_REVIEW_FILE="$CLAUDE_PROJECT_DIR/.claude/plan-review.jsonl"
 [ ! -f "$PLAN_REVIEW_FILE" ] && touch "$PLAN_REVIEW_FILE"
+PLAN_REVIEW_JSON=$(jq -c "if .session_id == \"$SESSION_ID\" then . else empty end" "$PLAN_REVIEW_FILE")
+[ -z "$PLAN_REVIEW_JSON" ] && PLAN_REVIEW_JSON="{}"
 
 update_plan_review_file() {
   local INPUT_FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
@@ -35,32 +37,67 @@ update_plan_review_file() {
   fi
   local data=$(jq -nc "{
       session_id: \"$SESSION_ID\",
-      file_path: \"$INPUT_FILE_PATH\"
+      file_path: \"$INPUT_FILE_PATH\",
+      reviews: $(echo "$PLAN_REVIEW_JSON" | jq -r '.reviews // 0'),
+      timestamp: $(date +%s)
     }")
   echo "- update plan-review.jsonl: $data" >> "$LOG_FILE"
 
-  local json=$(jq "if .session_id == \"$SESSION_ID\" then . else empty end" "$PLAN_REVIEW_FILE")
-  if [ -n "$json" ]; then
-    local tmp_file="$CLAUDE_PROJECT_DIR/.claude/plan-review.tmp.jsonl"
-    jq -c "if .session_id == \"$SESSION_ID\" then .file_path = \"$INPUT_FILE_PATH\" end" "$PLAN_REVIEW_FILE" > "$tmp_file"
-    mv "$tmp_file" "$PLAN_REVIEW_FILE"
-  else
+  if [ "$PLAN_REVIEW_JSON" = "{}" ]; then
     echo "$data" >> "$PLAN_REVIEW_FILE"
+  else
+    local tmp_file="$CLAUDE_PROJECT_DIR/.claude/plan-review.tmp.jsonl"
+    jq -c "if .session_id == \"$SESSION_ID\" then . = $data end" "$PLAN_REVIEW_FILE" > "$tmp_file"
+    mv "$tmp_file" "$PLAN_REVIEW_FILE"
   fi
 }
 
 plan_review() {
-  local data=$(jq "if .session_id == \"$SESSION_ID\" then . else empty end" "$PLAN_REVIEW_FILE")
-  if [ -z "$data" ]; then
-    exit 0
-  fi
-  local file_path=$(echo "$data" | jq -r '.file_path // empty')
+  local file_path=$(echo "$PLAN_REVIEW_JSON" | jq -r '.file_path // empty')
   if [ -z "$file_path" ]; then
     exit 0
   fi
+  # check and save review iteration
+  local reviews=$(jq -c "if .session_id == \"$SESSION_ID\" then . else empty end | .reviews" "$PLAN_REVIEW_FILE")
+  if [ "$reviews" = "3" ]; then
+    exit 0
+  fi
+  local tmp_file="$CLAUDE_PROJECT_DIR/.claude/plan-review.tmp.jsonl"
+  jq -c "if .session_id == \"$SESSION_ID\" then .reviews = .reviews+1 end" "$PLAN_REVIEW_FILE" > "$tmp_file"
+  mv "$tmp_file" "$PLAN_REVIEW_FILE"
   echo "- review plan: $file_path" >> "$LOG_FILE"
-  local result=$(codex exec resume --last -m gpt-5.4 "/review @${file_path}")
-  echo "- review plan result: $result" >> "$LOG_FILE"
+  local review_results=$(codex exec \
+    -m gpt-5.4 \
+    -s read-only \
+    "/review Review the implementation plan in @${file_path}. You have to focus on:
+1. Correctness - Will this plan achieve the stated goals?
+2. Risks - What could go wrong? Edge cases? Data loss?
+3. Missing steps - Is anything forgotten?
+4. Alternatives - Is there a simpler or better approach?
+5. Security - Any security concerns?
+
+Be specific and actionable. If the plan is solid and ready to implement, end your review with exactly: VERDICT: APPROVED
+
+If changes are needed, end with exactly: VERDICT: REVISE")
+  echo "- review plan results: $review_results" >> "$LOG_FILE"
+  if [[ "$review_results" == *"VERDICT: APPROVED"* ]]; then
+    exit 0
+  fi
+  local data="{
+    hookSpecificOutput: {
+      hookEventName: \"$HOOK_EVENT_NAME\",
+      permissionDecision: \"deny\",
+      permissionDecisionReason: \"$TOOL_NAME was blocked by plan-review hook.
+Revise [this original plan]($file_path) based on the following review results.
+Then, ask me to approve your update plan by ExitPlanMode after you complete improving your plan.
+
+## Review Results
+${review_results//\"/\\\"}\"
+    }
+  }"
+  echo "- review plan output: $data" >> "$LOG_FILE"
+  jq -n "$data" 2>&1 >> "$LOG_FILE"
+  jq -n "$data"
 }
 
 if [ "$TOOL_NAME" = "ExitPlanMode" ]; then
