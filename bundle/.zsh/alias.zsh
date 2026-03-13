@@ -1,5 +1,5 @@
 # Maintainer:  Shintaro Kaneko <kaneshin0120@gmail.com>
-# Last Change: 30-Jan-2026.
+# Last Change: 14-Mar-2026.
 
 # alias
 ## ls command
@@ -33,6 +33,7 @@ alias path='echo -e ${PATH//:/\\n}'
 alias now='date +"%T"'
 alias nowtime=now
 alias nowdate='date +"%d-%m-%Y"'
+alias unixtime='date +"%s"'
 
 # vim:set ts=8 sts=2 sw=2 tw=0:
 # vim:set ft=sh:
