@@ -1,11 +1,13 @@
 #!/bin/bash
 
-# This script is allowed to run in a project directory.
+# Plan review hook — runs an external review (codex CLI) when ExitPlanMode is invoked.
+# State is stored per-session in .claude/plan-review/<session_id>.json.
+
+# This hook only operates within a project directory.
 if [ -z "$CLAUDE_PROJECT_DIR" ]; then
   exit 0
 fi
 
-# change working directory
 cd "$CLAUDE_PROJECT_DIR"
 
 INPUT=$(cat)
@@ -20,53 +22,60 @@ TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty')
 
 # Logging
 LOG_DIR="$HOME/.claude/logs"
-[ ! -d "$LOG_DIR" ] && mkdir -p $LOG_DIR
+[ ! -d "$LOG_DIR" ] && mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/plan-review.log"
 echo "=== $(date '+%Y-%m-%d %H:%M:%S') $HOOK_EVENT_NAME ($TOOL_NAME) hook executed ===" >> "$LOG_FILE"
 
-# plan-review file to store something
-PLAN_REVIEW_FILE="$CLAUDE_PROJECT_DIR/.claude/plan-review.jsonl"
-[ ! -f "$PLAN_REVIEW_FILE" ] && touch "$PLAN_REVIEW_FILE"
-PLAN_REVIEW_JSON=$(jq -c "if .session_id == \"$SESSION_ID\" then . else empty end" "$PLAN_REVIEW_FILE")
-[ -z "$PLAN_REVIEW_JSON" ] && PLAN_REVIEW_JSON="{}"
+# Per-session state file
+STATE_DIR="$CLAUDE_PROJECT_DIR/.claude/plan-review"
+mkdir -p "$STATE_DIR"
+STATE_FILE="$STATE_DIR/${SESSION_ID}.json"
+
+if [ -f "$STATE_FILE" ]; then
+  PLAN_REVIEW_JSON=$(cat "$STATE_FILE")
+else
+  PLAN_REVIEW_JSON="{}"
+fi
 
 update_plan_review_file() {
-  local INPUT_FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
+  local INPUT_FILE_PATH
+  INPUT_FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
   if [ -z "$INPUT_FILE_PATH" ]; then
-    exit 0
+    return 0
   fi
-  local data=$(jq -nc "{
-      session_id: \"$SESSION_ID\",
-      file_path: \"$INPUT_FILE_PATH\",
-      reviews: $(echo "$PLAN_REVIEW_JSON" | jq -r '.reviews // 0'),
-      timestamp: $(date +%s)
-    }")
-  echo "- update plan-review.jsonl: $data" >> "$LOG_FILE"
-
-  if [ "$PLAN_REVIEW_JSON" = "{}" ]; then
-    echo "$data" >> "$PLAN_REVIEW_FILE"
-  else
-    local tmp_file="$CLAUDE_PROJECT_DIR/.claude/plan-review.tmp.jsonl"
-    jq -c "if .session_id == \"$SESSION_ID\" then . = $data end" "$PLAN_REVIEW_FILE" > "$tmp_file"
-    mv "$tmp_file" "$PLAN_REVIEW_FILE"
-  fi
+  local reviews
+  reviews=$(echo "$PLAN_REVIEW_JSON" | jq -r '.reviews // 0')
+  jq -n \
+    --arg fp "$INPUT_FILE_PATH" \
+    --argjson rev "$reviews" \
+    --argjson ts "$(date +%s)" \
+    '{file_path: $fp, reviews: $rev, timestamp: $ts}' > "$STATE_FILE"
+  echo "- update state: $STATE_FILE" >> "$LOG_FILE"
 }
 
 plan_review() {
-  local file_path=$(echo "$PLAN_REVIEW_JSON" | jq -r '.file_path // empty')
+  local file_path
+  file_path=$(echo "$PLAN_REVIEW_JSON" | jq -r '.file_path // empty')
   if [ -z "$file_path" ]; then
-    exit 0
+    return 0
   fi
-  # check and save review iteration
-  local reviews=$(jq -c "if .session_id == \"$SESSION_ID\" then . else empty end | .reviews" "$PLAN_REVIEW_FILE")
+
+  # Check review iteration cap
+  local reviews
+  reviews=$(jq -r '.reviews // 0' "$STATE_FILE")
   if [ "$reviews" = "3" ]; then
-    exit 0
+    return 0
   fi
-  local tmp_file="$CLAUDE_PROJECT_DIR/.claude/plan-review.tmp.jsonl"
-  jq -c "if .session_id == \"$SESSION_ID\" then .reviews = .reviews+1 end" "$PLAN_REVIEW_FILE" > "$tmp_file"
-  mv "$tmp_file" "$PLAN_REVIEW_FILE"
-  echo "- review plan: $file_path" >> "$LOG_FILE"
-  local review_results=$(codex exec \
+
+  # Increment reviews BEFORE codex exec (counts attempts, not successes)
+  jq -c '.reviews = (.reviews // 0) + 1' "$STATE_FILE" > "${STATE_FILE}.tmp" \
+    && mv "${STATE_FILE}.tmp" "$STATE_FILE"
+
+  echo "- review plan: $file_path (attempt $((reviews + 1)))" >> "$LOG_FILE"
+
+  # codex failure or non-APPROVED output is treated as deny (fail-safe)
+  local review_results
+  review_results=$(codex exec \
     -m gpt-5.4 \
     -s read-only \
     "/review Review the implementation plan in @${file_path}. You have to focus on:
@@ -78,69 +87,30 @@ plan_review() {
 
 Be specific and actionable. If the plan is solid and ready to implement, end your review with exactly: VERDICT: APPROVED
 
-If changes are needed, end with exactly: VERDICT: REVISE")
-  echo "- review plan results: $review_results" >> "$LOG_FILE"
-  if [[ "$review_results" == *"VERDICT: APPROVED"* ]]; then
-    exit 0
-  fi
-  local data="{
-    hookSpecificOutput: {
-      hookEventName: \"$HOOK_EVENT_NAME\",
-      permissionDecision: \"deny\",
-      permissionDecisionReason: \"$TOOL_NAME was blocked by plan-review hook.
-Revise [this original plan]($file_path) based on the following review results.
-Then, ask me to approve your update plan by ExitPlanMode after you complete improving your plan.
+If changes are needed, end with exactly: VERDICT: REVISE") || true
 
-## Review Results
-${review_results//\"/\\\"}\"
-    }
-  }"
-  echo "- review plan output: $data" >> "$LOG_FILE"
-  jq -n "$data" 2>&1 >> "$LOG_FILE"
-  jq -n "$data"
+  echo "- review results: $review_results" >> "$LOG_FILE"
+
+  if [[ "$review_results" == *"VERDICT: APPROVED"* ]]; then
+    return 0
+  fi
+
+  # Emit deny response — use backtick path (no Markdown link injection risk)
+  local reason
+  reason=$(printf '%s was blocked by plan-review hook.\nRevise the original plan `%s` based on the following review results.\nThen, ask me to approve your update plan by ExitPlanMode after you complete improving your plan.\n\n## Review Results\n%s' \
+    "$TOOL_NAME" "$file_path" "$review_results")
+
+  jq -n \
+    --arg event "$HOOK_EVENT_NAME" \
+    --arg reason "$reason" \
+    '{hookSpecificOutput: {hookEventName: $event, permissionDecision: "deny", permissionDecisionReason: $reason}}'
 }
 
+# Main dispatch — errors in state management should not block the user
 if [ "$TOOL_NAME" = "ExitPlanMode" ]; then
-  plan_review
+  plan_review || { echo "- plan_review failed, allowing exit" >> "$LOG_FILE"; }
 else
-  update_plan_review_file
+  update_plan_review_file || { echo "- update failed, continuing" >> "$LOG_FILE"; }
 fi
 
 exit 0
-
-
-
-# claude settings files in order
-SETTINGS="$HOME/.claude/settings.json"
-if [ -n "$CLAUDE_PROJECT_DIR" ]; then
-  prj_settings="$CLAUDE_PROJECT_DIR/.claude/settings.json"
-  if [ -f "$prj_settings" ]; then
-    SETTINGS="$SETTINGS\n$prj_settings"
-  fi
-  prj_local_settings="$CLAUDE_PROJECT_DIR/.claude/settings.local.json"
-  if [ -f "$prj_local_settings" ]; then
-    SETTINGS="$SETTINGS\n$prj_local_settings"
-  fi
-fi
-SETTINGS=$(echo -e "$SETTINGS")
-
-PLANS_DIR="$HOME/.claude/plans/" # default
-while IFS= read -r settings; do
-  [ ! -f "$settings" ] && continue
-
-  dir=$(jq -r '.plansDirectory // empty' "$settings")
-  if [ -n "$dir" ]; then
-    PLANS_DIR="$dir"
-  fi
-done <<<"$SETTINGS"
-
-
-# 1. get the latest plan file
-#   ls -t .claude/plans/ | head -1
-#   Or to get the full path:
-#   ls -t .claude/plans/ | head -1 | xargs -I{} echo .claude/plans/{}
-# 2. review the plan file
-
-exit 0
-
-
