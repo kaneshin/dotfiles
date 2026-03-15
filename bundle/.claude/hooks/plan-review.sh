@@ -43,14 +43,42 @@ update_plan_review_file() {
   if [ -z "$INPUT_FILE_PATH" ]; then
     return 0
   fi
-  local reviews
-  reviews=$(echo "$PLAN_REVIEW_JSON" | jq -r '.reviews // 0')
-  jq -n \
-    --arg fp "$INPUT_FILE_PATH" \
-    --argjson rev "$reviews" \
-    --argjson ts "$(date +%s)" \
-    '{file_path: $fp, reviews: $rev, timestamp: $ts}' > "$STATE_FILE"
+
+  local stored_file_path
+  stored_file_path=$(echo "$PLAN_REVIEW_JSON" | jq -r '.file_path // empty' 2>/dev/null)
+
+  if [ "$INPUT_FILE_PATH" != "$stored_file_path" ]; then
+    # New plan file — full reset
+    jq -n \
+      --arg fp "$INPUT_FILE_PATH" \
+      --argjson ts "$(date +%s)" \
+      '{file_path: $fp, reviews: 0, timestamp: $ts}' > "$STATE_FILE"
+  else
+    # Same plan file — preserve all fields
+    local reviews codex_tid
+    reviews=$(echo "$PLAN_REVIEW_JSON" | jq -r '.reviews // 0')
+    codex_tid=$(echo "$PLAN_REVIEW_JSON" | jq -r '.codex_thread_id // empty' 2>/dev/null)
+    if [ -n "$codex_tid" ]; then
+      jq -n --arg fp "$INPUT_FILE_PATH" --argjson rev "$reviews" --argjson ts "$(date +%s)" --arg tid "$codex_tid" \
+        '{file_path: $fp, reviews: $rev, timestamp: $ts, codex_thread_id: $tid}' > "$STATE_FILE"
+    else
+      jq -n --arg fp "$INPUT_FILE_PATH" --argjson rev "$reviews" --argjson ts "$(date +%s)" \
+        '{file_path: $fp, reviews: $rev, timestamp: $ts}' > "$STATE_FILE"
+    fi
+  fi
   echo "- update state: $STATE_FILE" >> "$LOG_FILE"
+}
+
+parse_codex_jsonl() {
+  local jsonl_output="$1"
+  CODEX_THREAD_ID=""
+  CODEX_REVIEW_TEXT=""
+  CODEX_THREAD_ID=$(printf '%s\n' "$jsonl_output" \
+    | jq -R -r 'fromjson? | select(.type == "thread.started") | .thread_id // empty' 2>/dev/null \
+    | head -1)
+  CODEX_REVIEW_TEXT=$(printf '%s\n' "$jsonl_output" \
+    | jq -R -r 'fromjson? | select(.type == "item.completed" and .item.type == "agent_message") | .item.text // empty' 2>/dev/null \
+    | paste -sd $'\n' -)
 }
 
 plan_review() {
@@ -67,18 +95,15 @@ plan_review() {
     return 0
   fi
 
-  # Increment reviews BEFORE codex exec (counts attempts, not successes)
+  # Increment reviews BEFORE codex call (counts attempts, not successes)
   jq -c '.reviews = (.reviews // 0) + 1' "$STATE_FILE" > "${STATE_FILE}.tmp" \
     && mv "${STATE_FILE}.tmp" "$STATE_FILE"
 
   echo "- review plan: $file_path (attempt $((reviews + 1)))" >> "$LOG_FILE"
 
-  # codex failure or non-APPROVED output is treated as deny (fail-safe)
-  local review_results
-  review_results=$(codex exec \
-    -m gpt-5.4 \
-    -s read-only \
-    "/review Review the implementation plan in @${file_path}. You have to focus on:
+  # Build prompt once, reuse for both exec and resume
+  local prompt
+  prompt="/review Review the implementation plan in @${file_path}. You have to focus on:
 1. Correctness - Will this plan achieve the stated goals?
 2. Risks - What could go wrong? Edge cases? Data loss?
 3. Missing steps - Is anything forgotten?
@@ -87,11 +112,43 @@ plan_review() {
 
 Be specific and actionable. If the plan is solid and ready to implement, end your review with exactly: VERDICT: APPROVED
 
-If changes are needed, end with exactly: VERDICT: REVISE") || true
+If changes are needed, end with exactly: VERDICT: REVISE"
 
+  # Determine whether to exec or resume
+  local codex_thread_id
+  codex_thread_id=$(echo "$PLAN_REVIEW_JSON" | jq -r '.codex_thread_id // empty')
+
+  local codex_output codex_rc
+  if [ -n "$codex_thread_id" ]; then
+    echo "- resuming codex thread: ${codex_thread_id:0:8}..." >> "$LOG_FILE"
+    codex_output=$(codex exec resume --json "$codex_thread_id" "$prompt") && codex_rc=0 || codex_rc=$?
+    parse_codex_jsonl "$codex_output"
+
+    # Retry with fresh exec if resume failed (non-zero exit OR empty text)
+    if [ "$codex_rc" -ne 0 ] || [ -z "$CODEX_REVIEW_TEXT" ]; then
+      echo "- resume failed (rc=$codex_rc), retrying with fresh exec" >> "$LOG_FILE"
+      codex_output=$(codex exec --json -m gpt-5.4 -s read-only "$prompt") && codex_rc=0 || codex_rc=$?
+      parse_codex_jsonl "$codex_output"
+    fi
+  else
+    codex_output=$(codex exec --json -m gpt-5.4 -s read-only "$prompt") && codex_rc=0 || codex_rc=$?
+    parse_codex_jsonl "$codex_output"
+  fi
+
+  # Persist thread_id ONLY on successful run (rc=0 AND non-empty text)
+  if [ "$codex_rc" -eq 0 ] && [ -n "$CODEX_REVIEW_TEXT" ] && [ -n "$CODEX_THREAD_ID" ]; then
+    jq -c --arg tid "$CODEX_THREAD_ID" '.codex_thread_id = $tid' "$STATE_FILE" > "${STATE_FILE}.tmp" \
+      && mv "${STATE_FILE}.tmp" "$STATE_FILE" 2>/dev/null || true
+    echo "- saved codex thread: ${CODEX_THREAD_ID:0:8}..." >> "$LOG_FILE"
+  fi
+
+  local review_results="$CODEX_REVIEW_TEXT"
   echo "- review results: $review_results" >> "$LOG_FILE"
 
   if [[ "$review_results" == *"VERDICT: APPROVED"* ]]; then
+    # Clear thread_id — review cycle complete, avoid stale context
+    jq -c 'del(.codex_thread_id)' "$STATE_FILE" > "${STATE_FILE}.tmp" \
+      && mv "${STATE_FILE}.tmp" "$STATE_FILE" 2>/dev/null || true
     return 0
   fi
 

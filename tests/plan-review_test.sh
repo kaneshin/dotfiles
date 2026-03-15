@@ -60,11 +60,16 @@ trap 'rm -rf "$TEST_TMP_DIR"' EXIT
 MOCK_BIN="$TEST_TMP_DIR/bin"
 mkdir -p "$MOCK_BIN"
 
-# Default mock codex: outputs VERDICT: APPROVED
+# Default mock codex: outputs JSONL with VERDICT: APPROVED
 set_mock_codex_approved() {
   cat > "$MOCK_BIN/codex" <<'MOCK'
 #!/bin/bash
-echo "Looks good. VERDICT: APPROVED"
+printf '%s ' "$@" | tr '\n' ' ' >> "$HOME/.claude/logs/codex-argv.log"
+printf '\n' >> "$HOME/.claude/logs/codex-argv.log"
+echo '{"type":"thread.started","thread_id":"mock-thread-001"}'
+echo '{"type":"turn.started"}'
+echo '{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"Looks good. VERDICT: APPROVED"}}'
+echo '{"type":"turn.completed","usage":{}}'
 MOCK
   chmod +x "$MOCK_BIN/codex"
 }
@@ -72,7 +77,12 @@ MOCK
 set_mock_codex_revise() {
   cat > "$MOCK_BIN/codex" <<'MOCK'
 #!/bin/bash
-echo "Issue found. Please fix X. VERDICT: REVISE"
+printf '%s ' "$@" | tr '\n' ' ' >> "$HOME/.claude/logs/codex-argv.log"
+printf '\n' >> "$HOME/.claude/logs/codex-argv.log"
+echo '{"type":"thread.started","thread_id":"mock-thread-002"}'
+echo '{"type":"turn.started"}'
+echo '{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"Issue found. Please fix X. VERDICT: REVISE"}}'
+echo '{"type":"turn.completed","usage":{}}'
 MOCK
   chmod +x "$MOCK_BIN/codex"
 }
@@ -80,6 +90,8 @@ MOCK
 set_mock_codex_fail() {
   cat > "$MOCK_BIN/codex" <<'MOCK'
 #!/bin/bash
+printf '%s ' "$@" | tr '\n' ' ' >> "$HOME/.claude/logs/codex-argv.log"
+printf '\n' >> "$HOME/.claude/logs/codex-argv.log"
 exit 1
 MOCK
   chmod +x "$MOCK_BIN/codex"
@@ -88,10 +100,53 @@ MOCK
 set_mock_codex_multiline() {
   cat > "$MOCK_BIN/codex" <<'MOCK'
 #!/bin/bash
-printf 'Line 1: issue with "quotes"\nLine 2: another problem\nLine 3: conclusion\nVERDICT: REVISE'
+printf '%s ' "$@" | tr '\n' ' ' >> "$HOME/.claude/logs/codex-argv.log"
+printf '\n' >> "$HOME/.claude/logs/codex-argv.log"
+echo '{"type":"thread.started","thread_id":"mock-thread-003"}'
+echo '{"type":"turn.started"}'
+printf '{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"Line 1: issue with \\"quotes\\"\\nLine 2: another problem"}}\n'
+printf '{"type":"item.completed","item":{"id":"item_1","type":"agent_message","text":"Line 3: conclusion\\nVERDICT: REVISE"}}\n'
+echo '{"type":"turn.completed","usage":{}}'
 MOCK
   chmod +x "$MOCK_BIN/codex"
 }
+
+set_mock_codex_resume_fail() {
+  cat > "$MOCK_BIN/codex" <<'MOCK'
+#!/bin/bash
+printf '%s ' "$@" | tr '\n' ' ' >> "$HOME/.claude/logs/codex-argv.log"
+printf '\n' >> "$HOME/.claude/logs/codex-argv.log"
+if [ "$1" = "exec" ] && [ "$2" = "resume" ]; then
+  exit 1
+fi
+echo '{"type":"thread.started","thread_id":"mock-thread-fresh"}'
+echo '{"type":"turn.started"}'
+echo '{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"Fresh review. VERDICT: REVISE"}}'
+echo '{"type":"turn.completed","usage":{}}'
+MOCK
+  chmod +x "$MOCK_BIN/codex"
+}
+
+set_mock_codex_resume_partial() {
+  cat > "$MOCK_BIN/codex" <<'MOCK'
+#!/bin/bash
+printf '%s ' "$@" | tr '\n' ' ' >> "$HOME/.claude/logs/codex-argv.log"
+printf '\n' >> "$HOME/.claude/logs/codex-argv.log"
+if [ "$1" = "exec" ] && [ "$2" = "resume" ]; then
+  echo '{"type":"thread.started","thread_id":"mock-thread-partial"}'
+  exit 1
+fi
+echo '{"type":"thread.started","thread_id":"mock-thread-fresh-after-partial"}'
+echo '{"type":"turn.started"}'
+echo '{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"Fresh after partial. VERDICT: REVISE"}}'
+echo '{"type":"turn.completed","usage":{}}'
+MOCK
+  chmod +x "$MOCK_BIN/codex"
+}
+
+# Ensure codex argv log directory exists
+mkdir -p "$TEST_TMP_DIR/home/.claude/logs"
+: > "$TEST_TMP_DIR/home/.claude/logs/codex-argv.log"
 
 # Start with default (APPROVED)
 set_mock_codex_approved
@@ -110,13 +165,23 @@ create_state_file() {
   local session_id="$2"
   local file_path="$3"
   local reviews="${4:-0}"
+  local codex_thread_id="${5:-}"
   local state_dir="$project_dir/.claude/plan-review"
   mkdir -p "$state_dir"
-  jq -n \
-    --arg fp "$file_path" \
-    --argjson rev "$reviews" \
-    --argjson ts "$(date +%s)" \
-    '{file_path: $fp, reviews: $rev, timestamp: $ts}' > "$state_dir/${session_id}.json"
+  if [ -n "$codex_thread_id" ]; then
+    jq -n \
+      --arg fp "$file_path" \
+      --argjson rev "$reviews" \
+      --argjson ts "$(date +%s)" \
+      --arg tid "$codex_thread_id" \
+      '{file_path: $fp, reviews: $rev, timestamp: $ts, codex_thread_id: $tid}' > "$state_dir/${session_id}.json"
+  else
+    jq -n \
+      --arg fp "$file_path" \
+      --argjson rev "$reviews" \
+      --argjson ts "$(date +%s)" \
+      '{file_path: $fp, reviews: $rev, timestamp: $ts}' > "$state_dir/${session_id}.json"
+  fi
 }
 
 # Helper: run plan-review.sh with given JSON input
@@ -124,6 +189,9 @@ run_plan_review() {
   local input="$1"
   local project_dir="${2:-}"
   local env_vars=""
+
+  # Clear codex argv log before each run
+  : > "$TEST_TMP_DIR/home/.claude/logs/codex-argv.log"
 
   if [ -n "$project_dir" ]; then
     env_vars="CLAUDE_PROJECT_DIR=$project_dir"
@@ -274,6 +342,13 @@ test_exit_plan_approved() {
   local state_file="$project_dir/.claude/plan-review/${session_id}.json"
   assert_equals "1" "$(jq -r '.reviews' "$state_file")" \
     "reviews incremented to 1"
+  assert_equals "null" "$(jq -r '.codex_thread_id // "null"' "$state_file")" \
+    "codex_thread_id cleared after APPROVED"
+
+  local argv_log="$TEST_TMP_DIR/home/.claude/logs/codex-argv.log"
+  local has_exec_json
+  has_exec_json=$(grep -q 'exec --json' "$argv_log" && echo yes || echo no)
+  assert_equals "yes" "$has_exec_json" "codex called with exec --json"
 }
 
 # Case 7: ExitPlanMode + REVISE → deny JSON output, reviews incremented
@@ -320,6 +395,8 @@ test_exit_plan_revise() {
   local state_file="$project_dir/.claude/plan-review/${session_id}.json"
   assert_equals "1" "$(jq -r '.reviews' "$state_file")" \
     "reviews incremented to 1"
+  assert_equals "mock-thread-002" "$(jq -r '.codex_thread_id // "null"' "$state_file")" \
+    "codex_thread_id saved after REVISE"
 }
 
 # Case 8: reviews=3 → exit 0 (skip review)
@@ -376,6 +453,10 @@ test_codex_failure() {
 
   assert_equals "deny" "$(echo "$output" | jq -r '.hookSpecificOutput.permissionDecision')" \
     "codex failure treated as deny"
+
+  local state_file="$project_dir/.claude/plan-review/${session_id}.json"
+  assert_equals "null" "$(jq -r '.codex_thread_id // "null"' "$state_file")" \
+    "codex_thread_id not saved on failure"
 }
 
 # Case 10: file_path with spaces and special characters
@@ -478,6 +559,235 @@ test_corrupted_state() {
   assert_return_code 0 "$rc" "exits 0 with corrupted state (fail-open)"
 }
 
+# Case 13: Resume flow — state has codex_thread_id, verify resume argv
+test_resume_flow() {
+  echo "Test 13: Resume flow..."
+  set_mock_codex_revise
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-resume"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 1 "existing-thread-abc"
+
+  local input
+  input=$(jq -nc \
+    --arg sid "$session_id" \
+    '{
+      permission_mode: "plan",
+      session_id: $sid,
+      hook_event_name: "PreToolUse",
+      tool_name: "ExitPlanMode",
+      tool_input: {}
+    }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0 on resume"
+
+  local argv_log="$TEST_TMP_DIR/home/.claude/logs/codex-argv.log"
+  local has_resume
+  has_resume=$(grep -q 'exec resume --json existing-thread-abc' "$argv_log" && echo yes || echo no)
+  assert_equals "yes" "$has_resume" "codex called with exec resume --json <thread_id>"
+}
+
+# Case 14: Resume failure retry — resume exits 1, falls back to fresh exec
+test_resume_failure_retry() {
+  echo "Test 14: Resume failure retry..."
+  set_mock_codex_resume_fail
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-resume-fail"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 1 "old-thread-xyz"
+
+  local input
+  input=$(jq -nc \
+    --arg sid "$session_id" \
+    '{
+      permission_mode: "plan",
+      session_id: $sid,
+      hook_event_name: "PreToolUse",
+      tool_name: "ExitPlanMode",
+      tool_input: {}
+    }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0 after retry"
+
+  local argv_log="$TEST_TMP_DIR/home/.claude/logs/codex-argv.log"
+  local line_count
+  line_count=$(wc -l < "$argv_log" | tr -d ' ')
+  assert_equals "2" "$line_count" "codex called twice (resume then fresh exec)"
+
+  local state_file="$project_dir/.claude/plan-review/${session_id}.json"
+  assert_equals "mock-thread-fresh" "$(jq -r '.codex_thread_id // "null"' "$state_file")" \
+    "codex_thread_id updated from fresh exec"
+}
+
+# Case 15: Resume partial output — resume emits thread.started then exits 1
+test_resume_partial_output() {
+  echo "Test 15: Resume partial output..."
+  set_mock_codex_resume_partial
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-resume-partial"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 1 "old-thread-partial"
+
+  local input
+  input=$(jq -nc \
+    --arg sid "$session_id" \
+    '{
+      permission_mode: "plan",
+      session_id: $sid,
+      hook_event_name: "PreToolUse",
+      tool_name: "ExitPlanMode",
+      tool_input: {}
+    }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0 after partial resume retry"
+
+  local state_file="$project_dir/.claude/plan-review/${session_id}.json"
+  assert_equals "mock-thread-fresh-after-partial" "$(jq -r '.codex_thread_id // "null"' "$state_file")" \
+    "codex_thread_id updated from fresh exec after partial"
+}
+
+# Case 16: thread_id preserved across update_plan_review_file for same file_path
+test_thread_id_preserved_same_path() {
+  echo "Test 16: thread_id preserved for same file_path..."
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-preserve-tid"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 1 "preserved-thread-123"
+
+  local input
+  input=$(jq -nc \
+    --arg sid "$session_id" \
+    '{
+      permission_mode: "plan",
+      session_id: $sid,
+      hook_event_name: "PostToolUse",
+      tool_name: "Write",
+      tool_input: {file_path: "/tmp/plan.md"}
+    }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0"
+
+  local state_file="$project_dir/.claude/plan-review/${session_id}.json"
+  assert_equals "preserved-thread-123" "$(jq -r '.codex_thread_id // "null"' "$state_file")" \
+    "codex_thread_id preserved for same file_path"
+  assert_equals "1" "$(jq -r '.reviews' "$state_file")" \
+    "reviews preserved for same file_path"
+}
+
+# Case 17: File path change resets state
+test_file_path_change_resets() {
+  echo "Test 17: File path change resets state..."
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-path-change"
+  create_state_file "$project_dir" "$session_id" "/tmp/old-plan.md" 2 "old-thread-999"
+
+  local input
+  input=$(jq -nc \
+    --arg sid "$session_id" \
+    '{
+      permission_mode: "plan",
+      session_id: $sid,
+      hook_event_name: "PostToolUse",
+      tool_name: "Write",
+      tool_input: {file_path: "/tmp/new-plan.md"}
+    }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0"
+
+  local state_file="$project_dir/.claude/plan-review/${session_id}.json"
+  assert_equals "/tmp/new-plan.md" "$(jq -r '.file_path' "$state_file")" \
+    "file_path updated"
+  assert_equals "0" "$(jq -r '.reviews' "$state_file")" \
+    "reviews reset to 0"
+  assert_equals "null" "$(jq -r '.codex_thread_id // "null"' "$state_file")" \
+    "codex_thread_id cleared on file_path change"
+}
+
+# Case 18: Resume without thread.started — text returned but no new thread_id
+test_resume_no_thread_started() {
+  echo "Test 18: Resume without thread.started..."
+
+  # Mock that returns text but no thread.started event
+  cat > "$MOCK_BIN/codex" <<'MOCK'
+#!/bin/bash
+printf '%s ' "$@" | tr '\n' ' ' >> "$HOME/.claude/logs/codex-argv.log"
+printf '\n' >> "$HOME/.claude/logs/codex-argv.log"
+echo '{"type":"turn.started"}'
+echo '{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"Review without thread. VERDICT: REVISE"}}'
+echo '{"type":"turn.completed","usage":{}}'
+MOCK
+  chmod +x "$MOCK_BIN/codex"
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-no-thread-started"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 1 "existing-thread-keep"
+
+  local input
+  input=$(jq -nc \
+    --arg sid "$session_id" \
+    '{
+      permission_mode: "plan",
+      session_id: $sid,
+      hook_event_name: "PreToolUse",
+      tool_name: "ExitPlanMode",
+      tool_input: {}
+    }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0"
+
+  # thread_id should NOT be overwritten since CODEX_THREAD_ID is empty
+  local state_file="$project_dir/.claude/plan-review/${session_id}.json"
+  assert_equals "existing-thread-keep" "$(jq -r '.codex_thread_id // "null"' "$state_file")" \
+    "existing codex_thread_id preserved when no thread.started"
+}
+
+# Case 19: Corrupted state during resume — fail-open
+test_corrupted_state_resume() {
+  echo "Test 19: Corrupted state during resume..."
+  set_mock_codex_approved
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-corrupt-resume"
+  local state_dir="$project_dir/.claude/plan-review"
+  mkdir -p "$state_dir"
+  echo '{"file_path":"/tmp/plan.md","reviews":0,"codex_thread_id":"corrupt-tid"' > "$state_dir/${session_id}.json"
+
+  local input
+  input=$(jq -nc \
+    --arg sid "$session_id" \
+    '{
+      permission_mode: "plan",
+      session_id: $sid,
+      hook_event_name: "PreToolUse",
+      tool_name: "ExitPlanMode",
+      tool_input: {}
+    }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0 with corrupted state during resume (fail-open)"
+}
+
 # =============================================================================
 # Run Tests
 # =============================================================================
@@ -499,6 +809,13 @@ test_codex_failure
 test_special_chars_in_path
 test_multiline_review
 test_corrupted_state
+test_resume_flow
+test_resume_failure_retry
+test_resume_partial_output
+test_thread_id_preserved_same_path
+test_file_path_change_resets
+test_resume_no_thread_started
+test_corrupted_state_resume
 
 echo ""
 echo "================================="
