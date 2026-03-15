@@ -63,7 +63,7 @@ plan_review() {
   # Check review iteration cap
   local reviews
   reviews=$(jq -r '.reviews // 0' "$STATE_FILE")
-  if [ "$reviews" = "3" ]; then
+  if [ "$reviews" -ge 3 ]; then
     return 0
   fi
 
