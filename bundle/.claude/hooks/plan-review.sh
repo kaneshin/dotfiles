@@ -64,17 +64,17 @@ update_plan_review_file() {
       --argjson ts "$(date +%s)" \
       '{file_path: $fp, reviews: 0, timestamp: $ts}'
   else
-    # Same plan file — preserve all fields
+    # Same plan file — single atomic write, codex_thread_id conditionally included
     local reviews codex_tid
     reviews=$(echo "$PLAN_REVIEW_JSON" | jq -r '.reviews // 0')
     codex_tid=$(echo "$PLAN_REVIEW_JSON" | jq -r '.codex_thread_id // empty' 2>/dev/null)
-    if [ -n "$codex_tid" ]; then
-      state_init --arg fp "$INPUT_FILE_PATH" --argjson rev "$reviews" --argjson ts "$(date +%s)" --arg tid "$codex_tid" \
-        '{file_path: $fp, reviews: $rev, timestamp: $ts, codex_thread_id: $tid}'
-    else
-      state_init --arg fp "$INPUT_FILE_PATH" --argjson rev "$reviews" --argjson ts "$(date +%s)" \
-        '{file_path: $fp, reviews: $rev, timestamp: $ts}'
-    fi
+    state_init \
+      --arg fp "$INPUT_FILE_PATH" \
+      --argjson rev "$reviews" \
+      --argjson ts "$(date +%s)" \
+      --arg tid "${codex_tid:-}" \
+      '{file_path: $fp, reviews: $rev, timestamp: $ts}
+       + (if $tid != "" then {codex_thread_id: $tid} else {} end)'
   fi
   log "- update state: $STATE_FILE"
 }
