@@ -788,6 +788,109 @@ test_corrupted_state_resume() {
   assert_return_code 0 "$rc" "exits 0 with corrupted state during resume (fail-open)"
 }
 
+# Case 20: State mutation failure — read-only state file → fail-open (exit 0)
+test_state_mutation_failure() {
+  echo "Test 20: State mutation failure (read-only state file)..."
+  set_mock_codex_approved
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-readonly"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  # Make state file read-only to trigger write failure
+  local state_file="$project_dir/.claude/plan-review/${session_id}.json"
+  chmod 444 "$state_file"
+
+  local input
+  input=$(jq -nc \
+    --arg sid "$session_id" \
+    '{
+      permission_mode: "plan",
+      session_id: $sid,
+      hook_event_name: "PreToolUse",
+      tool_name: "ExitPlanMode",
+      tool_input: {}
+    }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+
+  # Restore permissions for cleanup
+  chmod 644 "$state_file"
+
+  assert_return_code 0 "$rc" "exits 0 when state file is read-only (fail-open)"
+}
+
+# Case 21: Atomic codex_thread_id preservation — PostToolUse same file, verify on disk
+test_atomic_thread_id_on_disk() {
+  echo "Test 21: Atomic codex_thread_id preservation on disk..."
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-atomic-tid"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 2 "atomic-thread-xyz"
+
+  local input
+  input=$(jq -nc \
+    --arg sid "$session_id" \
+    '{
+      permission_mode: "plan",
+      session_id: $sid,
+      hook_event_name: "PostToolUse",
+      tool_name: "Write",
+      tool_input: {file_path: "/tmp/plan.md"}
+    }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0"
+
+  # Read state file from disk immediately — verify codex_thread_id survived
+  local state_file="$project_dir/.claude/plan-review/${session_id}.json"
+  local on_disk_tid
+  on_disk_tid=$(jq -r '.codex_thread_id // "null"' "$state_file")
+  assert_equals "atomic-thread-xyz" "$on_disk_tid" \
+    "codex_thread_id on disk matches original after PostToolUse"
+
+  # Also verify the file is valid JSON (atomic write didn't corrupt it)
+  local valid_json
+  valid_json=$(jq -e '.' "$state_file" > /dev/null 2>&1 && echo yes || echo no)
+  assert_equals "yes" "$valid_json" "state file is valid JSON after update"
+}
+
+# Case 22: Log output format — verify log file contains expected header line
+test_log_output_format() {
+  echo "Test 22: Log output format..."
+  set_mock_codex_approved
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-log-fmt"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  local input
+  input=$(jq -nc \
+    --arg sid "$session_id" \
+    '{
+      permission_mode: "plan",
+      session_id: $sid,
+      hook_event_name: "PreToolUse",
+      tool_name: "ExitPlanMode",
+      tool_input: {}
+    }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0"
+
+  # Verify log file contains the expected header format
+  local log_file="$TEST_TMP_DIR/home/.claude/logs/plan-review.log"
+  local has_header
+  has_header=$(grep -qE '=== [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} PreToolUse \(ExitPlanMode\) hook executed ===' "$log_file" && echo yes || echo no)
+  assert_equals "yes" "$has_header" "log contains expected header format"
+}
+
 # =============================================================================
 # Run Tests
 # =============================================================================
@@ -816,6 +919,9 @@ test_thread_id_preserved_same_path
 test_file_path_change_resets
 test_resume_no_thread_started
 test_corrupted_state_resume
+test_state_mutation_failure
+test_atomic_thread_id_on_disk
+test_log_output_format
 
 echo ""
 echo "================================="
