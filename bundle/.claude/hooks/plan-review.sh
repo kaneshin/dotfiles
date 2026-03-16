@@ -24,7 +24,8 @@ TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty')
 LOG_DIR="$HOME/.claude/logs"
 [ ! -d "$LOG_DIR" ] && mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/plan-review.log"
-echo "=== $(date '+%Y-%m-%d %H:%M:%S') $HOOK_EVENT_NAME ($TOOL_NAME) hook executed ===" >> "$LOG_FILE"
+log() { echo "$1" >> "$LOG_FILE"; }
+log "=== $(date '+%Y-%m-%d %H:%M:%S') $HOOK_EVENT_NAME ($TOOL_NAME) hook executed ==="
 
 # Per-session state file
 STATE_DIR="$CLAUDE_PROJECT_DIR/.claude/plan-review"
@@ -66,7 +67,7 @@ update_plan_review_file() {
         '{file_path: $fp, reviews: $rev, timestamp: $ts}' > "$STATE_FILE"
     fi
   fi
-  echo "- update state: $STATE_FILE" >> "$LOG_FILE"
+  log "- update state: $STATE_FILE"
 }
 
 parse_codex_jsonl() {
@@ -99,7 +100,7 @@ plan_review() {
   jq -c '.reviews = (.reviews // 0) + 1' "$STATE_FILE" > "${STATE_FILE}.tmp" \
     && mv "${STATE_FILE}.tmp" "$STATE_FILE"
 
-  echo "- review plan: $file_path (attempt $((reviews + 1)))" >> "$LOG_FILE"
+  log "- review plan: $file_path (attempt $((reviews + 1)))"
 
   # Build prompt once, reuse for both exec and resume
   local prompt
@@ -120,13 +121,13 @@ If changes are needed, end with exactly: VERDICT: REVISE"
 
   local codex_output codex_rc
   if [ -n "$codex_thread_id" ]; then
-    echo "- resuming codex thread: ${codex_thread_id:0:8}..." >> "$LOG_FILE"
+    log "- resuming codex thread: ${codex_thread_id:0:8}..."
     codex_output=$(codex exec resume --json "$codex_thread_id" "$prompt") && codex_rc=0 || codex_rc=$?
     parse_codex_jsonl "$codex_output"
 
     # Retry with fresh exec if resume failed (non-zero exit OR empty text)
     if [ "$codex_rc" -ne 0 ] || [ -z "$CODEX_REVIEW_TEXT" ]; then
-      echo "- resume failed (rc=$codex_rc), retrying with fresh exec" >> "$LOG_FILE"
+      log "- resume failed (rc=$codex_rc), retrying with fresh exec"
       codex_output=$(codex exec --json -m gpt-5.4 -s read-only "$prompt") && codex_rc=0 || codex_rc=$?
       parse_codex_jsonl "$codex_output"
     fi
@@ -139,11 +140,11 @@ If changes are needed, end with exactly: VERDICT: REVISE"
   if [ "$codex_rc" -eq 0 ] && [ -n "$CODEX_REVIEW_TEXT" ] && [ -n "$CODEX_THREAD_ID" ]; then
     jq -c --arg tid "$CODEX_THREAD_ID" '.codex_thread_id = $tid' "$STATE_FILE" > "${STATE_FILE}.tmp" \
       && mv "${STATE_FILE}.tmp" "$STATE_FILE" 2>/dev/null || true
-    echo "- saved codex thread: ${CODEX_THREAD_ID:0:8}..." >> "$LOG_FILE"
+    log "- saved codex thread: ${CODEX_THREAD_ID:0:8}..."
   fi
 
   local review_results="$CODEX_REVIEW_TEXT"
-  echo "- review results: $review_results" >> "$LOG_FILE"
+  log "- review results: $review_results"
 
   if [[ "$review_results" == *"VERDICT: APPROVED"* ]]; then
     # Clear thread_id — review cycle complete, avoid stale context
@@ -165,9 +166,9 @@ If changes are needed, end with exactly: VERDICT: REVISE"
 
 # Main dispatch — errors in state management should not block the user
 if [ "$TOOL_NAME" = "ExitPlanMode" ]; then
-  plan_review || { echo "- plan_review failed, allowing exit" >> "$LOG_FILE"; }
+  plan_review || { log "- plan_review failed, allowing exit"; }
 else
-  update_plan_review_file || { echo "- update failed, continuing" >> "$LOG_FILE"; }
+  update_plan_review_file || { log "- update failed, continuing"; }
 fi
 
 exit 0
