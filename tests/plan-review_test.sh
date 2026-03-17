@@ -160,15 +160,25 @@ setup_project() {
 }
 
 # Helper: create a state file for a session
+# Args: project_dir session_id file_path [reviews [codex_thread_id [codex_model]]]
 create_state_file() {
   local project_dir="$1"
   local session_id="$2"
   local file_path="$3"
   local reviews="${4:-0}"
   local codex_thread_id="${5:-}"
+  local codex_model="${6:-}"
   local state_dir="$project_dir/.claude/plan-review"
   mkdir -p "$state_dir"
-  if [ -n "$codex_thread_id" ]; then
+  if [ -n "$codex_thread_id" ] && [ -n "$codex_model" ]; then
+    jq -n \
+      --arg fp "$file_path" \
+      --argjson rev "$reviews" \
+      --argjson ts "$(date +%s)" \
+      --arg tid "$codex_thread_id" \
+      --arg model "$codex_model" \
+      '{file_path: $fp, reviews: $rev, timestamp: $ts, codex_thread_id: $tid, codex_model: $model}' > "$state_dir/${session_id}.json"
+  elif [ -n "$codex_thread_id" ]; then
     jq -n \
       --arg fp "$file_path" \
       --argjson rev "$reviews" \
@@ -789,6 +799,360 @@ test_corrupted_state_resume() {
 }
 
 # =============================================================================
+# Config / Settings Tests (Cases 20–29)
+# =============================================================================
+
+# Helper: write a settings.json to a given directory
+write_settings() {
+  local dir="$1"
+  local json="$2"
+  mkdir -p "$dir"
+  echo "$json" > "$dir/settings.json"
+}
+
+# Case 20: No planReview key anywhere → defaults in log
+test_config_defaults() {
+  echo "Test 20: Config defaults (no planReview anywhere)..."
+  set_mock_codex_approved
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-cfg-defaults"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  run_plan_review "$input" "$project_dir" > /dev/null
+
+  local log_line
+  log_line=$(grep 'settings:' "$TEST_TMP_DIR/home/.claude/logs/plan-review.log" | tail -1)
+  local has_defaults
+  has_defaults=$(echo "$log_line" | grep -q 'max=3 min=1 model=gpt-5.4' && echo yes || echo no)
+  assert_equals "yes" "$has_defaults" "defaults logged: max=3 min=1 model=gpt-5.4"
+}
+
+# Case 21: Global maxReviews:1 → cap fires after 1 attempt
+test_config_global_maxreviews() {
+  echo "Test 21: Global maxReviews:1 caps at 1..."
+  set_mock_codex_revise
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-cfg-maxrev"
+  # reviews already at 1 — should be capped
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 1
+
+  write_settings "$TEST_TMP_DIR/home/.claude" '{"planReview":{"maxReviews":1}}'
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0 at cap"
+  assert_equals "" "$output" "no output when capped at maxReviews=1"
+
+  # Restore default global settings (no planReview)
+  rm -f "$TEST_TMP_DIR/home/.claude/settings.json"
+}
+
+# Case 22: Project settings override global value
+test_config_project_override() {
+  echo "Test 22: Project settings override global..."
+  set_mock_codex_revise
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-cfg-proj"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  # Global says max=1, project overrides to max=5
+  write_settings "$TEST_TMP_DIR/home/.claude" '{"planReview":{"maxReviews":1}}'
+  write_settings "$project_dir/.claude" '{"planReview":{"maxReviews":5}}'
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0"
+
+  local log_line
+  log_line=$(grep 'settings:' "$TEST_TMP_DIR/home/.claude/logs/plan-review.log" | tail -1)
+  local has_max5
+  has_max5=$(echo "$log_line" | grep -q 'max=5' && echo yes || echo no)
+  assert_equals "yes" "$has_max5" "project overrides global: max=5"
+
+  rm -f "$TEST_TMP_DIR/home/.claude/settings.json"
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 23: Local settings override project value
+test_config_local_override() {
+  echo "Test 23: Local settings override project..."
+  set_mock_codex_revise
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-cfg-local"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  write_settings "$project_dir/.claude" '{"planReview":{"codex":{"model":"gpt-4o"}}}'
+  echo '{"planReview":{"codex":{"model":"gpt-local"}}}' > "$project_dir/.claude/settings.local.json"
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  run_plan_review "$input" "$project_dir" > /dev/null
+
+  local log_line
+  log_line=$(grep 'settings:' "$TEST_TMP_DIR/home/.claude/logs/plan-review.log" | tail -1)
+  local has_local_model
+  has_local_model=$(echo "$log_line" | grep -q 'model=gpt-local' && echo yes || echo no)
+  assert_equals "yes" "$has_local_model" "local overrides project: model=gpt-local"
+
+  rm -f "$project_dir/.claude/settings.json" "$project_dir/.claude/settings.local.json"
+}
+
+# Case 24: Malformed project JSON → global value preserved
+test_config_malformed_project_skipped() {
+  echo "Test 24: Malformed project JSON skipped..."
+  set_mock_codex_approved
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-cfg-malformed"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  write_settings "$TEST_TMP_DIR/home/.claude" '{"planReview":{"maxReviews":2}}'
+  echo '{invalid json' > "$project_dir/.claude/settings.json"
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  run_plan_review "$input" "$project_dir" > /dev/null
+
+  local log_line
+  log_line=$(grep 'settings:' "$TEST_TMP_DIR/home/.claude/logs/plan-review.log" | tail -1)
+  local has_max2
+  has_max2=$(echo "$log_line" | grep -q 'max=2' && echo yes || echo no)
+  assert_equals "yes" "$has_max2" "malformed project JSON skipped; global max=2 preserved"
+
+  rm -f "$TEST_TMP_DIR/home/.claude/settings.json"
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 25: maxReviews:1, minReviews:3 → effective max raised to 3
+test_config_max_min_normalization() {
+  echo "Test 25: maxReviews < minReviews → normalized up..."
+  set_mock_codex_approved
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-cfg-normalize"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  write_settings "$project_dir/.claude" '{"planReview":{"maxReviews":1,"minReviews":3}}'
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  run_plan_review "$input" "$project_dir" > /dev/null
+
+  local log_line
+  log_line=$(grep 'settings:' "$TEST_TMP_DIR/home/.claude/logs/plan-review.log" | tail -1)
+  local has_max3
+  has_max3=$(echo "$log_line" | grep -q 'max=3' && echo yes || echo no)
+  assert_equals "yes" "$has_max3" "maxReviews normalized up to minReviews=3"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 26: minReviews:2, first APPROVED (reviews=1) → deny with 1/2 message
+test_config_min_reviews_gates_approved() {
+  echo "Test 26: minReviews:2, first APPROVED denied..."
+  set_mock_codex_approved
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-cfg-min-gate"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  write_settings "$project_dir/.claude" '{"planReview":{"minReviews":2}}'
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0"
+
+  # Should deny because reviews(1) < minReviews(2)
+  assert_equals "deny" "$(echo "$output" | jq -r '.hookSpecificOutput.permissionDecision')" \
+    "first APPROVED denied when reviews < minReviews"
+
+  local reason
+  reason=$(echo "$output" | jq -r '.hookSpecificOutput.permissionDecisionReason')
+  local has_count
+  has_count=$(echo "$reason" | grep -q '1/2' && echo yes || echo no)
+  assert_equals "yes" "$has_count" "reason contains 1/2 count"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 27: minReviews:2, second APPROVED (reviews=2) → allow
+test_config_min_reviews_second_approved() {
+  echo "Test 27: minReviews:2, second APPROVED allowed..."
+  set_mock_codex_approved
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-cfg-min-pass"
+  # reviews already at 1 from previous attempt; this will be incremented to 2
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 1
+
+  write_settings "$project_dir/.claude" '{"planReview":{"minReviews":2}}'
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0"
+  assert_equals "" "$output" "second APPROVED allowed (no deny output)"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 28: Thread has codex_model:"old", config is "new" → fresh exec used
+test_config_model_change_clears_thread() {
+  echo "Test 28: Model change clears thread..."
+
+  # Mock that records argv and returns REVISE; we check no 'resume' call
+  cat > "$MOCK_BIN/codex" <<'MOCK'
+#!/bin/bash
+printf '%s ' "$@" | tr '\n' ' ' >> "$HOME/.claude/logs/codex-argv.log"
+printf '\n' >> "$HOME/.claude/logs/codex-argv.log"
+echo '{"type":"thread.started","thread_id":"mock-thread-new-model"}'
+echo '{"type":"turn.started"}'
+echo '{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"Fresh review. VERDICT: REVISE"}}'
+echo '{"type":"turn.completed","usage":{}}'
+MOCK
+  chmod +x "$MOCK_BIN/codex"
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-cfg-model-change"
+  # State has old model; config will have new model
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 1 "old-thread-id" "old-model"
+
+  write_settings "$project_dir/.claude" '{"planReview":{"codex":{"model":"new-model"}}}'
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  run_plan_review "$input" "$project_dir" > /dev/null
+
+  local argv_log="$TEST_TMP_DIR/home/.claude/logs/codex-argv.log"
+  local has_resume
+  has_resume=$(grep -q 'resume' "$argv_log" && echo yes || echo no)
+  assert_equals "no" "$has_resume" "resume NOT called after model change"
+
+  local has_fresh
+  has_fresh=$(grep -q 'exec --json' "$argv_log" && echo yes || echo no)
+  assert_equals "yes" "$has_fresh" "fresh exec called with new model"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 29: After REVISE, codex_model saved alongside codex_thread_id
+test_config_codex_model_persisted() {
+  echo "Test 29: codex_model persisted alongside codex_thread_id on REVISE..."
+  set_mock_codex_revise
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-cfg-model-persist"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  write_settings "$project_dir/.claude" '{"planReview":{"codex":{"model":"gpt-persist-test"}}}'
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  run_plan_review "$input" "$project_dir" > /dev/null
+
+  local state_file="$project_dir/.claude/plan-review/${session_id}.json"
+  assert_equals "mock-thread-002" "$(jq -r '.codex_thread_id // "null"' "$state_file")" \
+    "codex_thread_id persisted"
+  assert_equals "gpt-persist-test" "$(jq -r '.codex_model // "null"' "$state_file")" \
+    "codex_model persisted alongside thread_id"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# =============================================================================
 # Run Tests
 # =============================================================================
 
@@ -816,6 +1180,16 @@ test_thread_id_preserved_same_path
 test_file_path_change_resets
 test_resume_no_thread_started
 test_corrupted_state_resume
+test_config_defaults
+test_config_global_maxreviews
+test_config_project_override
+test_config_local_override
+test_config_malformed_project_skipped
+test_config_max_min_normalization
+test_config_min_reviews_gates_approved
+test_config_min_reviews_second_approved
+test_config_model_change_clears_thread
+test_config_codex_model_persisted
 
 echo ""
 echo "================================="
