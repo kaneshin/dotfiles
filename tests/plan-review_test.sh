@@ -904,8 +904,8 @@ test_config_defaults() {
   local log_line
   log_line=$(grep 'settings:' "$TEST_TMP_DIR/home/.claude/logs/plan-review.log" | tail -1)
   local has_defaults
-  has_defaults=$(echo "$log_line" | grep -q 'enabled=true max=3 min=1 model=sonnet' && echo yes || echo no)
-  assert_equals "yes" "$has_defaults" "defaults logged: enabled=true max=3 min=1 model=sonnet"
+  has_defaults=$(echo "$log_line" | grep -q 'enabled=true max=3 model=sonnet' && echo yes || echo no)
+  assert_equals "yes" "$has_defaults" "defaults logged: enabled=true max=3 model=sonnet"
 }
 
 # Case 21: Global maxReviews:1 → cap fires after 1 attempt
@@ -1040,106 +1040,6 @@ test_config_malformed_project_skipped() {
   assert_equals "yes" "$has_max2" "malformed project JSON skipped; global max=2 preserved"
 
   rm -f "$TEST_TMP_DIR/home/.claude/settings.json"
-  rm -f "$project_dir/.claude/settings.json"
-}
-
-# Case 25: maxReviews:1, minReviews:3 → effective max raised to 3
-test_config_max_min_normalization() {
-  echo "Test 25: maxReviews < minReviews → normalized up..."
-  set_mock_codex_approved
-
-  local project_dir
-  project_dir=$(setup_project)
-  local session_id="sess-cfg-normalize"
-  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
-
-  write_settings "$project_dir/.claude" '{"planReview":{"maxReviews":1,"minReviews":3}}'
-
-  local input
-  input=$(jq -nc --arg sid "$session_id" '{
-    permission_mode: "plan",
-    session_id: $sid,
-    hook_event_name: "PreToolUse",
-    tool_name: "ExitPlanMode",
-    tool_input: {}
-  }')
-
-  run_plan_review "$input" "$project_dir" > /dev/null
-
-  local log_line
-  log_line=$(grep 'settings:' "$TEST_TMP_DIR/home/.claude/logs/plan-review.log" | tail -1)
-  local has_max3
-  has_max3=$(echo "$log_line" | grep -q 'max=3' && echo yes || echo no)
-  assert_equals "yes" "$has_max3" "maxReviews normalized up to minReviews=3"
-
-  rm -f "$project_dir/.claude/settings.json"
-}
-
-# Case 26: minReviews:2, first APPROVED (reviews=1) → deny with 1/2 message
-test_config_min_reviews_gates_approved() {
-  echo "Test 26: minReviews:2, first APPROVED denied..."
-  set_mock_codex_approved
-
-  local project_dir
-  project_dir=$(setup_project)
-  local session_id="sess-cfg-min-gate"
-  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
-
-  write_settings "$project_dir/.claude" '{"planReview":{"minReviews":2}}'
-
-  local input
-  input=$(jq -nc --arg sid "$session_id" '{
-    permission_mode: "plan",
-    session_id: $sid,
-    hook_event_name: "PreToolUse",
-    tool_name: "ExitPlanMode",
-    tool_input: {}
-  }')
-
-  local rc output
-  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
-  assert_return_code 0 "$rc" "exits 0"
-
-  # Should deny because reviews(1) < minReviews(2)
-  assert_equals "deny" "$(echo "$output" | jq -r '.hookSpecificOutput.permissionDecision')" \
-    "first APPROVED denied when reviews < minReviews"
-
-  local reason
-  reason=$(echo "$output" | jq -r '.hookSpecificOutput.permissionDecisionReason')
-  local has_count
-  has_count=$(echo "$reason" | grep -q '1/2' && echo yes || echo no)
-  assert_equals "yes" "$has_count" "reason contains 1/2 count"
-
-  rm -f "$project_dir/.claude/settings.json"
-}
-
-# Case 27: minReviews:2, second APPROVED (reviews=2) → allow
-test_config_min_reviews_second_approved() {
-  echo "Test 27: minReviews:2, second APPROVED allowed..."
-  set_mock_codex_approved
-
-  local project_dir
-  project_dir=$(setup_project)
-  local session_id="sess-cfg-min-pass"
-  # reviews already at 1 from previous attempt; this will be incremented to 2
-  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 1
-
-  write_settings "$project_dir/.claude" '{"planReview":{"minReviews":2}}'
-
-  local input
-  input=$(jq -nc --arg sid "$session_id" '{
-    permission_mode: "plan",
-    session_id: $sid,
-    hook_event_name: "PreToolUse",
-    tool_name: "ExitPlanMode",
-    tool_input: {}
-  }')
-
-  local rc output
-  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
-  assert_return_code 0 "$rc" "exits 0"
-  assert_equals "" "$output" "second APPROVED allowed (no deny output)"
-
   rm -f "$project_dir/.claude/settings.json"
 }
 
@@ -1875,6 +1775,169 @@ test_mid_output_verdict_not_approved() {
 }
 
 # =============================================================================
+# Custom Prompt Config Tests (Cases 49–52)
+# =============================================================================
+
+# Case 49: Custom prompt via config (claude engine)
+test_config_custom_prompt_claude() {
+  echo "Test 49: Custom prompt via config (claude engine)..."
+  set_mock_claude_revise
+
+  local project_dir
+  project_dir=$(setup_project)
+  write_settings "$project_dir/.claude" '{"planReview":{"model":"sonnet","prompt":"Focus on:\n1. Performance\n2. Scalability"}}'
+  local session_id="sess-prompt-claude"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  run_plan_review "$input" "$project_dir" > /dev/null
+
+  local argv_log="$TEST_TMP_DIR/home/.claude/logs/claude-argv.log"
+  local has_custom
+  has_custom=$(grep -q 'Performance' "$argv_log" && echo yes || echo no)
+  assert_equals "yes" "$has_custom" "custom prompt text appears in claude argv"
+
+  # Verify default criteria NOT present
+  local has_default
+  has_default=$(grep -q 'Missing steps' "$argv_log" && echo yes || echo no)
+  assert_equals "no" "$has_default" "default criteria NOT in prompt when custom set"
+
+  # Verify fixed prefix still present
+  local has_prefix
+  has_prefix=$(grep -q 'Review the implementation plan in' "$argv_log" && echo yes || echo no)
+  assert_equals "yes" "$has_prefix" "fixed prefix still present with custom prompt"
+
+  # Verify fixed suffix still present
+  local has_suffix
+  has_suffix=$(grep -q 'VERDICT: APPROVED' "$argv_log" && echo yes || echo no)
+  assert_equals "yes" "$has_suffix" "verdict instructions still present with custom prompt"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 50: Custom prompt via config (codex engine)
+test_config_custom_prompt_codex() {
+  echo "Test 50: Custom prompt via config (codex engine)..."
+  set_mock_codex_revise
+
+  local project_dir
+  project_dir=$(setup_project)
+  write_settings "$project_dir/.claude" '{"planReview":{"model":"gpt-5.4","prompt":"Check for API breaking changes"}}'
+  local session_id="sess-prompt-codex"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  run_plan_review "$input" "$project_dir" > /dev/null
+
+  local argv_log="$TEST_TMP_DIR/home/.claude/logs/codex-argv.log"
+  local has_custom
+  has_custom=$(grep -q 'API breaking changes' "$argv_log" && echo yes || echo no)
+  assert_equals "yes" "$has_custom" "custom prompt text appears in codex argv"
+
+  # Verify fixed suffix still present
+  local has_suffix
+  has_suffix=$(grep -q 'VERDICT: APPROVED' "$argv_log" && echo yes || echo no)
+  assert_equals "yes" "$has_suffix" "verdict instructions still present in codex prompt"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 51: Config precedence — project prompt overrides global prompt
+test_config_prompt_precedence() {
+  echo "Test 51: Config precedence — project prompt overrides global..."
+  set_mock_claude_revise
+
+  local project_dir
+  project_dir=$(setup_project)
+  write_settings "$TEST_TMP_DIR/home/.claude" '{"planReview":{"prompt":"Global review criteria"}}'
+  write_settings "$project_dir/.claude" '{"planReview":{"model":"sonnet","prompt":"Project-specific criteria"}}'
+  local session_id="sess-prompt-prec"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  run_plan_review "$input" "$project_dir" > /dev/null
+
+  local argv_log="$TEST_TMP_DIR/home/.claude/logs/claude-argv.log"
+  local has_project
+  has_project=$(grep -q 'Project-specific criteria' "$argv_log" && echo yes || echo no)
+  assert_equals "yes" "$has_project" "project prompt overrides global"
+
+  local has_global
+  has_global=$(grep -q 'Global review criteria' "$argv_log" && echo yes || echo no)
+  assert_equals "no" "$has_global" "global prompt NOT present when project overrides"
+
+  rm -f "$TEST_TMP_DIR/home/.claude/settings.json"
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 52: Default prompt — without planReview.prompt, default criteria used
+test_config_default_prompt() {
+  echo "Test 52: Default prompt without planReview.prompt..."
+  set_mock_claude_revise
+
+  local project_dir
+  project_dir=$(setup_project)
+  write_settings "$project_dir/.claude" '{"planReview":{"model":"sonnet"}}'
+  local session_id="sess-prompt-default"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  run_plan_review "$input" "$project_dir" > /dev/null
+
+  local argv_log="$TEST_TMP_DIR/home/.claude/logs/claude-argv.log"
+  # Verify default criteria text is used
+  local has_correctness
+  has_correctness=$(grep -q 'Correctness' "$argv_log" && echo yes || echo no)
+  assert_equals "yes" "$has_correctness" "default criteria 'Correctness' present"
+
+  local has_risks
+  has_risks=$(grep -q 'Risks' "$argv_log" && echo yes || echo no)
+  assert_equals "yes" "$has_risks" "default criteria 'Risks' present"
+
+  local has_missing
+  has_missing=$(grep -q 'Missing steps' "$argv_log" && echo yes || echo no)
+  assert_equals "yes" "$has_missing" "default criteria 'Missing steps' present"
+
+  local has_security
+  has_security=$(grep -q 'Security' "$argv_log" && echo yes || echo no)
+  assert_equals "yes" "$has_security" "default criteria 'Security' present"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# =============================================================================
 # Run Tests
 # =============================================================================
 
@@ -1907,9 +1970,6 @@ test_config_global_maxreviews
 test_config_project_override
 test_config_local_override
 test_config_malformed_project_skipped
-test_config_max_min_normalization
-test_config_min_reviews_gates_approved
-test_config_min_reviews_second_approved
 test_config_model_change_clears_thread
 test_config_codex_model_persisted
 test_config_enabled_false_skips_review
@@ -1931,6 +1991,10 @@ test_engine_switch_clears_thread
 test_legacy_config_key
 test_new_config_key_priority
 test_mid_output_verdict_not_approved
+test_config_custom_prompt_claude
+test_config_custom_prompt_codex
+test_config_prompt_precedence
+test_config_default_prompt
 
 echo ""
 echo "================================="

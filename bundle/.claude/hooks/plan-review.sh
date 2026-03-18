@@ -19,8 +19,8 @@ fi
 # Config defaults (only needed for plan permission mode)
 PLAN_REVIEW_ENABLED="true"
 MAX_REVIEWS=3
-MIN_REVIEWS=1
 REVIEW_MODEL="sonnet"
+REVIEW_PROMPT=""
 
 _read_plan_review_config() {
   local f="$1"
@@ -30,18 +30,15 @@ _read_plan_review_config() {
   [ -n "$val" ] && PLAN_REVIEW_ENABLED=$val
   val=$(jq -r '.planReview.maxReviews | select(type=="number" and . >= 1 and floor == .)' "$f" 2>/dev/null)
   [ -n "$val" ] && MAX_REVIEWS=$val
-  val=$(jq -r '.planReview.minReviews | select(type=="number" and . >= 1 and floor == .)' "$f" 2>/dev/null)
-  [ -n "$val" ] && MIN_REVIEWS=$val
   val=$(jq -r '(.planReview.model // .planReview.codex.model) | select(type=="string" and length > 0)' "$f" 2>/dev/null)
   [ -n "$val" ] && REVIEW_MODEL=$val
+  val=$(jq -r '.planReview.prompt | select(type=="string" and length > 0)' "$f" 2>/dev/null)
+  [ -n "$val" ] && REVIEW_PROMPT=$val
 }
 
 _read_plan_review_config "$HOME/.claude/settings.json"
 _read_plan_review_config "$CLAUDE_PROJECT_DIR/.claude/settings.json"
 _read_plan_review_config "$CLAUDE_PROJECT_DIR/.claude/settings.local.json"
-
-# Enforce invariant: maxReviews must be >= minReviews
-[ "$MAX_REVIEWS" -lt "$MIN_REVIEWS" ] && MAX_REVIEWS=$MIN_REVIEWS
 
 SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty')
 HOOK_EVENT_NAME=$(echo "$INPUT" | jq -r '.hook_event_name // empty')
@@ -53,7 +50,7 @@ LOG_DIR="$HOME/.claude/logs"
 LOG_FILE="$LOG_DIR/plan-review.log"
 log() { echo "$1" >> "$LOG_FILE"; }
 log "=== $(date '+%Y-%m-%d %H:%M:%S') $HOOK_EVENT_NAME ($TOOL_NAME) hook executed ==="
-log "- settings: enabled=$PLAN_REVIEW_ENABLED max=$MAX_REVIEWS min=$MIN_REVIEWS model=$REVIEW_MODEL"
+log "- settings: enabled=$PLAN_REVIEW_ENABLED max=$MAX_REVIEWS model=$REVIEW_MODEL prompt=$(echo "$REVIEW_PROMPT" | head -1)..."
 
 if [ "$PLAN_REVIEW_ENABLED" = "false" ]; then
   log "- plan review disabled, exiting"
@@ -171,15 +168,11 @@ plan_review() {
 
   # Build prompt once, reuse for both exec and resume
   local prompt
-  prompt="Review the implementation plan in @${file_path}. You have to focus on:
-1. Correctness - Will this plan achieve the stated goals?
-2. Risks - What could go wrong? Edge cases? Data loss?
-3. Missing steps - Is anything forgotten?
-4. Alternatives - Is there a simpler or better approach?
-5. Security - Any security concerns?
+  prompt="Review the implementation plan in @${file_path}.
+${REVIEW_PROMPT}
 
-Be specific and actionable. If the plan is solid and ready to implement, end your review with exactly: VERDICT: APPROVED
-
+Be specific and actionable.
+If the plan is solid and ready to implement, end your review with exactly: VERDICT: APPROVED
 If changes are needed, end with exactly: VERDICT: REVISE"
 
   # Determine whether to exec or resume
@@ -248,16 +241,8 @@ If changes are needed, end with exactly: VERDICT: REVISE"
   local last_line
   last_line=$(printf '%s' "$review_results" | tail -1)
   if [[ "$last_line" == *"VERDICT: APPROVED"* ]]; then
-    # Always clear thread on APPROVED — any subsequent required pass starts fresh
     state_update 'del(.thread_id) | del(.model)' || true
-
-    local current_reviews
-    current_reviews=$(jq -r '.reviews // 0' "$STATE_FILE")
-    if [ "$current_reviews" -ge "$MIN_REVIEWS" ]; then
-      return 0  # allow
-    fi
-    review_results=$(printf '%s\n\nMinimum review count not reached (%s/%s). Trigger ExitPlanMode again.' \
-      "$review_results" "$current_reviews" "$MIN_REVIEWS")
+    return 0  # allow
   fi
 
   # Emit deny response — use backtick path (no Markdown link injection risk)
