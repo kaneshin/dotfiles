@@ -17,6 +17,7 @@ if [ "$PERMISSION_MODE" != "plan" ]; then
 fi
 
 # Config defaults (only needed for plan permission mode)
+PLAN_REVIEW_ENABLED="true"
 MAX_REVIEWS=3
 MIN_REVIEWS=1
 REVIEW_MODEL="sonnet"
@@ -25,6 +26,8 @@ _read_plan_review_config() {
   local f="$1"
   [ -f "$f" ] || return 0
   local val
+  val=$(jq -r '.planReview.enabled | select(type=="boolean")' "$f" 2>/dev/null)
+  [ -n "$val" ] && PLAN_REVIEW_ENABLED=$val
   val=$(jq -r '.planReview.maxReviews | select(type=="number" and . >= 1 and floor == .)' "$f" 2>/dev/null)
   [ -n "$val" ] && MAX_REVIEWS=$val
   val=$(jq -r '.planReview.minReviews | select(type=="number" and . >= 1 and floor == .)' "$f" 2>/dev/null)
@@ -50,7 +53,7 @@ LOG_DIR="$HOME/.claude/logs"
 LOG_FILE="$LOG_DIR/plan-review.log"
 log() { echo "$1" >> "$LOG_FILE"; }
 log "=== $(date '+%Y-%m-%d %H:%M:%S') $HOOK_EVENT_NAME ($TOOL_NAME) hook executed ==="
-log "- settings: max=$MAX_REVIEWS min=$MIN_REVIEWS model=$REVIEW_MODEL"
+log "- settings: enabled=$PLAN_REVIEW_ENABLED max=$MAX_REVIEWS min=$MIN_REVIEWS model=$REVIEW_MODEL"
 
 # Per-session state file
 STATE_DIR="$CLAUDE_PROJECT_DIR/.claude/plan-review"

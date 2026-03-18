@@ -894,8 +894,8 @@ test_config_defaults() {
   local log_line
   log_line=$(grep 'settings:' "$TEST_TMP_DIR/home/.claude/logs/plan-review.log" | tail -1)
   local has_defaults
-  has_defaults=$(echo "$log_line" | grep -q 'max=3 min=1 model=sonnet' && echo yes || echo no)
-  assert_equals "yes" "$has_defaults" "defaults logged: max=3 min=1 model=sonnet"
+  has_defaults=$(echo "$log_line" | grep -q 'enabled=true max=3 min=1 model=sonnet' && echo yes || echo no)
+  assert_equals "yes" "$has_defaults" "defaults logged: enabled=true max=3 min=1 model=sonnet"
 }
 
 # Case 21: Global maxReviews:1 → cap fires after 1 attempt
