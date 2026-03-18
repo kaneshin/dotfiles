@@ -55,6 +55,11 @@ log() { echo "$1" >> "$LOG_FILE"; }
 log "=== $(date '+%Y-%m-%d %H:%M:%S') $HOOK_EVENT_NAME ($TOOL_NAME) hook executed ==="
 log "- settings: enabled=$PLAN_REVIEW_ENABLED max=$MAX_REVIEWS min=$MIN_REVIEWS model=$REVIEW_MODEL"
 
+if [ "$PLAN_REVIEW_ENABLED" = "false" ]; then
+  log "- plan review disabled, exiting"
+  exit 0
+fi
+
 # Per-session state file
 STATE_DIR="$CLAUDE_PROJECT_DIR/.claude/plan-review"
 mkdir -p "$STATE_DIR"
