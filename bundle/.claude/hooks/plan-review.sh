@@ -16,6 +16,30 @@ if [ "$PERMISSION_MODE" != "plan" ]; then
   exit 0
 fi
 
+# Config defaults (only needed for plan permission mode)
+MAX_REVIEWS=3
+MIN_REVIEWS=1
+CODEX_MODEL="gpt-5.4"
+
+_read_plan_review_config() {
+  local f="$1"
+  [ -f "$f" ] || return 0
+  local val
+  val=$(jq -r '.planReview.maxReviews | select(type=="number" and . >= 1 and floor == .)' "$f" 2>/dev/null)
+  [ -n "$val" ] && MAX_REVIEWS=$val
+  val=$(jq -r '.planReview.minReviews | select(type=="number" and . >= 1 and floor == .)' "$f" 2>/dev/null)
+  [ -n "$val" ] && MIN_REVIEWS=$val
+  val=$(jq -r '.planReview.codex.model | select(type=="string" and length > 0)' "$f" 2>/dev/null)
+  [ -n "$val" ] && CODEX_MODEL=$val
+}
+
+_read_plan_review_config "$HOME/.claude/settings.json"
+_read_plan_review_config "$CLAUDE_PROJECT_DIR/.claude/settings.json"
+_read_plan_review_config "$CLAUDE_PROJECT_DIR/.claude/settings.local.json"
+
+# Enforce invariant: maxReviews must be >= minReviews
+[ "$MAX_REVIEWS" -lt "$MIN_REVIEWS" ] && MAX_REVIEWS=$MIN_REVIEWS
+
 SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty')
 HOOK_EVENT_NAME=$(echo "$INPUT" | jq -r '.hook_event_name // empty')
 TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty')
@@ -25,6 +49,7 @@ LOG_DIR="$HOME/.claude/logs"
 [ ! -d "$LOG_DIR" ] && mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/plan-review.log"
 echo "=== $(date '+%Y-%m-%d %H:%M:%S') $HOOK_EVENT_NAME ($TOOL_NAME) hook executed ===" >> "$LOG_FILE"
+echo "- settings: max=$MAX_REVIEWS min=$MIN_REVIEWS model=$CODEX_MODEL" >> "$LOG_FILE"
 
 # Per-session state file
 STATE_DIR="$CLAUDE_PROJECT_DIR/.claude/plan-review"
@@ -55,12 +80,20 @@ update_plan_review_file() {
       '{file_path: $fp, reviews: 0, timestamp: $ts}' > "$STATE_FILE"
   else
     # Same plan file — preserve all fields
-    local reviews codex_tid
+    local reviews codex_tid codex_mdl
     reviews=$(echo "$PLAN_REVIEW_JSON" | jq -r '.reviews // 0')
     codex_tid=$(echo "$PLAN_REVIEW_JSON" | jq -r '.codex_thread_id // empty' 2>/dev/null)
+    codex_mdl=$(echo "$PLAN_REVIEW_JSON" | jq -r '.codex_model // empty' 2>/dev/null)
     if [ -n "$codex_tid" ]; then
-      jq -n --arg fp "$INPUT_FILE_PATH" --argjson rev "$reviews" --argjson ts "$(date +%s)" --arg tid "$codex_tid" \
-        '{file_path: $fp, reviews: $rev, timestamp: $ts, codex_thread_id: $tid}' > "$STATE_FILE"
+      if [ -n "$codex_mdl" ]; then
+        jq -n --arg fp "$INPUT_FILE_PATH" --argjson rev "$reviews" --argjson ts "$(date +%s)" \
+          --arg tid "$codex_tid" --arg model "$codex_mdl" \
+          '{file_path: $fp, reviews: $rev, timestamp: $ts, codex_thread_id: $tid, codex_model: $model}' > "$STATE_FILE"
+      else
+        jq -n --arg fp "$INPUT_FILE_PATH" --argjson rev "$reviews" --argjson ts "$(date +%s)" \
+          --arg tid "$codex_tid" \
+          '{file_path: $fp, reviews: $rev, timestamp: $ts, codex_thread_id: $tid}' > "$STATE_FILE"
+      fi
     else
       jq -n --arg fp "$INPUT_FILE_PATH" --argjson rev "$reviews" --argjson ts "$(date +%s)" \
         '{file_path: $fp, reviews: $rev, timestamp: $ts}' > "$STATE_FILE"
@@ -91,7 +124,7 @@ plan_review() {
   # Check review iteration cap
   local reviews
   reviews=$(jq -r '.reviews // 0' "$STATE_FILE")
-  if [ "$reviews" -ge 3 ]; then
+  if [ "$reviews" -ge "$MAX_REVIEWS" ]; then
     return 0
   fi
 
@@ -118,6 +151,19 @@ If changes are needed, end with exactly: VERDICT: REVISE"
   local codex_thread_id
   codex_thread_id=$(echo "$PLAN_REVIEW_JSON" | jq -r '.codex_thread_id // empty')
 
+  # Invalidate thread if model has changed or is missing (legacy state)
+  local stored_model
+  stored_model=$(echo "$PLAN_REVIEW_JSON" | jq -r '.codex_model // empty')
+  if [ -n "$codex_thread_id" ]; then
+    if [ -z "$stored_model" ]; then
+      echo "- stored codex_model missing for thread ${codex_thread_id:0:8}..., clearing stale thread" >> "$LOG_FILE"
+      codex_thread_id=""
+    elif [ "$stored_model" != "$CODEX_MODEL" ]; then
+      echo "- model changed ($stored_model -> $CODEX_MODEL), clearing thread" >> "$LOG_FILE"
+      codex_thread_id=""
+    fi
+  fi
+
   local codex_output codex_rc
   if [ -n "$codex_thread_id" ]; then
     echo "- resuming codex thread: ${codex_thread_id:0:8}..." >> "$LOG_FILE"
@@ -127,17 +173,19 @@ If changes are needed, end with exactly: VERDICT: REVISE"
     # Retry with fresh exec if resume failed (non-zero exit OR empty text)
     if [ "$codex_rc" -ne 0 ] || [ -z "$CODEX_REVIEW_TEXT" ]; then
       echo "- resume failed (rc=$codex_rc), retrying with fresh exec" >> "$LOG_FILE"
-      codex_output=$(codex exec --json -m gpt-5.4 -s read-only "$prompt") && codex_rc=0 || codex_rc=$?
+      codex_output=$(codex exec --json -m "$CODEX_MODEL" -s read-only "$prompt") && codex_rc=0 || codex_rc=$?
       parse_codex_jsonl "$codex_output"
     fi
   else
-    codex_output=$(codex exec --json -m gpt-5.4 -s read-only "$prompt") && codex_rc=0 || codex_rc=$?
+    codex_output=$(codex exec --json -m "$CODEX_MODEL" -s read-only "$prompt") && codex_rc=0 || codex_rc=$?
     parse_codex_jsonl "$codex_output"
   fi
 
   # Persist thread_id ONLY on successful run (rc=0 AND non-empty text)
   if [ "$codex_rc" -eq 0 ] && [ -n "$CODEX_REVIEW_TEXT" ] && [ -n "$CODEX_THREAD_ID" ]; then
-    jq -c --arg tid "$CODEX_THREAD_ID" '.codex_thread_id = $tid' "$STATE_FILE" > "${STATE_FILE}.tmp" \
+    jq -c --arg tid "$CODEX_THREAD_ID" --arg model "$CODEX_MODEL" \
+      '.codex_thread_id = $tid | .codex_model = $model' \
+      "$STATE_FILE" > "${STATE_FILE}.tmp" \
       && mv "${STATE_FILE}.tmp" "$STATE_FILE" 2>/dev/null || true
     echo "- saved codex thread: ${CODEX_THREAD_ID:0:8}..." >> "$LOG_FILE"
   fi
@@ -146,10 +194,17 @@ If changes are needed, end with exactly: VERDICT: REVISE"
   echo "- review results: $review_results" >> "$LOG_FILE"
 
   if [[ "$review_results" == *"VERDICT: APPROVED"* ]]; then
-    # Clear thread_id — review cycle complete, avoid stale context
-    jq -c 'del(.codex_thread_id)' "$STATE_FILE" > "${STATE_FILE}.tmp" \
+    # Always clear thread on APPROVED — any subsequent required pass starts fresh
+    jq -c 'del(.codex_thread_id) | del(.codex_model)' "$STATE_FILE" > "${STATE_FILE}.tmp" \
       && mv "${STATE_FILE}.tmp" "$STATE_FILE" 2>/dev/null || true
-    return 0
+
+    local current_reviews
+    current_reviews=$(jq -r '.reviews // 0' "$STATE_FILE")
+    if [ "$current_reviews" -ge "$MIN_REVIEWS" ]; then
+      return 0  # allow
+    fi
+    review_results=$(printf '%s\n\nMinimum review count not reached (%s/%s). Trigger ExitPlanMode again.' \
+      "$review_results" "$current_reviews" "$MIN_REVIEWS")
   fi
 
   # Emit deny response — use backtick path (no Markdown link injection risk)
