@@ -89,25 +89,20 @@ update_plan_review_file() {
       --argjson ts "$(date +%s)" \
       '{file_path: $fp, reviews: 0, timestamp: $ts}'
   else
-    # Same plan file — preserve all fields
+    # Same plan file — single atomic write, optional fields merged via jq
     local reviews codex_tid codex_mdl
     reviews=$(echo "$PLAN_REVIEW_JSON" | jq -r '.reviews // 0')
     codex_tid=$(echo "$PLAN_REVIEW_JSON" | jq -r '.codex_thread_id // empty' 2>/dev/null)
     codex_mdl=$(echo "$PLAN_REVIEW_JSON" | jq -r '.codex_model // empty' 2>/dev/null)
-    if [ -n "$codex_tid" ]; then
-      if [ -n "$codex_mdl" ]; then
-        state_init --arg fp "$INPUT_FILE_PATH" --argjson rev "$reviews" --argjson ts "$(date +%s)" \
-          --arg tid "$codex_tid" --arg model "$codex_mdl" \
-          '{file_path: $fp, reviews: $rev, timestamp: $ts, codex_thread_id: $tid, codex_model: $model}'
-      else
-        state_init --arg fp "$INPUT_FILE_PATH" --argjson rev "$reviews" --argjson ts "$(date +%s)" \
-          --arg tid "$codex_tid" \
-          '{file_path: $fp, reviews: $rev, timestamp: $ts, codex_thread_id: $tid}'
-      fi
-    else
-      state_init --arg fp "$INPUT_FILE_PATH" --argjson rev "$reviews" --argjson ts "$(date +%s)" \
-        '{file_path: $fp, reviews: $rev, timestamp: $ts}'
-    fi
+    state_init \
+      --arg fp "$INPUT_FILE_PATH" \
+      --argjson rev "$reviews" \
+      --argjson ts "$(date +%s)" \
+      --arg tid "${codex_tid:-}" \
+      --arg model "${codex_mdl:-}" \
+      '{file_path: $fp, reviews: $rev, timestamp: $ts}
+       + (if $tid != "" then {codex_thread_id: $tid} else {} end)
+       + (if $model != "" then {codex_model: $model} else {} end)'
   fi
   log "- update state: $STATE_FILE"
 }
