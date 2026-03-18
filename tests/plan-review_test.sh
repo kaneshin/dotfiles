@@ -1316,6 +1316,430 @@ test_log_output_format() {
 }
 
 # =============================================================================
+# Claude Code Engine Tests (Cases 33–44)
+# =============================================================================
+
+# Case 33: Legacy state with codex_thread_id/codex_model fields still works
+test_legacy_state_fields() {
+  echo "Test 33: Legacy state with codex_thread_id/codex_model..."
+  set_mock_codex_revise
+
+  local project_dir
+  project_dir=$(setup_project)
+  write_settings "$project_dir/.claude" '{"planReview":{"model":"gpt-5.4"}}'
+  local session_id="sess-legacy-fields"
+  local state_dir="$project_dir/.claude/plan-review"
+  mkdir -p "$state_dir"
+  # Write state with OLD field names (codex_thread_id, codex_model)
+  jq -n \
+    --arg fp "/tmp/plan.md" \
+    --argjson rev 1 \
+    --argjson ts "$(date +%s)" \
+    --arg tid "legacy-thread-abc" \
+    --arg model "gpt-5.4" \
+    '{file_path: $fp, reviews: $rev, timestamp: $ts, codex_thread_id: $tid, codex_model: $model}' > "$state_dir/${session_id}.json"
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0 with legacy state"
+
+  # Verify resume was attempted with the legacy thread_id
+  local argv_log="$TEST_TMP_DIR/home/.claude/logs/codex-argv.log"
+  local has_resume
+  has_resume=$(grep -q 'exec resume --json legacy-thread-abc' "$argv_log" && echo yes || echo no)
+  assert_equals "yes" "$has_resume" "legacy codex_thread_id used for resume"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 34: Claude model dispatch — sonnet model → claude binary called
+test_claude_model_dispatch() {
+  echo "Test 34: Claude model dispatch..."
+  set_mock_claude_approved
+
+  local project_dir
+  project_dir=$(setup_project)
+  write_settings "$project_dir/.claude" '{"planReview":{"model":"sonnet"}}'
+  local session_id="sess-claude-dispatch"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  run_plan_review "$input" "$project_dir" > /dev/null
+
+  local argv_log="$TEST_TMP_DIR/home/.claude/logs/claude-argv.log"
+  local has_claude
+  has_claude=$(grep -q '\-p' "$argv_log" && echo yes || echo no)
+  assert_equals "yes" "$has_claude" "claude binary called with -p for sonnet model"
+
+  # codex should NOT be called
+  local codex_log="$TEST_TMP_DIR/home/.claude/logs/codex-argv.log"
+  local codex_empty
+  codex_empty=$([ ! -s "$codex_log" ] && echo yes || echo no)
+  assert_equals "yes" "$codex_empty" "codex NOT called for sonnet model"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 35: Codex model dispatch — gpt-5.4 model → codex binary called
+test_codex_model_dispatch() {
+  echo "Test 35: Codex model dispatch..."
+  set_mock_codex_approved
+
+  local project_dir
+  project_dir=$(setup_project)
+  write_settings "$project_dir/.claude" '{"planReview":{"model":"gpt-5.4"}}'
+  local session_id="sess-codex-dispatch"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  run_plan_review "$input" "$project_dir" > /dev/null
+
+  local argv_log="$TEST_TMP_DIR/home/.claude/logs/codex-argv.log"
+  local has_codex
+  has_codex=$(grep -q 'exec --json' "$argv_log" && echo yes || echo no)
+  assert_equals "yes" "$has_codex" "codex binary called for gpt-5.4 model"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 36: Claude APPROVED → thread_id cleared, exit allowed
+test_claude_approved() {
+  echo "Test 36: Claude APPROVED..."
+  set_mock_claude_approved
+
+  local project_dir
+  project_dir=$(setup_project)
+  write_settings "$project_dir/.claude" '{"planReview":{"model":"sonnet"}}'
+  local session_id="sess-claude-approved"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0 when claude APPROVED"
+  assert_equals "" "$output" "no deny JSON output on claude APPROVED"
+
+  local state_file="$project_dir/.claude/plan-review/${session_id}.json"
+  assert_equals "null" "$(jq -r '.thread_id // "null"' "$state_file")" \
+    "thread_id cleared after claude APPROVED"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 37: Claude REVISE → thread_id persisted, deny returned
+test_claude_revise() {
+  echo "Test 37: Claude REVISE..."
+  set_mock_claude_revise
+
+  local project_dir
+  project_dir=$(setup_project)
+  write_settings "$project_dir/.claude" '{"planReview":{"model":"sonnet"}}'
+  local session_id="sess-claude-revise"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0 (deny via JSON)"
+  assert_equals "deny" "$(echo "$output" | jq -r '.hookSpecificOutput.permissionDecision')" \
+    "claude REVISE treated as deny"
+
+  local state_file="$project_dir/.claude/plan-review/${session_id}.json"
+  assert_equals "mock-session-002" "$(jq -r '.thread_id // "null"' "$state_file")" \
+    "thread_id (session_id) persisted after claude REVISE"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 38: Claude resume — --resume SESSION_ID present in argv
+test_claude_resume() {
+  echo "Test 38: Claude resume..."
+  set_mock_claude_revise
+
+  local project_dir
+  project_dir=$(setup_project)
+  write_settings "$project_dir/.claude" '{"planReview":{"model":"sonnet"}}'
+  local session_id="sess-claude-resume"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 1 "existing-session-xyz" "sonnet"
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  run_plan_review "$input" "$project_dir" > /dev/null
+
+  local argv_log="$TEST_TMP_DIR/home/.claude/logs/claude-argv.log"
+  local has_resume
+  has_resume=$(grep -q '\-\-resume existing-session-xyz' "$argv_log" && echo yes || echo no)
+  assert_equals "yes" "$has_resume" "claude called with --resume SESSION_ID"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 39: Claude resume failure → retry with claude_exec_fresh
+test_claude_resume_failure_retry() {
+  echo "Test 39: Claude resume failure retry..."
+  set_mock_claude_resume_fail
+
+  local project_dir
+  project_dir=$(setup_project)
+  write_settings "$project_dir/.claude" '{"planReview":{"model":"sonnet"}}'
+  local session_id="sess-claude-resume-fail"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 1 "old-session-abc" "sonnet"
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0 after claude resume retry"
+
+  local argv_log="$TEST_TMP_DIR/home/.claude/logs/claude-argv.log"
+  local line_count
+  line_count=$(wc -l < "$argv_log" | tr -d ' ')
+  assert_equals "2" "$line_count" "claude called twice (resume then fresh)"
+
+  local state_file="$project_dir/.claude/plan-review/${session_id}.json"
+  assert_equals "mock-session-fresh" "$(jq -r '.thread_id // "null"' "$state_file")" \
+    "thread_id updated from fresh claude exec"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 40: Missing claude binary → fail-open (review allowed, error logged)
+test_claude_missing_binary() {
+  echo "Test 40: Missing claude binary..."
+
+  # Remove the mock claude binary
+  rm -f "$MOCK_BIN/claude"
+
+  local project_dir
+  project_dir=$(setup_project)
+  write_settings "$project_dir/.claude" '{"planReview":{"model":"sonnet"}}'
+  local session_id="sess-claude-missing"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0 when claude binary missing (fail-open)"
+
+  # Restore mock claude
+  set_mock_claude_approved
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 41: Malformed Claude JSON → fail-open
+test_claude_malformed_json() {
+  echo "Test 41: Malformed Claude JSON..."
+
+  # Mock that returns invalid JSON
+  cat > "$MOCK_BIN/claude" <<'MOCK'
+#!/bin/bash
+printf '%s ' "$@" | tr '\n' ' ' >> "$HOME/.claude/logs/claude-argv.log"
+printf '\n' >> "$HOME/.claude/logs/claude-argv.log"
+echo 'not valid json{{{}'
+MOCK
+  chmod +x "$MOCK_BIN/claude"
+
+  local project_dir
+  project_dir=$(setup_project)
+  write_settings "$project_dir/.claude" '{"planReview":{"model":"sonnet"}}'
+  local session_id="sess-claude-malformed"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0 with malformed claude JSON (fail-open)"
+
+  # Restore mock claude
+  set_mock_claude_approved
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 42: Engine switch (codex→claude) with stale thread → thread cleared
+test_engine_switch_clears_thread() {
+  echo "Test 42: Engine switch (codex→claude) clears stale thread..."
+  set_mock_claude_revise
+
+  local project_dir
+  project_dir=$(setup_project)
+  # Config says sonnet (claude), but state has gpt-5.4 model
+  write_settings "$project_dir/.claude" '{"planReview":{"model":"sonnet"}}'
+  local session_id="sess-engine-switch"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 1 "old-codex-thread" "gpt-5.4"
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  run_plan_review "$input" "$project_dir" > /dev/null
+
+  # Claude should be called (NOT codex), and should NOT attempt resume
+  local claude_log="$TEST_TMP_DIR/home/.claude/logs/claude-argv.log"
+  local has_resume
+  has_resume=$(grep -q '\-\-resume' "$claude_log" && echo yes || echo no)
+  assert_equals "no" "$has_resume" "claude NOT called with --resume (stale codex thread cleared)"
+
+  local has_fresh
+  has_fresh=$(grep -q '\-p' "$claude_log" && echo yes || echo no)
+  assert_equals "yes" "$has_fresh" "claude called with fresh -p after engine switch"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 43: Legacy config key planReview.codex.model still works
+test_legacy_config_key() {
+  echo "Test 43: Legacy config key planReview.codex.model..."
+  set_mock_codex_approved
+
+  local project_dir
+  project_dir=$(setup_project)
+  write_settings "$project_dir/.claude" '{"planReview":{"codex":{"model":"gpt-5.4"}}}'
+  local session_id="sess-legacy-config"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  run_plan_review "$input" "$project_dir" > /dev/null
+
+  local log_line
+  log_line=$(grep 'settings:' "$TEST_TMP_DIR/home/.claude/logs/plan-review.log" | tail -1)
+  local has_model
+  has_model=$(echo "$log_line" | grep -q 'model=gpt-5.4' && echo yes || echo no)
+  assert_equals "yes" "$has_model" "legacy planReview.codex.model read correctly"
+
+  # Verify codex was called (gpt-5.4 → codex path)
+  local argv_log="$TEST_TMP_DIR/home/.claude/logs/codex-argv.log"
+  local has_exec
+  has_exec=$(grep -q 'exec --json' "$argv_log" && echo yes || echo no)
+  assert_equals "yes" "$has_exec" "codex used for legacy config model gpt-5.4"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 44: New config key takes priority over legacy when both exist
+test_new_config_key_priority() {
+  echo "Test 44: New config key priority over legacy..."
+  set_mock_claude_approved
+
+  local project_dir
+  project_dir=$(setup_project)
+  # Both keys present — new key should win
+  write_settings "$project_dir/.claude" '{"planReview":{"model":"sonnet","codex":{"model":"gpt-5.4"}}}'
+  local session_id="sess-config-priority"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  run_plan_review "$input" "$project_dir" > /dev/null
+
+  local log_line
+  log_line=$(grep 'settings:' "$TEST_TMP_DIR/home/.claude/logs/plan-review.log" | tail -1)
+  local has_model
+  has_model=$(echo "$log_line" | grep -q 'model=sonnet' && echo yes || echo no)
+  assert_equals "yes" "$has_model" "new planReview.model takes priority over legacy"
+
+  # Verify claude was called (sonnet → claude path)
+  local claude_log="$TEST_TMP_DIR/home/.claude/logs/claude-argv.log"
+  local has_claude
+  has_claude=$(grep -q '\-p' "$claude_log" && echo yes || echo no)
+  assert_equals "yes" "$has_claude" "claude used when new config key has priority"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# =============================================================================
 # Run Tests
 # =============================================================================
 
@@ -1356,6 +1780,18 @@ test_config_codex_model_persisted
 test_state_mutation_failure
 test_thread_id_atomic_preservation
 test_log_output_format
+test_legacy_state_fields
+test_claude_model_dispatch
+test_codex_model_dispatch
+test_claude_approved
+test_claude_revise
+test_claude_resume
+test_claude_resume_failure_retry
+test_claude_missing_binary
+test_claude_malformed_json
+test_engine_switch_clears_thread
+test_legacy_config_key
+test_new_config_key_priority
 
 echo ""
 echo "================================="

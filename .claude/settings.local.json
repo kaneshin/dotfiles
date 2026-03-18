@@ -25,6 +25,7 @@
       "Bash(/bin/bash:*)",
       "Bash(codex exec:*)",
       "Bash(codex resume:*)",
+      "Bash(claude -p:*)",
       "Bash(git:*)",
       "WebFetch(domain:json.schemastore.org)",
       "WebFetch(domain:www.schemastore.org)"
