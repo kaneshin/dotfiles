@@ -10,7 +10,13 @@ fi
 
 cd "$CLAUDE_PROJECT_DIR"
 
-# Config defaults
+INPUT=$(cat)
+PERMISSION_MODE=$(echo "$INPUT" | jq -r '.permission_mode // empty')
+if [ "$PERMISSION_MODE" != "plan" ]; then
+  exit 0
+fi
+
+# Config defaults (only needed for plan permission mode)
 MAX_REVIEWS=3
 MIN_REVIEWS=1
 CODEX_MODEL="gpt-5.4"
@@ -33,12 +39,6 @@ _read_plan_review_config "$CLAUDE_PROJECT_DIR/.claude/settings.local.json"
 
 # Enforce invariant: maxReviews must be >= minReviews
 [ "$MAX_REVIEWS" -lt "$MIN_REVIEWS" ] && MAX_REVIEWS=$MIN_REVIEWS
-
-INPUT=$(cat)
-PERMISSION_MODE=$(echo "$INPUT" | jq -r '.permission_mode // empty')
-if [ "$PERMISSION_MODE" != "plan" ]; then
-  exit 0
-fi
 
 SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty')
 HOOK_EVENT_NAME=$(echo "$INPUT" | jq -r '.hook_event_name // empty')
