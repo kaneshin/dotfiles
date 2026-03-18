@@ -119,6 +119,10 @@ parse_codex_jsonl() {
     | paste -sd $'\n' -)
 }
 
+codex_exec_fresh() {
+  codex exec --json -m "$CODEX_MODEL" -s read-only "$1"
+}
+
 plan_review() {
   local file_path
   file_path=$(echo "$PLAN_REVIEW_JSON" | jq -r '.file_path // empty')
@@ -177,11 +181,11 @@ If changes are needed, end with exactly: VERDICT: REVISE"
     # Retry with fresh exec if resume failed (non-zero exit OR empty text)
     if [ "$codex_rc" -ne 0 ] || [ -z "$CODEX_REVIEW_TEXT" ]; then
       log "- resume failed (rc=$codex_rc), retrying with fresh exec"
-      codex_output=$(codex exec --json -m "$CODEX_MODEL" -s read-only "$prompt") && codex_rc=0 || codex_rc=$?
+      codex_output=$(codex_exec_fresh "$prompt") && codex_rc=0 || codex_rc=$?
       parse_codex_jsonl "$codex_output"
     fi
   else
-    codex_output=$(codex exec --json -m "$CODEX_MODEL" -s read-only "$prompt") && codex_rc=0 || codex_rc=$?
+    codex_output=$(codex_exec_fresh "$prompt") && codex_rc=0 || codex_rc=$?
     parse_codex_jsonl "$codex_output"
   fi
 
