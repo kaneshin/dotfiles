@@ -2,6 +2,13 @@
 
 # Plan review hook — runs an external review (Codex CLI or Claude Code) when ExitPlanMode is invoked.
 # State is stored per-session in .claude/plan-review/<session_id>.json.
+# Pass --debug to enable log output to ~/.claude/logs/plan-review.log.
+
+# Parse flags
+DEBUG=false
+for _arg in "$@"; do
+  case "$_arg" in --debug) DEBUG=true ;; esac
+done
 
 # This hook only operates within a project directory.
 if [ -z "$CLAUDE_PROJECT_DIR" ]; then
@@ -44,11 +51,13 @@ SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty')
 HOOK_EVENT_NAME=$(echo "$INPUT" | jq -r '.hook_event_name // empty')
 TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty')
 
-# Logging
-LOG_DIR="$HOME/.claude/logs"
-[ ! -d "$LOG_DIR" ] && mkdir -p "$LOG_DIR"
-LOG_FILE="$LOG_DIR/plan-review.log"
-log() { echo "$1" >> "$LOG_FILE"; }
+# Logging — only writes when --debug is passed
+LOG_FILE="$HOME/.claude/logs/plan-review.log"
+log() {
+  [ "$DEBUG" = "true" ] || return 0
+  mkdir -p "$(dirname "$LOG_FILE")"
+  echo "$1" >> "$LOG_FILE"
+}
 log "=== $(date '+%Y-%m-%d %H:%M:%S') $HOOK_EVENT_NAME ($TOOL_NAME) hook executed ==="
 log "- settings: enabled=$PLAN_REVIEW_ENABLED max=$MAX_REVIEWS model=$REVIEW_MODEL prompt=$(echo "$REVIEW_PROMPT" | head -1)..."
 

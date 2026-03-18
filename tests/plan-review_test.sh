@@ -253,9 +253,11 @@ create_state_file() {
 }
 
 # Helper: run plan-review.sh with given JSON input
+# $1: JSON input  $2: project_dir (optional)  $3: extra script args e.g. "--debug" (optional)
 run_plan_review() {
   local input="$1"
   local project_dir="${2:-}"
+  local extra_args="${3:-}"
   local env_vars=""
 
   # Clear argv logs before each run
@@ -269,7 +271,7 @@ run_plan_review() {
   env -i PATH="$MOCK_BIN:/usr/bin:/bin:/usr/sbin:/sbin" \
     HOME="$TEST_TMP_DIR/home" \
     ${env_vars:+$env_vars} \
-    /bin/bash "$PLAN_REVIEW_SCRIPT" <<< "$input"
+    /bin/bash "$PLAN_REVIEW_SCRIPT" ${extra_args:+$extra_args} <<< "$input"
 }
 
 # =============================================================================
@@ -899,7 +901,7 @@ test_config_defaults() {
     tool_input: {}
   }')
 
-  run_plan_review "$input" "$project_dir" > /dev/null
+  run_plan_review "$input" "$project_dir" "--debug" > /dev/null
 
   local log_line
   log_line=$(grep 'settings:' "$TEST_TMP_DIR/home/.claude/logs/plan-review.log" | tail -1)
@@ -963,7 +965,7 @@ test_config_project_override() {
   }')
 
   local rc output
-  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  output=$(run_plan_review "$input" "$project_dir" "--debug") && rc=0 || rc=$?
   assert_return_code 0 "$rc" "exits 0"
 
   local log_line
@@ -998,7 +1000,7 @@ test_config_local_override() {
     tool_input: {}
   }')
 
-  run_plan_review "$input" "$project_dir" > /dev/null
+  run_plan_review "$input" "$project_dir" "--debug" > /dev/null
 
   local log_line
   log_line=$(grep 'settings:' "$TEST_TMP_DIR/home/.claude/logs/plan-review.log" | tail -1)
@@ -1031,7 +1033,7 @@ test_config_malformed_project_skipped() {
     tool_input: {}
   }')
 
-  run_plan_review "$input" "$project_dir" > /dev/null
+  run_plan_review "$input" "$project_dir" "--debug" > /dev/null
 
   local log_line
   log_line=$(grep 'settings:' "$TEST_TMP_DIR/home/.claude/logs/plan-review.log" | tail -1)
@@ -1148,7 +1150,7 @@ test_config_enabled_false_skips_review() {
   }')
 
   local rc output
-  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  output=$(run_plan_review "$input" "$project_dir" "--debug") && rc=0 || rc=$?
   assert_return_code 0 "$rc" "exits 0 when disabled"
   assert_equals "" "$output" "no output when plan review disabled"
 
@@ -1351,7 +1353,7 @@ test_log_output_format() {
     tool_input: {}
   }')
 
-  run_plan_review "$input" "$project_dir" > /dev/null
+  run_plan_review "$input" "$project_dir" "--debug" > /dev/null
 
   local log_file="$TEST_TMP_DIR/home/.claude/logs/plan-review.log"
   # Verify the expected header format: === <date> <event> (<tool>) hook executed ===
@@ -1688,7 +1690,7 @@ test_legacy_config_key() {
     tool_input: {}
   }')
 
-  run_plan_review "$input" "$project_dir" > /dev/null
+  run_plan_review "$input" "$project_dir" "--debug" > /dev/null
 
   local log_line
   log_line=$(grep 'settings:' "$TEST_TMP_DIR/home/.claude/logs/plan-review.log" | tail -1)
@@ -1726,7 +1728,7 @@ test_new_config_key_priority() {
     tool_input: {}
   }')
 
-  run_plan_review "$input" "$project_dir" > /dev/null
+  run_plan_review "$input" "$project_dir" "--debug" > /dev/null
 
   local log_line
   log_line=$(grep 'settings:' "$TEST_TMP_DIR/home/.claude/logs/plan-review.log" | tail -1)
@@ -1938,6 +1940,74 @@ test_config_default_prompt() {
 }
 
 # =============================================================================
+# Debug Logging Tests (Cases 53–54)
+# =============================================================================
+
+# Case 53: Without --debug → log file NOT created
+test_debug_log_without_flag() {
+  echo "Test 53: No log file created without --debug..."
+  set_mock_claude_approved
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-no-debug"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  # Remove log file if it exists from a previous test
+  rm -f "$TEST_TMP_DIR/home/.claude/logs/plan-review.log"
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  run_plan_review "$input" "$project_dir" > /dev/null
+
+  local log_file="$TEST_TMP_DIR/home/.claude/logs/plan-review.log"
+  local log_exists
+  log_exists=$([ -f "$log_file" ] && echo yes || echo no)
+  assert_equals "no" "$log_exists" "log file not created without --debug"
+}
+
+# Case 54: With --debug → log file created and contains expected content
+test_debug_log_with_flag() {
+  echo "Test 54: Log file created with --debug..."
+  set_mock_claude_approved
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-with-debug"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  rm -f "$TEST_TMP_DIR/home/.claude/logs/plan-review.log"
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  run_plan_review "$input" "$project_dir" "--debug" > /dev/null
+
+  local log_file="$TEST_TMP_DIR/home/.claude/logs/plan-review.log"
+  local log_exists
+  log_exists=$([ -f "$log_file" ] && echo yes || echo no)
+  assert_equals "yes" "$log_exists" "log file created with --debug"
+
+  local has_header
+  has_header=$(grep -qE '^=== [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} PreToolUse \(ExitPlanMode\) hook executed ===$' \
+    "$log_file" && echo yes || echo no)
+  assert_equals "yes" "$has_header" "log contains expected header with --debug"
+}
+
+# =============================================================================
 # Run Tests
 # =============================================================================
 
@@ -1995,6 +2065,8 @@ test_config_custom_prompt_claude
 test_config_custom_prompt_codex
 test_config_prompt_precedence
 test_config_default_prompt
+test_debug_log_without_flag
+test_debug_log_with_flag
 
 echo ""
 echo "================================="
