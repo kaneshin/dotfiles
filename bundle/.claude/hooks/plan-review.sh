@@ -57,6 +57,15 @@ STATE_DIR="$CLAUDE_PROJECT_DIR/.claude/plan-review"
 mkdir -p "$STATE_DIR"
 STATE_FILE="$STATE_DIR/${SESSION_ID}.json"
 
+state_init() {
+  jq -n "$@" > "$STATE_FILE"
+}
+
+state_update() {
+  jq -c "$@" "$STATE_FILE" > "${STATE_FILE}.tmp" \
+    && mv "${STATE_FILE}.tmp" "$STATE_FILE" 2>/dev/null
+}
+
 if [ -f "$STATE_FILE" ]; then
   PLAN_REVIEW_JSON=$(cat "$STATE_FILE")
 else
@@ -75,10 +84,10 @@ update_plan_review_file() {
 
   if [ "$INPUT_FILE_PATH" != "$stored_file_path" ]; then
     # New plan file — full reset
-    jq -n \
+    state_init \
       --arg fp "$INPUT_FILE_PATH" \
       --argjson ts "$(date +%s)" \
-      '{file_path: $fp, reviews: 0, timestamp: $ts}' > "$STATE_FILE"
+      '{file_path: $fp, reviews: 0, timestamp: $ts}'
   else
     # Same plan file — preserve all fields
     local reviews codex_tid codex_mdl
@@ -87,17 +96,17 @@ update_plan_review_file() {
     codex_mdl=$(echo "$PLAN_REVIEW_JSON" | jq -r '.codex_model // empty' 2>/dev/null)
     if [ -n "$codex_tid" ]; then
       if [ -n "$codex_mdl" ]; then
-        jq -n --arg fp "$INPUT_FILE_PATH" --argjson rev "$reviews" --argjson ts "$(date +%s)" \
+        state_init --arg fp "$INPUT_FILE_PATH" --argjson rev "$reviews" --argjson ts "$(date +%s)" \
           --arg tid "$codex_tid" --arg model "$codex_mdl" \
-          '{file_path: $fp, reviews: $rev, timestamp: $ts, codex_thread_id: $tid, codex_model: $model}' > "$STATE_FILE"
+          '{file_path: $fp, reviews: $rev, timestamp: $ts, codex_thread_id: $tid, codex_model: $model}'
       else
-        jq -n --arg fp "$INPUT_FILE_PATH" --argjson rev "$reviews" --argjson ts "$(date +%s)" \
+        state_init --arg fp "$INPUT_FILE_PATH" --argjson rev "$reviews" --argjson ts "$(date +%s)" \
           --arg tid "$codex_tid" \
-          '{file_path: $fp, reviews: $rev, timestamp: $ts, codex_thread_id: $tid}' > "$STATE_FILE"
+          '{file_path: $fp, reviews: $rev, timestamp: $ts, codex_thread_id: $tid}'
       fi
     else
-      jq -n --arg fp "$INPUT_FILE_PATH" --argjson rev "$reviews" --argjson ts "$(date +%s)" \
-        '{file_path: $fp, reviews: $rev, timestamp: $ts}' > "$STATE_FILE"
+      state_init --arg fp "$INPUT_FILE_PATH" --argjson rev "$reviews" --argjson ts "$(date +%s)" \
+        '{file_path: $fp, reviews: $rev, timestamp: $ts}'
     fi
   fi
   log "- update state: $STATE_FILE"
@@ -130,8 +139,7 @@ plan_review() {
   fi
 
   # Increment reviews BEFORE codex call (counts attempts, not successes)
-  jq -c '.reviews = (.reviews // 0) + 1' "$STATE_FILE" > "${STATE_FILE}.tmp" \
-    && mv "${STATE_FILE}.tmp" "$STATE_FILE"
+  state_update '.reviews = (.reviews // 0) + 1'
 
   log "- review plan: $file_path (attempt $((reviews + 1)))"
 
@@ -184,10 +192,8 @@ If changes are needed, end with exactly: VERDICT: REVISE"
 
   # Persist thread_id ONLY on successful run (rc=0 AND non-empty text)
   if [ "$codex_rc" -eq 0 ] && [ -n "$CODEX_REVIEW_TEXT" ] && [ -n "$CODEX_THREAD_ID" ]; then
-    jq -c --arg tid "$CODEX_THREAD_ID" --arg model "$CODEX_MODEL" \
-      '.codex_thread_id = $tid | .codex_model = $model' \
-      "$STATE_FILE" > "${STATE_FILE}.tmp" \
-      && mv "${STATE_FILE}.tmp" "$STATE_FILE" 2>/dev/null || true
+    state_update --arg tid "$CODEX_THREAD_ID" --arg model "$CODEX_MODEL" \
+      '.codex_thread_id = $tid | .codex_model = $model' || true
     log "- saved codex thread: ${CODEX_THREAD_ID:0:8}..."
   fi
 
@@ -196,8 +202,7 @@ If changes are needed, end with exactly: VERDICT: REVISE"
 
   if [[ "$review_results" == *"VERDICT: APPROVED"* ]]; then
     # Always clear thread on APPROVED — any subsequent required pass starts fresh
-    jq -c 'del(.codex_thread_id) | del(.codex_model)' "$STATE_FILE" > "${STATE_FILE}.tmp" \
-      && mv "${STATE_FILE}.tmp" "$STATE_FILE" 2>/dev/null || true
+    state_update 'del(.codex_thread_id) | del(.codex_model)' || true
 
     local current_reviews
     current_reviews=$(jq -r '.reviews // 0' "$STATE_FILE")
