@@ -1319,48 +1319,6 @@ test_log_output_format() {
 # Claude Code Engine Tests (Cases 33–44)
 # =============================================================================
 
-# Case 33: Legacy state with codex_thread_id/codex_model fields still works
-test_legacy_state_fields() {
-  echo "Test 33: Legacy state with codex_thread_id/codex_model..."
-  set_mock_codex_revise
-
-  local project_dir
-  project_dir=$(setup_project)
-  write_settings "$project_dir/.claude" '{"planReview":{"model":"gpt-5.4"}}'
-  local session_id="sess-legacy-fields"
-  local state_dir="$project_dir/.claude/plan-review"
-  mkdir -p "$state_dir"
-  # Write state with OLD field names (codex_thread_id, codex_model)
-  jq -n \
-    --arg fp "/tmp/plan.md" \
-    --argjson rev 1 \
-    --argjson ts "$(date +%s)" \
-    --arg tid "legacy-thread-abc" \
-    --arg model "gpt-5.4" \
-    '{file_path: $fp, reviews: $rev, timestamp: $ts, codex_thread_id: $tid, codex_model: $model}' > "$state_dir/${session_id}.json"
-
-  local input
-  input=$(jq -nc --arg sid "$session_id" '{
-    permission_mode: "plan",
-    session_id: $sid,
-    hook_event_name: "PreToolUse",
-    tool_name: "ExitPlanMode",
-    tool_input: {}
-  }')
-
-  local rc output
-  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
-  assert_return_code 0 "$rc" "exits 0 with legacy state"
-
-  # Verify resume was attempted with the legacy thread_id
-  local argv_log="$TEST_TMP_DIR/home/.claude/logs/codex-argv.log"
-  local has_resume
-  has_resume=$(grep -q 'exec resume --json legacy-thread-abc' "$argv_log" && echo yes || echo no)
-  assert_equals "yes" "$has_resume" "legacy codex_thread_id used for resume"
-
-  rm -f "$project_dir/.claude/settings.json"
-}
-
 # Case 34: Claude model dispatch — sonnet model → claude binary called
 test_claude_model_dispatch() {
   echo "Test 34: Claude model dispatch..."
@@ -1780,7 +1738,6 @@ test_config_codex_model_persisted
 test_state_mutation_failure
 test_thread_id_atomic_preservation
 test_log_output_format
-test_legacy_state_fields
 test_claude_model_dispatch
 test_codex_model_dispatch
 test_claude_approved

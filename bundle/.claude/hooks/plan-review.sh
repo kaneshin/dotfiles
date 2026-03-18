@@ -92,8 +92,8 @@ update_plan_review_file() {
     # Same plan file — single atomic write, optional fields merged via jq
     local reviews tid mdl
     reviews=$(echo "$PLAN_REVIEW_JSON" | jq -r '.reviews // 0')
-    tid=$(echo "$PLAN_REVIEW_JSON" | jq -r '.thread_id // .codex_thread_id // empty' 2>/dev/null)
-    mdl=$(echo "$PLAN_REVIEW_JSON" | jq -r '.model // .codex_model // empty' 2>/dev/null)
+    tid=$(echo "$PLAN_REVIEW_JSON" | jq -r '.thread_id // empty' 2>/dev/null)
+    mdl=$(echo "$PLAN_REVIEW_JSON" | jq -r '.model // empty' 2>/dev/null)
     state_init \
       --arg fp "$INPUT_FILE_PATH" \
       --argjson rev "$reviews" \
@@ -163,7 +163,7 @@ plan_review() {
 
   # Build prompt once, reuse for both exec and resume
   local prompt
-  prompt="/review Review the implementation plan in @${file_path}. You have to focus on:
+  prompt="Review the implementation plan in @${file_path}. You have to focus on:
 1. Correctness - Will this plan achieve the stated goals?
 2. Risks - What could go wrong? Edge cases? Data loss?
 3. Missing steps - Is anything forgotten?
@@ -176,11 +176,11 @@ If changes are needed, end with exactly: VERDICT: REVISE"
 
   # Determine whether to exec or resume
   local thread_id
-  thread_id=$(echo "$PLAN_REVIEW_JSON" | jq -r '.thread_id // .codex_thread_id // empty')
+  thread_id=$(echo "$PLAN_REVIEW_JSON" | jq -r '.thread_id // empty')
 
   # Invalidate thread if model has changed or is missing (legacy state)
   local stored_model
-  stored_model=$(echo "$PLAN_REVIEW_JSON" | jq -r '.model // .codex_model // empty')
+  stored_model=$(echo "$PLAN_REVIEW_JSON" | jq -r '.model // empty')
   if [ -n "$thread_id" ]; then
     if [ -z "$stored_model" ]; then
       log "- stored model missing for thread ${thread_id:0:8}..., clearing stale thread"
