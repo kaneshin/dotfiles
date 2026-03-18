@@ -10,4 +10,4 @@ query=$(echo "$INPUT" | jq -r '.query // empty')
 if [ -n "$CLAUDE_PROJECT_DIR" ]; then
   cd "$CLAUDE_PROJECT_DIR"
 fi
-fd --hidden | fzf --filter="$query" | head -20
+fd --hidden --no-ignore | fzf --filter="$query" | head -20
