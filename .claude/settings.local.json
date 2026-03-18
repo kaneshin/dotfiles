@@ -35,6 +35,6 @@
   "planReview": {
     "maxReviews": 3,
     "minReviews": 1,
-    "model": "gpt-5.4"
+    "model": "sonnet"
   }
 }
