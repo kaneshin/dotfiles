@@ -1213,6 +1213,142 @@ test_config_codex_model_persisted() {
 }
 
 # =============================================================================
+# Config: planReview.enabled tests (Cases 45–48)
+# =============================================================================
+
+# Case 45: enabled:false → ExitPlanMode produces no output (allow, skipped)
+test_config_enabled_false_skips_review() {
+  echo "Test 45: enabled:false skips review..."
+  set_mock_claude_revise  # Would normally produce deny output
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-cfg-enabled-false"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  write_settings "$project_dir/.claude" '{"planReview":{"enabled":false}}'
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0 when disabled"
+  assert_equals "" "$output" "no output when plan review disabled"
+
+  local log_content
+  log_content=$(cat "$TEST_TMP_DIR/home/.claude/logs/plan-review.log")
+  local has_disabled
+  has_disabled=$(echo "$log_content" | grep -q 'plan review disabled' && echo yes || echo no)
+  assert_equals "yes" "$has_disabled" "log contains disabled message"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 46: enabled:true → review runs normally
+test_config_enabled_true_runs_review() {
+  echo "Test 46: enabled:true runs review..."
+  set_mock_claude_revise
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-cfg-enabled-true"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  write_settings "$project_dir/.claude" '{"planReview":{"enabled":true}}'
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0"
+
+  local decision
+  decision=$(echo "$output" | jq -r '.hookSpecificOutput.permissionDecision // empty' 2>/dev/null)
+  assert_equals "deny" "$decision" "review runs and produces deny when enabled:true"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 47: global false, project true → review runs (project overrides global)
+test_config_enabled_override_hierarchy() {
+  echo "Test 47: enabled hierarchy: global false, project true..."
+  set_mock_claude_revise
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-cfg-enabled-hierarchy"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  write_settings "$TEST_TMP_DIR/home/.claude" '{"planReview":{"enabled":false}}'
+  write_settings "$project_dir/.claude" '{"planReview":{"enabled":true}}'
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+
+  local decision
+  decision=$(echo "$output" | jq -r '.hookSpecificOutput.permissionDecision // empty' 2>/dev/null)
+  assert_equals "deny" "$decision" "project enabled:true overrides global enabled:false"
+
+  rm -f "$TEST_TMP_DIR/home/.claude/settings.json"
+  rm -f "$project_dir/.claude/settings.json"
+}
+
+# Case 48: project true, local false → skips (local overrides project)
+test_config_enabled_local_override() {
+  echo "Test 48: enabled hierarchy: project true, local false..."
+  set_mock_claude_revise
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-cfg-enabled-local"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  write_settings "$project_dir/.claude" '{"planReview":{"enabled":true}}'
+  mkdir -p "$project_dir/.claude"
+  echo '{"planReview":{"enabled":false}}' > "$project_dir/.claude/settings.local.json"
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0"
+  assert_equals "" "$output" "local enabled:false overrides project enabled:true"
+
+  rm -f "$project_dir/.claude/settings.json"
+  rm -f "$project_dir/.claude/settings.local.json"
+}
+
+# =============================================================================
 # Pre-refactoring coverage tests (Cases 30–32)
 # =============================================================================
 
@@ -1735,6 +1871,10 @@ test_config_min_reviews_gates_approved
 test_config_min_reviews_second_approved
 test_config_model_change_clears_thread
 test_config_codex_model_persisted
+test_config_enabled_false_skips_review
+test_config_enabled_true_runs_review
+test_config_enabled_override_hierarchy
+test_config_enabled_local_override
 test_state_mutation_failure
 test_thread_id_atomic_preservation
 test_log_output_format
