@@ -151,12 +151,17 @@ If changes are needed, end with exactly: VERDICT: REVISE"
   local codex_thread_id
   codex_thread_id=$(echo "$PLAN_REVIEW_JSON" | jq -r '.codex_thread_id // empty')
 
-  # Invalidate thread if model has changed
+  # Invalidate thread if model has changed or is missing (legacy state)
   local stored_model
   stored_model=$(echo "$PLAN_REVIEW_JSON" | jq -r '.codex_model // empty')
-  if [ -n "$codex_thread_id" ] && [ -n "$stored_model" ] && [ "$stored_model" != "$CODEX_MODEL" ]; then
-    echo "- model changed ($stored_model -> $CODEX_MODEL), clearing thread" >> "$LOG_FILE"
-    codex_thread_id=""
+  if [ -n "$codex_thread_id" ]; then
+    if [ -z "$stored_model" ]; then
+      echo "- stored codex_model missing for thread ${codex_thread_id:0:8}..., clearing stale thread" >> "$LOG_FILE"
+      codex_thread_id=""
+    elif [ "$stored_model" != "$CODEX_MODEL" ]; then
+      echo "- model changed ($stored_model -> $CODEX_MODEL), clearing thread" >> "$LOG_FILE"
+      codex_thread_id=""
+    fi
   fi
 
   local codex_output codex_rc
