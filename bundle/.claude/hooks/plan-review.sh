@@ -29,7 +29,7 @@ _read_plan_review_config() {
   [ -n "$val" ] && MAX_REVIEWS=$val
   val=$(jq -r '.planReview.minReviews | select(type=="number" and . >= 1 and floor == .)' "$f" 2>/dev/null)
   [ -n "$val" ] && MIN_REVIEWS=$val
-  val=$(jq -r '.planReview.codex.model | select(type=="string" and length > 0)' "$f" 2>/dev/null)
+  val=$(jq -r '(.planReview.model // .planReview.codex.model) | select(type=="string" and length > 0)' "$f" 2>/dev/null)
   [ -n "$val" ] && REVIEW_MODEL=$val
 }
 

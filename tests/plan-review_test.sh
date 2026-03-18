@@ -916,8 +916,8 @@ test_config_local_override() {
   local session_id="sess-cfg-local"
   create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
 
-  write_settings "$project_dir/.claude" '{"planReview":{"codex":{"model":"gpt-4o"}}}'
-  echo '{"planReview":{"codex":{"model":"gpt-local"}}}' > "$project_dir/.claude/settings.local.json"
+  write_settings "$project_dir/.claude" '{"planReview":{"model":"gpt-4o"}}'
+  echo '{"planReview":{"model":"gpt-local"}}' > "$project_dir/.claude/settings.local.json"
 
   local input
   input=$(jq -nc --arg sid "$session_id" '{
@@ -1095,7 +1095,7 @@ MOCK
   # State has old model; config will have new model
   create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 1 "old-thread-id" "old-model"
 
-  write_settings "$project_dir/.claude" '{"planReview":{"codex":{"model":"new-model"}}}'
+  write_settings "$project_dir/.claude" '{"planReview":{"model":"new-model"}}'
 
   local input
   input=$(jq -nc --arg sid "$session_id" '{
@@ -1130,7 +1130,7 @@ test_config_codex_model_persisted() {
   local session_id="sess-cfg-model-persist"
   create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
 
-  write_settings "$project_dir/.claude" '{"planReview":{"codex":{"model":"gpt-persist-test"}}}'
+  write_settings "$project_dir/.claude" '{"planReview":{"model":"gpt-persist-test"}}'
 
   local input
   input=$(jq -nc --arg sid "$session_id" '{
