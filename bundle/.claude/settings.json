@@ -20,11 +20,19 @@
   "permissions": {
     "allow": [
       "Bash",
-      "Edit(**)",
-      "Read(**)",
+      "Edit",
+      "ExitPlanMode",
+      "Glob",
+      "Grep",
+      "LS",
+      "LSP",
+      "MultiEdit",
+      "Read",
+      "Skill",
+      "Task",
       "WebFetch(domain:*)",
       "WebSearch",
-      "Write(**)"
+      "Write"
     ],
     "deny": [
       "Bash(rm -rf ../*)",
