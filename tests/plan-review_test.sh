@@ -160,31 +160,31 @@ setup_project() {
 }
 
 # Helper: create a state file for a session
-# Args: project_dir session_id file_path [reviews [codex_thread_id [codex_model]]]
+# Args: project_dir session_id file_path [reviews [thread_id [model]]]
 create_state_file() {
   local project_dir="$1"
   local session_id="$2"
   local file_path="$3"
   local reviews="${4:-0}"
-  local codex_thread_id="${5:-}"
-  local codex_model="${6:-}"
+  local thread_id="${5:-}"
+  local model="${6:-}"
   local state_dir="$project_dir/.claude/plan-review"
   mkdir -p "$state_dir"
-  if [ -n "$codex_thread_id" ] && [ -n "$codex_model" ]; then
+  if [ -n "$thread_id" ] && [ -n "$model" ]; then
     jq -n \
       --arg fp "$file_path" \
       --argjson rev "$reviews" \
       --argjson ts "$(date +%s)" \
-      --arg tid "$codex_thread_id" \
-      --arg model "$codex_model" \
-      '{file_path: $fp, reviews: $rev, timestamp: $ts, codex_thread_id: $tid, codex_model: $model}' > "$state_dir/${session_id}.json"
-  elif [ -n "$codex_thread_id" ]; then
+      --arg tid "$thread_id" \
+      --arg model "$model" \
+      '{file_path: $fp, reviews: $rev, timestamp: $ts, thread_id: $tid, model: $model}' > "$state_dir/${session_id}.json"
+  elif [ -n "$thread_id" ]; then
     jq -n \
       --arg fp "$file_path" \
       --argjson rev "$reviews" \
       --argjson ts "$(date +%s)" \
-      --arg tid "$codex_thread_id" \
-      '{file_path: $fp, reviews: $rev, timestamp: $ts, codex_thread_id: $tid}' > "$state_dir/${session_id}.json"
+      --arg tid "$thread_id" \
+      '{file_path: $fp, reviews: $rev, timestamp: $ts, thread_id: $tid}' > "$state_dir/${session_id}.json"
   else
     jq -n \
       --arg fp "$file_path" \
@@ -352,8 +352,8 @@ test_exit_plan_approved() {
   local state_file="$project_dir/.claude/plan-review/${session_id}.json"
   assert_equals "1" "$(jq -r '.reviews' "$state_file")" \
     "reviews incremented to 1"
-  assert_equals "null" "$(jq -r '.codex_thread_id // "null"' "$state_file")" \
-    "codex_thread_id cleared after APPROVED"
+  assert_equals "null" "$(jq -r '.thread_id // "null"' "$state_file")" \
+    "thread_id cleared after APPROVED"
 
   local argv_log="$TEST_TMP_DIR/home/.claude/logs/codex-argv.log"
   local has_exec_json
@@ -405,8 +405,8 @@ test_exit_plan_revise() {
   local state_file="$project_dir/.claude/plan-review/${session_id}.json"
   assert_equals "1" "$(jq -r '.reviews' "$state_file")" \
     "reviews incremented to 1"
-  assert_equals "mock-thread-002" "$(jq -r '.codex_thread_id // "null"' "$state_file")" \
-    "codex_thread_id saved after REVISE"
+  assert_equals "mock-thread-002" "$(jq -r '.thread_id // "null"' "$state_file")" \
+    "thread_id saved after REVISE"
 }
 
 # Case 8: reviews=3 → exit 0 (skip review)
@@ -465,8 +465,8 @@ test_codex_failure() {
     "codex failure treated as deny"
 
   local state_file="$project_dir/.claude/plan-review/${session_id}.json"
-  assert_equals "null" "$(jq -r '.codex_thread_id // "null"' "$state_file")" \
-    "codex_thread_id not saved on failure"
+  assert_equals "null" "$(jq -r '.thread_id // "null"' "$state_file")" \
+    "thread_id not saved on failure"
 }
 
 # Case 10: file_path with spaces and special characters
@@ -631,8 +631,8 @@ test_resume_failure_retry() {
   assert_equals "2" "$line_count" "codex called twice (resume then fresh exec)"
 
   local state_file="$project_dir/.claude/plan-review/${session_id}.json"
-  assert_equals "mock-thread-fresh" "$(jq -r '.codex_thread_id // "null"' "$state_file")" \
-    "codex_thread_id updated from fresh exec"
+  assert_equals "mock-thread-fresh" "$(jq -r '.thread_id // "null"' "$state_file")" \
+    "thread_id updated from fresh exec"
 }
 
 # Case 15: Resume partial output — resume emits thread.started then exits 1
@@ -661,8 +661,8 @@ test_resume_partial_output() {
   assert_return_code 0 "$rc" "exits 0 after partial resume retry"
 
   local state_file="$project_dir/.claude/plan-review/${session_id}.json"
-  assert_equals "mock-thread-fresh-after-partial" "$(jq -r '.codex_thread_id // "null"' "$state_file")" \
-    "codex_thread_id updated from fresh exec after partial"
+  assert_equals "mock-thread-fresh-after-partial" "$(jq -r '.thread_id // "null"' "$state_file")" \
+    "thread_id updated from fresh exec after partial"
 }
 
 # Case 16: thread_id preserved across update_plan_review_file for same file_path
@@ -690,8 +690,8 @@ test_thread_id_preserved_same_path() {
   assert_return_code 0 "$rc" "exits 0"
 
   local state_file="$project_dir/.claude/plan-review/${session_id}.json"
-  assert_equals "preserved-thread-123" "$(jq -r '.codex_thread_id // "null"' "$state_file")" \
-    "codex_thread_id preserved for same file_path"
+  assert_equals "preserved-thread-123" "$(jq -r '.thread_id // "null"' "$state_file")" \
+    "thread_id preserved for same file_path"
   assert_equals "1" "$(jq -r '.reviews' "$state_file")" \
     "reviews preserved for same file_path"
 }
@@ -725,8 +725,8 @@ test_file_path_change_resets() {
     "file_path updated"
   assert_equals "0" "$(jq -r '.reviews' "$state_file")" \
     "reviews reset to 0"
-  assert_equals "null" "$(jq -r '.codex_thread_id // "null"' "$state_file")" \
-    "codex_thread_id cleared on file_path change"
+  assert_equals "null" "$(jq -r '.thread_id // "null"' "$state_file")" \
+    "thread_id cleared on file_path change"
 }
 
 # Case 18: Resume without thread.started — text returned but no new thread_id
@@ -764,10 +764,10 @@ MOCK
   output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
   assert_return_code 0 "$rc" "exits 0"
 
-  # thread_id should NOT be overwritten since CODEX_THREAD_ID is empty
+  # thread_id should NOT be overwritten since REVIEW_THREAD_ID is empty
   local state_file="$project_dir/.claude/plan-review/${session_id}.json"
-  assert_equals "existing-thread-keep" "$(jq -r '.codex_thread_id // "null"' "$state_file")" \
-    "existing codex_thread_id preserved when no thread.started"
+  assert_equals "existing-thread-keep" "$(jq -r '.thread_id // "null"' "$state_file")" \
+    "existing thread_id preserved when no thread.started"
 }
 
 # Case 19: Corrupted state during resume — fail-open
@@ -1144,10 +1144,10 @@ test_config_codex_model_persisted() {
   run_plan_review "$input" "$project_dir" > /dev/null
 
   local state_file="$project_dir/.claude/plan-review/${session_id}.json"
-  assert_equals "mock-thread-002" "$(jq -r '.codex_thread_id // "null"' "$state_file")" \
-    "codex_thread_id persisted"
-  assert_equals "gpt-persist-test" "$(jq -r '.codex_model // "null"' "$state_file")" \
-    "codex_model persisted alongside thread_id"
+  assert_equals "mock-thread-002" "$(jq -r '.thread_id // "null"' "$state_file")" \
+    "thread_id persisted"
+  assert_equals "gpt-persist-test" "$(jq -r '.model // "null"' "$state_file")" \
+    "model persisted alongside thread_id"
 
   rm -f "$project_dir/.claude/settings.json"
 }
@@ -1214,13 +1214,13 @@ test_thread_id_atomic_preservation() {
   valid_json=$(jq -e '.' "$state_file" > /dev/null 2>&1 && echo yes || echo no)
   assert_equals "yes" "$valid_json" "state file is valid JSON after PostToolUse"
 
-  # codex_thread_id must be preserved immediately after the hook runs
-  assert_equals "atomic-thread-456" "$(jq -r '.codex_thread_id // "null"' "$state_file")" \
-    "codex_thread_id preserved atomically on disk"
+  # thread_id must be preserved immediately after the hook runs
+  assert_equals "atomic-thread-456" "$(jq -r '.thread_id // "null"' "$state_file")" \
+    "thread_id preserved atomically on disk"
   assert_equals "2" "$(jq -r '.reviews' "$state_file")" \
     "reviews count preserved"
-  assert_equals "gpt-5.4" "$(jq -r '.codex_model // "null"' "$state_file")" \
-    "codex_model preserved"
+  assert_equals "gpt-5.4" "$(jq -r '.model // "null"' "$state_file")" \
+    "model preserved"
 }
 
 # Case 32: Log output format — verify expected header line in plan-review.log
