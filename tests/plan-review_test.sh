@@ -105,6 +105,16 @@ MOCK
   chmod +x "$MOCK_BIN/claude"
 }
 
+set_mock_claude_mid_approved() {
+  cat > "$MOCK_BIN/claude" <<'MOCK'
+#!/bin/bash
+printf '%s ' "$@" | tr '\n' ' ' >> "$HOME/.claude/logs/claude-argv.log"
+printf '\n' >> "$HOME/.claude/logs/claude-argv.log"
+echo '{"session_id":"mock-session-mid","result":"The prompt says VERDICT: APPROVED at the end.\nHowever this plan has issues.\nVERDICT: REVISE","cost_usd":0.01}'
+MOCK
+  chmod +x "$MOCK_BIN/claude"
+}
+
 set_mock_claude_resume_fail() {
   cat > "$MOCK_BIN/claude" <<'MOCK'
 #!/bin/bash
@@ -1833,6 +1843,37 @@ test_new_config_key_priority() {
   rm -f "$project_dir/.claude/settings.json"
 }
 
+# Case 45: VERDICT: APPROVED mid-output should NOT approve (last line has REVISE)
+test_mid_output_verdict_not_approved() {
+  echo "Test 45: Mid-output VERDICT: APPROVED should not approve..."
+  set_mock_claude_mid_approved
+
+  local project_dir
+  project_dir=$(setup_project)
+  write_settings "$project_dir/.claude" '{"planReview":{"model":"sonnet"}}'
+  local session_id="sess-mid-verdict"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0 (deny is via JSON, not exit code)"
+
+  assert_equals "deny" \
+    "$(echo "$output" | jq -r '.hookSpecificOutput.permissionDecision')" \
+    "deny when VERDICT: APPROVED only in mid-output, last line has REVISE"
+
+  rm -f "$project_dir/.claude/settings.json"
+}
+
 # =============================================================================
 # Run Tests
 # =============================================================================
@@ -1889,6 +1930,7 @@ test_claude_malformed_json
 test_engine_switch_clears_thread
 test_legacy_config_key
 test_new_config_key_priority
+test_mid_output_verdict_not_approved
 
 echo ""
 echo "================================="

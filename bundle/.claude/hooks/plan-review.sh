@@ -245,7 +245,9 @@ If changes are needed, end with exactly: VERDICT: REVISE"
   local review_results="$REVIEW_TEXT"
   log "- review results: $review_results"
 
-  if [[ "$review_results" == *"VERDICT: APPROVED"* ]]; then
+  local last_line
+  last_line=$(printf '%s' "$review_results" | tail -1)
+  if [[ "$last_line" == *"VERDICT: APPROVED"* ]]; then
     # Always clear thread on APPROVED — any subsequent required pass starts fresh
     state_update 'del(.thread_id) | del(.model)' || true
 
