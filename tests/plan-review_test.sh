@@ -577,7 +577,7 @@ test_resume_flow() {
   local project_dir
   project_dir=$(setup_project)
   local session_id="sess-resume"
-  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 1 "existing-thread-abc"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 1 "existing-thread-abc" "gpt-5.4"
 
   local input
   input=$(jq -nc \
@@ -608,7 +608,7 @@ test_resume_failure_retry() {
   local project_dir
   project_dir=$(setup_project)
   local session_id="sess-resume-fail"
-  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 1 "old-thread-xyz"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 1 "old-thread-xyz" "gpt-5.4"
 
   local input
   input=$(jq -nc \
@@ -1153,6 +1153,109 @@ test_config_codex_model_persisted() {
 }
 
 # =============================================================================
+# Pre-refactoring coverage tests (Cases 30–32)
+# =============================================================================
+
+# Case 30: State mutation failure — read-only state file → fail-open (exit 0)
+test_state_mutation_failure() {
+  echo "Test 30: State mutation failure (read-only state file)..."
+  set_mock_codex_approved
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-readonly"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  # Make state file read-only so jq writes fail
+  chmod 444 "$project_dir/.claude/plan-review/${session_id}.json"
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0 when state file is read-only (fail-open)"
+
+  # Restore permissions for cleanup
+  chmod 644 "$project_dir/.claude/plan-review/${session_id}.json"
+}
+
+# Case 31: Atomic codex_thread_id preservation — PostToolUse for same plan file
+test_thread_id_atomic_preservation() {
+  echo "Test 31: Atomic codex_thread_id preservation on PostToolUse..."
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-atomic-tid"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 2 "atomic-thread-456" "gpt-5.4"
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PostToolUse",
+    tool_name: "Write",
+    tool_input: {file_path: "/tmp/plan.md"}
+  }')
+
+  local rc output
+  output=$(run_plan_review "$input" "$project_dir") && rc=0 || rc=$?
+  assert_return_code 0 "$rc" "exits 0"
+
+  local state_file="$project_dir/.claude/plan-review/${session_id}.json"
+  # Verify state file exists and is valid JSON
+  local valid_json
+  valid_json=$(jq -e '.' "$state_file" > /dev/null 2>&1 && echo yes || echo no)
+  assert_equals "yes" "$valid_json" "state file is valid JSON after PostToolUse"
+
+  # codex_thread_id must be preserved immediately after the hook runs
+  assert_equals "atomic-thread-456" "$(jq -r '.codex_thread_id // "null"' "$state_file")" \
+    "codex_thread_id preserved atomically on disk"
+  assert_equals "2" "$(jq -r '.reviews' "$state_file")" \
+    "reviews count preserved"
+  assert_equals "gpt-5.4" "$(jq -r '.codex_model // "null"' "$state_file")" \
+    "codex_model preserved"
+}
+
+# Case 32: Log output format — verify expected header line in plan-review.log
+test_log_output_format() {
+  echo "Test 32: Log output format..."
+  set_mock_codex_approved
+
+  local project_dir
+  project_dir=$(setup_project)
+  local session_id="sess-log-fmt"
+  create_state_file "$project_dir" "$session_id" "/tmp/plan.md" 0
+
+  # Clear the log before this test
+  : > "$TEST_TMP_DIR/home/.claude/logs/plan-review.log"
+
+  local input
+  input=$(jq -nc --arg sid "$session_id" '{
+    permission_mode: "plan",
+    session_id: $sid,
+    hook_event_name: "PreToolUse",
+    tool_name: "ExitPlanMode",
+    tool_input: {}
+  }')
+
+  run_plan_review "$input" "$project_dir" > /dev/null
+
+  local log_file="$TEST_TMP_DIR/home/.claude/logs/plan-review.log"
+  # Verify the expected header format: === <date> <event> (<tool>) hook executed ===
+  local has_header
+  has_header=$(grep -qE '^=== [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} PreToolUse \(ExitPlanMode\) hook executed ===$' \
+    "$log_file" && echo yes || echo no)
+  assert_equals "yes" "$has_header" "log contains expected header format"
+}
+
+# =============================================================================
 # Run Tests
 # =============================================================================
 
@@ -1190,6 +1293,9 @@ test_config_min_reviews_gates_approved
 test_config_min_reviews_second_approved
 test_config_model_change_clears_thread
 test_config_codex_model_persisted
+test_state_mutation_failure
+test_thread_id_atomic_preservation
+test_log_output_format
 
 echo ""
 echo "================================="
