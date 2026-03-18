@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Plan review hook — runs an external review (codex CLI) when ExitPlanMode is invoked.
+# Plan review hook — runs an external review (Codex CLI or Claude Code) when ExitPlanMode is invoked.
 # State is stored per-session in .claude/plan-review/<session_id>.json.
 
 # This hook only operates within a project directory.
@@ -19,7 +19,7 @@ fi
 # Config defaults (only needed for plan permission mode)
 MAX_REVIEWS=3
 MIN_REVIEWS=1
-CODEX_MODEL="gpt-5.4"
+REVIEW_MODEL="sonnet"
 
 _read_plan_review_config() {
   local f="$1"
@@ -29,8 +29,8 @@ _read_plan_review_config() {
   [ -n "$val" ] && MAX_REVIEWS=$val
   val=$(jq -r '.planReview.minReviews | select(type=="number" and . >= 1 and floor == .)' "$f" 2>/dev/null)
   [ -n "$val" ] && MIN_REVIEWS=$val
-  val=$(jq -r '.planReview.codex.model | select(type=="string" and length > 0)' "$f" 2>/dev/null)
-  [ -n "$val" ] && CODEX_MODEL=$val
+  val=$(jq -r '(.planReview.model // .planReview.codex.model) | select(type=="string" and length > 0)' "$f" 2>/dev/null)
+  [ -n "$val" ] && REVIEW_MODEL=$val
 }
 
 _read_plan_review_config "$HOME/.claude/settings.json"
@@ -50,7 +50,7 @@ LOG_DIR="$HOME/.claude/logs"
 LOG_FILE="$LOG_DIR/plan-review.log"
 log() { echo "$1" >> "$LOG_FILE"; }
 log "=== $(date '+%Y-%m-%d %H:%M:%S') $HOOK_EVENT_NAME ($TOOL_NAME) hook executed ==="
-log "- settings: max=$MAX_REVIEWS min=$MIN_REVIEWS model=$CODEX_MODEL"
+log "- settings: max=$MAX_REVIEWS min=$MIN_REVIEWS model=$REVIEW_MODEL"
 
 # Per-session state file
 STATE_DIR="$CLAUDE_PROJECT_DIR/.claude/plan-review"
@@ -90,37 +90,56 @@ update_plan_review_file() {
       '{file_path: $fp, reviews: 0, timestamp: $ts}'
   else
     # Same plan file — single atomic write, optional fields merged via jq
-    local reviews codex_tid codex_mdl
+    local reviews tid mdl
     reviews=$(echo "$PLAN_REVIEW_JSON" | jq -r '.reviews // 0')
-    codex_tid=$(echo "$PLAN_REVIEW_JSON" | jq -r '.codex_thread_id // empty' 2>/dev/null)
-    codex_mdl=$(echo "$PLAN_REVIEW_JSON" | jq -r '.codex_model // empty' 2>/dev/null)
+    tid=$(echo "$PLAN_REVIEW_JSON" | jq -r '.thread_id // .codex_thread_id // empty' 2>/dev/null)
+    mdl=$(echo "$PLAN_REVIEW_JSON" | jq -r '.model // .codex_model // empty' 2>/dev/null)
     state_init \
       --arg fp "$INPUT_FILE_PATH" \
       --argjson rev "$reviews" \
       --argjson ts "$(date +%s)" \
-      --arg tid "${codex_tid:-}" \
-      --arg model "${codex_mdl:-}" \
+      --arg tid "${tid:-}" \
+      --arg model "${mdl:-}" \
       '{file_path: $fp, reviews: $rev, timestamp: $ts}
-       + (if $tid != "" then {codex_thread_id: $tid} else {} end)
-       + (if $model != "" then {codex_model: $model} else {} end)'
+       + (if $tid != "" then {thread_id: $tid} else {} end)
+       + (if $model != "" then {model: $model} else {} end)'
   fi
   log "- update state: $STATE_FILE"
 }
 
 parse_codex_jsonl() {
   local jsonl_output="$1"
-  CODEX_THREAD_ID=""
-  CODEX_REVIEW_TEXT=""
-  CODEX_THREAD_ID=$(printf '%s\n' "$jsonl_output" \
+  REVIEW_THREAD_ID=""
+  REVIEW_TEXT=""
+  REVIEW_THREAD_ID=$(printf '%s\n' "$jsonl_output" \
     | jq -R -r 'fromjson? | select(.type == "thread.started") | .thread_id // empty' 2>/dev/null \
     | head -1)
-  CODEX_REVIEW_TEXT=$(printf '%s\n' "$jsonl_output" \
+  REVIEW_TEXT=$(printf '%s\n' "$jsonl_output" \
     | jq -R -r 'fromjson? | select(.type == "item.completed" and .item.type == "agent_message") | .item.text // empty' 2>/dev/null \
     | paste -sd $'\n' -)
 }
 
+is_codex_model() {
+  case "$1" in gpt-*) return 0 ;; *) return 1 ;; esac
+}
+
 codex_exec_fresh() {
-  codex exec --json -m "$CODEX_MODEL" -s read-only "$1"
+  codex exec --json -m "$REVIEW_MODEL" -s read-only "$1"
+}
+
+claude_exec_fresh() {
+  env -u CLAUDECODE claude -p "$1" \
+    --output-format json --model "$REVIEW_MODEL" --allowedTools "Read"
+}
+
+parse_claude_json() {
+  local json_output="$1"
+  REVIEW_THREAD_ID=""
+  REVIEW_TEXT=""
+  REVIEW_THREAD_ID=$(printf '%s' "$json_output" \
+    | jq -r '.session_id // empty' 2>/dev/null)
+  REVIEW_TEXT=$(printf '%s' "$json_output" \
+    | jq -r '.result // empty' 2>/dev/null)
 }
 
 plan_review() {
@@ -156,52 +175,71 @@ Be specific and actionable. If the plan is solid and ready to implement, end you
 If changes are needed, end with exactly: VERDICT: REVISE"
 
   # Determine whether to exec or resume
-  local codex_thread_id
-  codex_thread_id=$(echo "$PLAN_REVIEW_JSON" | jq -r '.codex_thread_id // empty')
+  local thread_id
+  thread_id=$(echo "$PLAN_REVIEW_JSON" | jq -r '.thread_id // .codex_thread_id // empty')
 
   # Invalidate thread if model has changed or is missing (legacy state)
   local stored_model
-  stored_model=$(echo "$PLAN_REVIEW_JSON" | jq -r '.codex_model // empty')
-  if [ -n "$codex_thread_id" ]; then
+  stored_model=$(echo "$PLAN_REVIEW_JSON" | jq -r '.model // .codex_model // empty')
+  if [ -n "$thread_id" ]; then
     if [ -z "$stored_model" ]; then
-      log "- stored codex_model missing for thread ${codex_thread_id:0:8}..., clearing stale thread"
-      codex_thread_id=""
-    elif [ "$stored_model" != "$CODEX_MODEL" ]; then
-      log "- model changed ($stored_model -> $CODEX_MODEL), clearing thread"
-      codex_thread_id=""
+      log "- stored model missing for thread ${thread_id:0:8}..., clearing stale thread"
+      thread_id=""
+    elif [ "$stored_model" != "$REVIEW_MODEL" ]; then
+      log "- model changed ($stored_model -> $REVIEW_MODEL), clearing thread"
+      thread_id=""
     fi
   fi
 
-  local codex_output codex_rc
-  if [ -n "$codex_thread_id" ]; then
-    log "- resuming codex thread: ${codex_thread_id:0:8}..."
-    codex_output=$(codex exec resume --json "$codex_thread_id" "$prompt") && codex_rc=0 || codex_rc=$?
-    parse_codex_jsonl "$codex_output"
+  local review_output review_rc
+  if is_codex_model "$REVIEW_MODEL"; then
+    # Codex CLI path
+    if [ -n "$thread_id" ]; then
+      log "- resuming codex thread: ${thread_id:0:8}..."
+      review_output=$(codex exec resume --json "$thread_id" "$prompt") && review_rc=0 || review_rc=$?
+      parse_codex_jsonl "$review_output"
 
-    # Retry with fresh exec if resume failed (non-zero exit OR empty text)
-    if [ "$codex_rc" -ne 0 ] || [ -z "$CODEX_REVIEW_TEXT" ]; then
-      log "- resume failed (rc=$codex_rc), retrying with fresh exec"
-      codex_output=$(codex_exec_fresh "$prompt") && codex_rc=0 || codex_rc=$?
-      parse_codex_jsonl "$codex_output"
+      if [ "$review_rc" -ne 0 ] || [ -z "$REVIEW_TEXT" ]; then
+        log "- resume failed (rc=$review_rc), retrying with fresh exec"
+        review_output=$(codex_exec_fresh "$prompt") && review_rc=0 || review_rc=$?
+        parse_codex_jsonl "$review_output"
+      fi
+    else
+      review_output=$(codex_exec_fresh "$prompt") && review_rc=0 || review_rc=$?
+      parse_codex_jsonl "$review_output"
     fi
   else
-    codex_output=$(codex_exec_fresh "$prompt") && codex_rc=0 || codex_rc=$?
-    parse_codex_jsonl "$codex_output"
+    # Claude Code headless path
+    if [ -n "$thread_id" ]; then
+      log "- resuming claude session: ${thread_id:0:8}..."
+      review_output=$(env -u CLAUDECODE claude -p "$prompt" \
+        --output-format json --resume "$thread_id") && review_rc=0 || review_rc=$?
+      parse_claude_json "$review_output"
+
+      if [ "$review_rc" -ne 0 ] || [ -z "$REVIEW_TEXT" ]; then
+        log "- resume failed (rc=$review_rc), retrying with fresh exec"
+        review_output=$(claude_exec_fresh "$prompt") && review_rc=0 || review_rc=$?
+        parse_claude_json "$review_output"
+      fi
+    else
+      review_output=$(claude_exec_fresh "$prompt") && review_rc=0 || review_rc=$?
+      parse_claude_json "$review_output"
+    fi
   fi
 
   # Persist thread_id ONLY on successful run (rc=0 AND non-empty text)
-  if [ "$codex_rc" -eq 0 ] && [ -n "$CODEX_REVIEW_TEXT" ] && [ -n "$CODEX_THREAD_ID" ]; then
-    state_update --arg tid "$CODEX_THREAD_ID" --arg model "$CODEX_MODEL" \
-      '.codex_thread_id = $tid | .codex_model = $model' || true
-    log "- saved codex thread: ${CODEX_THREAD_ID:0:8}..."
+  if [ "$review_rc" -eq 0 ] && [ -n "$REVIEW_TEXT" ] && [ -n "$REVIEW_THREAD_ID" ]; then
+    state_update --arg tid "$REVIEW_THREAD_ID" --arg model "$REVIEW_MODEL" \
+      '.thread_id = $tid | .model = $model' || true
+    log "- saved thread: ${REVIEW_THREAD_ID:0:8}..."
   fi
 
-  local review_results="$CODEX_REVIEW_TEXT"
+  local review_results="$REVIEW_TEXT"
   log "- review results: $review_results"
 
   if [[ "$review_results" == *"VERDICT: APPROVED"* ]]; then
     # Always clear thread on APPROVED — any subsequent required pass starts fresh
-    state_update 'del(.codex_thread_id) | del(.codex_model)' || true
+    state_update 'del(.thread_id) | del(.model)' || true
 
     local current_reviews
     current_reviews=$(jq -r '.reviews // 0' "$STATE_FILE")
