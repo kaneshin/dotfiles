@@ -19,7 +19,7 @@ fi
 # Config defaults (only needed for plan permission mode)
 MAX_REVIEWS=3
 MIN_REVIEWS=1
-REVIEW_MODEL="gpt-5.4"
+REVIEW_MODEL="sonnet"
 
 _read_plan_review_config() {
   local f="$1"
@@ -119,8 +119,27 @@ parse_codex_jsonl() {
     | paste -sd $'\n' -)
 }
 
+is_codex_model() {
+  case "$1" in gpt-*) return 0 ;; *) return 1 ;; esac
+}
+
 codex_exec_fresh() {
   codex exec --json -m "$REVIEW_MODEL" -s read-only "$1"
+}
+
+claude_exec_fresh() {
+  env -u CLAUDECODE claude -p "$1" \
+    --output-format json --model "$REVIEW_MODEL" --allowedTools "Read"
+}
+
+parse_claude_json() {
+  local json_output="$1"
+  REVIEW_THREAD_ID=""
+  REVIEW_TEXT=""
+  REVIEW_THREAD_ID=$(printf '%s' "$json_output" \
+    | jq -r '.session_id // empty' 2>/dev/null)
+  REVIEW_TEXT=$(printf '%s' "$json_output" \
+    | jq -r '.result // empty' 2>/dev/null)
 }
 
 plan_review() {
@@ -173,20 +192,39 @@ If changes are needed, end with exactly: VERDICT: REVISE"
   fi
 
   local review_output review_rc
-  if [ -n "$thread_id" ]; then
-    log "- resuming codex thread: ${thread_id:0:8}..."
-    review_output=$(codex exec resume --json "$thread_id" "$prompt") && review_rc=0 || review_rc=$?
-    parse_codex_jsonl "$review_output"
+  if is_codex_model "$REVIEW_MODEL"; then
+    # Codex CLI path
+    if [ -n "$thread_id" ]; then
+      log "- resuming codex thread: ${thread_id:0:8}..."
+      review_output=$(codex exec resume --json "$thread_id" "$prompt") && review_rc=0 || review_rc=$?
+      parse_codex_jsonl "$review_output"
 
-    # Retry with fresh exec if resume failed (non-zero exit OR empty text)
-    if [ "$review_rc" -ne 0 ] || [ -z "$REVIEW_TEXT" ]; then
-      log "- resume failed (rc=$review_rc), retrying with fresh exec"
+      if [ "$review_rc" -ne 0 ] || [ -z "$REVIEW_TEXT" ]; then
+        log "- resume failed (rc=$review_rc), retrying with fresh exec"
+        review_output=$(codex_exec_fresh "$prompt") && review_rc=0 || review_rc=$?
+        parse_codex_jsonl "$review_output"
+      fi
+    else
       review_output=$(codex_exec_fresh "$prompt") && review_rc=0 || review_rc=$?
       parse_codex_jsonl "$review_output"
     fi
   else
-    review_output=$(codex_exec_fresh "$prompt") && review_rc=0 || review_rc=$?
-    parse_codex_jsonl "$review_output"
+    # Claude Code headless path
+    if [ -n "$thread_id" ]; then
+      log "- resuming claude session: ${thread_id:0:8}..."
+      review_output=$(env -u CLAUDECODE claude -p "$prompt" \
+        --output-format json --resume "$thread_id") && review_rc=0 || review_rc=$?
+      parse_claude_json "$review_output"
+
+      if [ "$review_rc" -ne 0 ] || [ -z "$REVIEW_TEXT" ]; then
+        log "- resume failed (rc=$review_rc), retrying with fresh exec"
+        review_output=$(claude_exec_fresh "$prompt") && review_rc=0 || review_rc=$?
+        parse_claude_json "$review_output"
+      fi
+    else
+      review_output=$(claude_exec_fresh "$prompt") && review_rc=0 || review_rc=$?
+      parse_claude_json "$review_output"
+    fi
   fi
 
   # Persist thread_id ONLY on successful run (rc=0 AND non-empty text)
