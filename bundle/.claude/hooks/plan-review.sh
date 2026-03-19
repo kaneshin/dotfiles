@@ -247,9 +247,12 @@ If changes are needed, end with exactly: VERDICT: REVISE"
   local review_results="$REVIEW_TEXT"
   log "- review results: $review_results"
 
-  local last_line
-  last_line=$(printf '%s' "$review_results" | tail -1)
-  if [[ "$last_line" == *"VERDICT: APPROVED"* ]]; then
+  local last_line trimmed_last_line
+  # Extract the final non-empty line from the review results
+  last_line=$(printf '%s\n' "$review_results" | awk 'NF{last=$0} END{if (length(last)) print last}')
+  # Trim leading/trailing whitespace from the final non-empty line
+  trimmed_last_line=$(printf '%s' "$last_line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+  if [[ "$trimmed_last_line" == "VERDICT: APPROVED" ]]; then
     state_update 'del(.thread_id) | del(.model)' || true
     return 0  # allow
   fi
