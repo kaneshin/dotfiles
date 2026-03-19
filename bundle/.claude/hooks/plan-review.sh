@@ -2,6 +2,13 @@
 
 # Plan review hook — runs an external review (Codex CLI or Claude Code) when ExitPlanMode is invoked.
 # State is stored per-session in .claude/plan-review/<session_id>.json.
+# Pass --debug to enable log output to ~/.claude/logs/plan-review.log.
+
+# Parse flags
+DEBUG=false
+for _arg in "$@"; do
+  case "$_arg" in --debug) DEBUG=true ;; esac
+done
 
 # This hook only operates within a project directory.
 if [ -z "$CLAUDE_PROJECT_DIR" ]; then
@@ -19,8 +26,8 @@ fi
 # Config defaults (only needed for plan permission mode)
 PLAN_REVIEW_ENABLED="true"
 MAX_REVIEWS=3
-MIN_REVIEWS=1
 REVIEW_MODEL="sonnet"
+REVIEW_PROMPT="You are reviewing a proposed implementation plan for this coding session.\n\nEvaluate the plan using these criteria:\n\n1. Correctness & feasibility\n   - Does the plan correctly address the user’s request and constraints?\n   - Are the steps technically sound and realistic to implement?\n2. Safety & risk\n   - Does the plan avoid data loss, security issues, or breaking changes?\n   - Are risky operations (e.g., destructive edits, migrations) highlighted and mitigated?\n3. Clarity & structure\n   - Is the plan broken into clear, ordered steps?\n   - Would another engineer be able to follow these steps without confusion?\n4. Completeness & scope\n   - Does the plan cover all major parts of the task (code, tests, docs, config, deployment, etc.)?\n   - Is the scope appropriate (not missing key work, not including unnecessary work)?\n5. Dependencies & validation\n   - Does the plan identify important dependencies, assumptions, or prerequisites?\n   - Does it include validation or testing steps to confirm the changes work?\n\nIn your review, briefly summarize strengths and weaknesses of the plan, then conclude with a clear recommendation such as:\n- APPROVE: The plan is solid as-is.\n- APPROVE WITH NITS: The plan is fine but could be slightly improved.\n- REVISE: The plan has issues that should be fixed before proceeding.\n- REJECT: The plan is unsafe, incorrect, or not aligned with the request."
 
 _read_plan_review_config() {
   local f="$1"
@@ -30,30 +37,29 @@ _read_plan_review_config() {
   [ -n "$val" ] && PLAN_REVIEW_ENABLED=$val
   val=$(jq -r '.planReview.maxReviews | select(type=="number" and . >= 1 and floor == .)' "$f" 2>/dev/null)
   [ -n "$val" ] && MAX_REVIEWS=$val
-  val=$(jq -r '.planReview.minReviews | select(type=="number" and . >= 1 and floor == .)' "$f" 2>/dev/null)
-  [ -n "$val" ] && MIN_REVIEWS=$val
   val=$(jq -r '(.planReview.model // .planReview.codex.model) | select(type=="string" and length > 0)' "$f" 2>/dev/null)
   [ -n "$val" ] && REVIEW_MODEL=$val
+  val=$(jq -r '.planReview.prompt | select(type=="string" and length > 0)' "$f" 2>/dev/null)
+  [ -n "$val" ] && REVIEW_PROMPT=$val
 }
 
 _read_plan_review_config "$HOME/.claude/settings.json"
 _read_plan_review_config "$CLAUDE_PROJECT_DIR/.claude/settings.json"
 _read_plan_review_config "$CLAUDE_PROJECT_DIR/.claude/settings.local.json"
 
-# Enforce invariant: maxReviews must be >= minReviews
-[ "$MAX_REVIEWS" -lt "$MIN_REVIEWS" ] && MAX_REVIEWS=$MIN_REVIEWS
-
 SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty')
 HOOK_EVENT_NAME=$(echo "$INPUT" | jq -r '.hook_event_name // empty')
 TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty')
 
-# Logging
-LOG_DIR="$HOME/.claude/logs"
-[ ! -d "$LOG_DIR" ] && mkdir -p "$LOG_DIR"
-LOG_FILE="$LOG_DIR/plan-review.log"
-log() { echo "$1" >> "$LOG_FILE"; }
+# Logging — only writes when --debug is passed
+LOG_FILE="$HOME/.claude/logs/plan-review.log"
+log() {
+  [ "$DEBUG" = "true" ] || return 0
+  mkdir -p "$(dirname "$LOG_FILE")"
+  echo "$1" >> "$LOG_FILE"
+}
 log "=== $(date '+%Y-%m-%d %H:%M:%S') $HOOK_EVENT_NAME ($TOOL_NAME) hook executed ==="
-log "- settings: enabled=$PLAN_REVIEW_ENABLED max=$MAX_REVIEWS min=$MIN_REVIEWS model=$REVIEW_MODEL"
+log "- settings: enabled=$PLAN_REVIEW_ENABLED max=$MAX_REVIEWS model=$REVIEW_MODEL prompt=$(echo "$REVIEW_PROMPT" | head -1)..."
 
 if [ "$PLAN_REVIEW_ENABLED" = "false" ]; then
   log "- plan review disabled, exiting"
@@ -171,15 +177,11 @@ plan_review() {
 
   # Build prompt once, reuse for both exec and resume
   local prompt
-  prompt="Review the implementation plan in @${file_path}. You have to focus on:
-1. Correctness - Will this plan achieve the stated goals?
-2. Risks - What could go wrong? Edge cases? Data loss?
-3. Missing steps - Is anything forgotten?
-4. Alternatives - Is there a simpler or better approach?
-5. Security - Any security concerns?
+  prompt="Review the implementation plan in @${file_path}.
+${REVIEW_PROMPT}
 
-Be specific and actionable. If the plan is solid and ready to implement, end your review with exactly: VERDICT: APPROVED
-
+Be specific and actionable.
+If the plan is solid and ready to implement, end your review with exactly: VERDICT: APPROVED
 If changes are needed, end with exactly: VERDICT: REVISE"
 
   # Determine whether to exec or resume
@@ -245,17 +247,14 @@ If changes are needed, end with exactly: VERDICT: REVISE"
   local review_results="$REVIEW_TEXT"
   log "- review results: $review_results"
 
-  if [[ "$review_results" == *"VERDICT: APPROVED"* ]]; then
-    # Always clear thread on APPROVED — any subsequent required pass starts fresh
+  local last_line trimmed_last_line
+  # Extract the final non-empty line from the review results
+  last_line=$(printf '%s\n' "$review_results" | awk 'NF{last=$0} END{if (length(last)) print last}')
+  # Trim leading/trailing whitespace from the final non-empty line
+  trimmed_last_line=$(printf '%s' "$last_line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+  if [[ "$trimmed_last_line" == "VERDICT: APPROVED" ]]; then
     state_update 'del(.thread_id) | del(.model)' || true
-
-    local current_reviews
-    current_reviews=$(jq -r '.reviews // 0' "$STATE_FILE")
-    if [ "$current_reviews" -ge "$MIN_REVIEWS" ]; then
-      return 0  # allow
-    fi
-    review_results=$(printf '%s\n\nMinimum review count not reached (%s/%s). Trigger ExitPlanMode again.' \
-      "$review_results" "$current_reviews" "$MIN_REVIEWS")
+    return 0  # allow
   fi
 
   # Emit deny response — use backtick path (no Markdown link injection risk)
