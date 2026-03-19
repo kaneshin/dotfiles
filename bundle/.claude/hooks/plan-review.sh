@@ -27,7 +27,7 @@ fi
 PLAN_REVIEW_ENABLED="true"
 MAX_REVIEWS=3
 REVIEW_MODEL="sonnet"
-REVIEW_PROMPT=""
+REVIEW_PROMPT="You are reviewing a proposed implementation plan for this coding session.\n\nEvaluate the plan using these criteria:\n\n1. Correctness & feasibility\n   - Does the plan correctly address the user’s request and constraints?\n   - Are the steps technically sound and realistic to implement?\n2. Safety & risk\n   - Does the plan avoid data loss, security issues, or breaking changes?\n   - Are risky operations (e.g., destructive edits, migrations) highlighted and mitigated?\n3. Clarity & structure\n   - Is the plan broken into clear, ordered steps?\n   - Would another engineer be able to follow these steps without confusion?\n4. Completeness & scope\n   - Does the plan cover all major parts of the task (code, tests, docs, config, deployment, etc.)?\n   - Is the scope appropriate (not missing key work, not including unnecessary work)?\n5. Dependencies & validation\n   - Does the plan identify important dependencies, assumptions, or prerequisites?\n   - Does it include validation or testing steps to confirm the changes work?\n\nIn your review, briefly summarize strengths and weaknesses of the plan, then conclude with a clear recommendation such as:\n- APPROVE: The plan is solid as-is.\n- APPROVE WITH NITS: The plan is fine but could be slightly improved.\n- REVISE: The plan has issues that should be fixed before proceeding.\n- REJECT: The plan is unsafe, incorrect, or not aligned with the request."
 
 _read_plan_review_config() {
   local f="$1"
