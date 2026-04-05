@@ -9,6 +9,29 @@ DEBUG=false
 for _arg in "$@"; do
   case "$_arg" in --debug) DEBUG=true ;; esac
 done
+#
+#    "PreToolUse": [
+#      {
+#        "matcher": "ExitPlanMode",
+#        "hooks": [
+#          {
+#            "type": "command",
+#            "command": "~/.claude/hooks/plan-review.sh"
+#          }
+#        ]
+#      }
+#    ],
+#    "PostToolUse": [
+#      {
+#        "matcher": "Edit|Write",
+#        "hooks": [
+#          {
+#            "type": "command",
+#            "command": "~/.claude/hooks/plan-review.sh"
+#          }
+#        ]
+#      }
+#    ],
 
 # This hook only operates within a project directory.
 if [ -z "$CLAUDE_PROJECT_DIR" ]; then

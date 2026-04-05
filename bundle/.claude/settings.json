@@ -131,28 +131,9 @@
             "command": "~/.claude/hooks/permissions.sh"
           }
         ]
-      },
-      {
-        "matcher": "ExitPlanMode",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/plan-review.sh"
-          }
-        ]
       }
     ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/plan-review.sh"
-          }
-        ]
-      }
-    ],
+    "PostToolUse": [],
     "SubagentStop": [],
     "SessionEnd": [
       {
