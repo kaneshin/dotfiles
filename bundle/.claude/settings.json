@@ -109,7 +109,6 @@
     ],
     "defaultMode": "acceptEdits"
   },
-  "model": "sonnet",
   "hooks": {
     "Notification": [
       {
@@ -173,5 +172,6 @@
     "skill-creator@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true
   },
+  "theme": "dark-ansi",
   "title": "kaneshin's Claude Code Setting"
 }
