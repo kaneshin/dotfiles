@@ -9,6 +9,5 @@
       "Bash(./libexec/*)",
       "Bash(./scripts/*)"
     ]
-  },
-  "plansDirectory": "./.claude/plans"
+  }
 }
