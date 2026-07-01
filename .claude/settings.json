@@ -1,5 +1,4 @@
 {
-  "hooks": {},
   "permissions": {
     "allow": [
       "Bash(./bin/*)",
@@ -9,5 +8,6 @@
       "Bash(./libexec/*)",
       "Bash(./scripts/*)"
     ]
-  }
+  },
+  "hooks": {}
 }
