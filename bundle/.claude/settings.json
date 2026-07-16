@@ -26,7 +26,9 @@
       "Task",
       "WebFetch(domain:*)",
       "WebSearch",
-      "Write"
+      "Write",
+      "Bash(curl -o /dev/null -s -w *)",
+      "Bash(curl -s -o /dev/null -w *)"
     ],
     "deny": [
       "Bash(rm -rf ../*)",
