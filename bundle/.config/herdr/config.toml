@@ -77,8 +77,8 @@ new_workspace = "prefix+shift+n"
 # close_workspace = "prefix+shift+d"
 previous_workspace = "prefix+ctrl+["
 next_workspace = "prefix+ctrl+]"
-# previous_agent = ""     # optional, unset by default
-# next_agent = ""         # optional, unset by default
+previous_agent = "prefix+ctrl+shift+a"     # optional, unset by default
+next_agent = "prefix+ctrl+a"         # optional, unset by default
 # focus_agent = ""        # optional indexed binding, e.g. "prefix+alt+1..9"
 # remote_image_paste = "ctrl+v" # only active in herdr --remote; empty disables raw-key image paste
 new_tab = ["prefix+c", "prefix+j"]
@@ -143,7 +143,7 @@ toggle_sidebar = ["prefix+b", "prefix+t"]
 
 # Terminal width at or below which Herdr uses the mobile single-column layout.
 # Increase this for foldables, tablets, or wide phone terminals.
-# mobile_width_threshold = 64
+mobile_width_threshold = 120
 
 # Capture mouse input for Herdr's mouse UI.
 # Set false to let the terminal handle normal clicks, such as Cmd-clicking URLs.
