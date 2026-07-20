@@ -11,6 +11,7 @@
 	pager = less -R
 	editor = vim
 	excludesfile = ~/.gitignore
+	quotepath = false
 [color]
 	ui = auto
 	diff = auto
